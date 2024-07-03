@@ -30,6 +30,66 @@ const PASSWORD = process.env.NEO4J_PASSWORD;
   }
 })();
 
+// Fetch all node labels
+app.get('/api/node-labels', async (req, res) => {
+    const session = driver.session();
+    try {
+        const result = await session.run(
+            'CALL db.labels()'
+        );
+        const labels = result.records.map(record => record.get(0));
+        res.json(labels);
+    } catch (error) {
+        console.error('Error fetching node labels:', error);
+        res.status(500).json({ error: 'Failed to fetch node labels' });
+    } finally {
+        await session.close();
+    }
+});
+
+// Fetch all node names for a given label
+app.get('/api/node-names/:label', async (req, res) => {
+    const { label } = req.params;
+    const session = driver.session();
+    try {
+        const result = await session.run(
+            `MATCH (n:${label}) RETURN n.name AS name`
+        );
+        const names = result.records.map(record => record.get('name'));
+        res.json(names);
+    } catch (error) {
+        console.error(`Error fetching node names for label ${label}:`, error);
+        res.status(500).json({ error: `Failed to fetch node names for label ${label}` });
+    } finally {
+        await session.close();
+    }
+});
+
+// Create a node
+app.post('/api/create-node', async (req, res) => {
+    const { label, name } = req.body;
+
+    const session = driver.session();
+
+    try {
+        const result = await session.run(
+            `CREATE (n:${label} {name: $name}) RETURN n`,
+            { name }
+        );
+
+        if (result.records.length > 0) {
+            res.status(200).json({ message: 'Node created successfully' });
+        } else {
+            res.status(500).json({ error: 'Failed to create node' });
+        }
+    } catch (error) {
+        console.error('Error creating node:', error);
+        res.status(500).json({ error: 'An error occurred while creating node' });
+    } finally {
+        await session.close();
+    }
+});
+
 app.post('/create-relationship', async (req, res) => {
   const { nodeLabel1, nodeName1, nodeLabel2, nodeName2, relationshipLabel, relationshipName } = req.body;
 

@@ -1,16 +1,18 @@
-import React from 'react';
-import './App.css';
-import RelationshipForm from './RelationshipForm';
+import React, { useState } from 'react';
+import Navbar from './Navbar';
+import AddNodeForm from './AddNodeForm';
+import AddReferenceForm from './AddReferenceForm';
 
-function App() {
+const App = () => {
+    const [activeForm, setActiveForm] = useState('node');
+
     return (
-        <div className="App">
-            <header className="App-header">
-                <h1>Neo4j Relationship Creator</h1>
-                <RelationshipForm />
-            </header>
+        <div>
+            <Navbar setActiveForm={setActiveForm} />
+            {activeForm === 'node' && <AddNodeForm />}
+            {activeForm === 'reference' && <AddReferenceForm />}
         </div>
     );
-}
+};
 
 export default App;
