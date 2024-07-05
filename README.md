@@ -44,3 +44,6 @@ and tools to develop multidisciplinary products, that can be
 filtered, searched and updated through a peer-reviewing process.
 This is a first step towards supporting the industry in its
 transformation of its product development practices. 
+
+# Funding: 
+This project was funded by Mitacs Globalink Research Internship.
