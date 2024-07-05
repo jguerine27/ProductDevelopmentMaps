@@ -13,6 +13,47 @@ const URI = process.env.NEO4J_URI;
 const USER = process.env.NEO4J_USER;
 const PASSWORD = process.env.NEO4J_PASSWORD;
 
+// Fetch all nodes and relationships, including isolated nodes
+app.get('/api/nodes-relationships', async (req, res) => {
+  const session = driver.session();
+  try {
+      const result = await session.run(
+          `MATCH (n)
+           OPTIONAL MATCH (n)-[r]->(m)
+           RETURN n, r, m`
+      );
+      const nodes = new Map();
+      result.records.forEach(record => {
+          const startNode = record.get('n').properties;
+          const endNode = record.get('m') ? record.get('m').properties : null;
+          const relationship = record.get('r') ? record.get('r').properties : null;
+
+          if (!nodes.has(startNode.name)) {
+              nodes.set(startNode.name, { ...startNode, label: startNode.label });
+          }
+
+          if (endNode && !nodes.has(endNode.name)) {
+              nodes.set(endNode.name, { ...endNode, label: endNode.label });
+          }
+      });
+
+      const relationships = result.records
+          .filter(record => record.get('r'))
+          .map(record => ({
+              source: record.get('n').properties.name,
+              target: record.get('m').properties.name,
+              name: record.get('r').properties.name
+          }));
+
+      res.json({ nodes: Array.from(nodes.values()), relationships });
+  } catch (error) {
+      console.error('Error fetching nodes and relationships:', error);
+      res.status(500).json({ error: 'Failed to fetch nodes and relationships' });
+  } finally {
+      await session.close();
+  }
+});
+
 
 
 (async () => {
