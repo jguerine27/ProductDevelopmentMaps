@@ -24,6 +24,7 @@ const GraphVisualization = () => {
         if (data.nodes.length > 0) {
             drawGraph(data);
         }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [data, selectedMap]);
 
     const drawGraph = ({ nodes, relationships }) => {

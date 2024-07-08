@@ -11,7 +11,6 @@ const AddReferenceForm = ({ fetchNodeLabels }) => {
     const [relationshipName, setRelationshipName] = useState('');
     const [year, setYear] = useState('');
     const [author, setAuthor] = useState('');
-    const [name, setName] = useState('');
     const [type, setType] = useState('');
     const [message, setMessage] = useState('');
 
