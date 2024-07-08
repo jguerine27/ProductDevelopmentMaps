@@ -73,20 +73,37 @@ app.get('/api/nodes-relationships', async (req, res) => {
 
 // Fetch all node labels
 app.get('/api/node-labels', async (req, res) => {
-    const session = driver.session();
-    try {
-        const result = await session.run(
-            'CALL db.labels()'
-        );
-        const labels = result.records.map(record => record.get(0));
-        res.json(labels);
-    } catch (error) {
-        console.error('Error fetching node labels:', error);
-        res.status(500).json({ error: 'Failed to fetch node labels' });
-    } finally {
-        await session.close();
-    }
+  const session = driver.session();
+  try {
+      const result = await session.run('CALL db.labels()');
+      const labels = result.records.map(record => record.get(0));
+      res.json(labels);
+  } catch (error) {
+      console.error('Error fetching node labels:', error);
+      res.status(500).json({ error: 'Failed to fetch node labels' });
+  } finally {
+      await session.close();
+  }
 });
+
+// Fetch all unique map names
+app.get('/api/node-maps', async (req, res) => {
+  const session = driver.session();
+  try {
+      const result = await session.run(
+          'MATCH (n) WHERE n.map IS NOT NULL RETURN DISTINCT n.map AS map'
+      );
+      const maps = result.records.map(record => record.get('map'));
+      res.json(maps);
+  } catch (error) {
+      console.error('Error fetching map names:', error);
+      res.status(500).json({ error: 'Failed to fetch map names' });
+  } finally {
+      await session.close();
+  }
+});
+
+
 
 // Fetch all node names for a given label
 app.get('/api/node-names/:label', async (req, res) => {
@@ -108,31 +125,39 @@ app.get('/api/node-names/:label', async (req, res) => {
 
 // Create a node
 app.post('/api/create-node', async (req, res) => {
-    const { label, name } = req.body;
+  const { label, name, type, citations, tags, map } = req.body;
 
-    const session = driver.session();
+  const session = driver.session();
 
-    try {
-        const result = await session.run(
-            `CREATE (n:${label} {name: $name}) RETURN n`,
-            { name }
-        );
+  try {
+      // Get the current count of nodes
+      const countResult = await session.run(`MATCH (n) RETURN count(n) as count`);
+      const count = countResult.records[0].get('count').toInt();
+      const newId = count + 1;
 
-        if (result.records.length > 0) {
-            res.status(200).json({ message: 'Node created successfully' });
-        } else {
-            res.status(500).json({ error: 'Failed to create node' });
-        }
-    } catch (error) {
-        console.error('Error creating node:', error);
-        res.status(500).json({ error: 'An error occurred while creating node' });
-    } finally {
-        await session.close();
-    }
+      // Create the new node with the auto-incremented ID
+      const result = await session.run(
+          `CREATE (b:${label} {name: $name, type: $type, citations: $citations, tags: $tags, map: $map}) RETURN b`,
+          { id: newId, name, type, citations, tags, map }
+      );
+
+      if (result.records.length > 0) {
+          const node = result.records[0].get('b');
+          res.status(200).json({ message: 'Node created successfully', node });
+      } else {
+          res.status(500).json({ error: 'Failed to create node' });
+      }
+  } catch (error) {
+      console.error('Error creating node:', error);
+      res.status(500).json({ error: 'An error occurred while creating node' });
+  } finally {
+      await session.close();
+  }
 });
 
+
 app.post('/create-relationship', async (req, res) => {
-  const { nodeLabel1, nodeName1, nodeLabel2, nodeName2, relationshipLabel, relationshipName } = req.body;
+  const { nodeLabel1, nodeName1, nodeLabel2, nodeName2, referenceName, year, author, type } = req.body;
 
   const session = driver.session();
 
@@ -140,28 +165,32 @@ app.post('/create-relationship', async (req, res) => {
     const result = await session.run(
       `
       MATCH (a:${nodeLabel1} {name: $nodeName1}), (b:${nodeLabel2} {name: $nodeName2})
-      CREATE (a)-[r:${relationshipLabel} {name: $relationshipName}]->(b)
+      CREATE (a)-[r:Reference {name: $referenceName, year: $year, author: $author, type: $type}]->(b)
       RETURN r
       `,
       {
         nodeName1,
         nodeName2,
-        relationshipName
+        referenceName,
+        year,
+        author,
+        type
       }
     );
 
     if (result.records.length > 0) {
-      res.status(200).json({ message: 'Relationship created successfully' });
+      res.status(200).json({ message: 'Reference created successfully' });
     } else {
       res.status(404).json({ message: 'One or both nodes not found' });
     }
   } catch (error) {
-    console.error('Error creating relationship:', error);
+    console.error('Error creating reference:', error);
     res.status(500).json({ message: 'An error occurred' });
   } finally {
     await session.close();
   }
 });
+
 
 app.listen(port, () => {
   console.log(`Server is running on http://localhost:${port}`);

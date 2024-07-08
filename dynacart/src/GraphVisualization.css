@@ -1,0 +1,30 @@
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+    overflow: auto;
+}
+
+.graph-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+svg {
+    margin: auto;
+}
+
+.tooltip {
+    position: absolute;
+    text-align: left;
+    width: auto;
+    padding: 10px;
+    font: 12px sans-serif;
+    background: lightsteelblue;
+    border: 1px solid gray;
+    border-radius: 5px;
+    pointer-events: none;
+}
