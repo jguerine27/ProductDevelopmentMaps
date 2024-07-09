@@ -1,0 +1,32 @@
+/* Navbar.css */
+
+nav {
+    background-color: #333; /* Dark background color */
+    padding: 10px 0; /* Padding around the navbar */
+}
+
+ul {
+    list-style-type: none; /* Remove default list styles */
+    margin: 0;
+    padding: 0;
+    text-align: center; /* Center align the list items */
+}
+
+li {
+    display: inline; /* Display list items inline */
+    margin: 0 10px; /* Margin between list items */
+}
+
+button {
+    background-color: #555; /* Darker button background color */
+    color: #fff; /* Text color */
+    padding: 10px 20px; /* Padding inside buttons */
+    border: none; /* Remove border */
+    border-radius: 5px; /* Rounded corners */
+    cursor: pointer; /* Cursor style */
+    transition: background-color 0.3s; /* Smooth transition for background color */
+}
+
+button:hover {
+    background-color: #777; /* Darken background color on hover */
+}
