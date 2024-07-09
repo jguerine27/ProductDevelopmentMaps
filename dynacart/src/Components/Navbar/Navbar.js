@@ -1,4 +1,5 @@
 import React from 'react';
+import './Navbar.css'; // Import CSS file for styling
 
 const Navbar = ({ setActiveForm }) => {
     return (
@@ -9,9 +10,6 @@ const Navbar = ({ setActiveForm }) => {
                 </li>
                 <li>
                     <button onClick={() => setActiveForm('reference')}>Add a Reference/Relation</button>
-                </li>
-                <li>
-                    <button onClick={() => setActiveForm('data')}>View Data</button>
                 </li>
                 <li>
                     <button onClick={() => setActiveForm('graph')}>View Graph</button>

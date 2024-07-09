@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-
+import './AddNodeForm.css';
 const AddNodeForm = () => {
     const [nodeLabels, setNodeLabels] = useState([]);
     const [selectedLabel, setSelectedLabel] = useState('');

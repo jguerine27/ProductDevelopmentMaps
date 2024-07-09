@@ -20,20 +20,23 @@ app.get('/api/nodes-relationships', async (req, res) => {
       const result = await session.run(
           `MATCH (n)
            OPTIONAL MATCH (n)-[r]->(m)
-           RETURN n, r, m`
+           RETURN n, labels(n) as nLabels, r, m, labels(m) as mLabels`
       );
+
       const nodes = new Map();
       result.records.forEach(record => {
           const startNode = record.get('n').properties;
+          const startNodeLabel = record.get('nLabels')[0];
           const endNode = record.get('m') ? record.get('m').properties : null;
+          const endNodeLabel = record.get('mLabels') ? record.get('mLabels')[0] : null;
           const relationship = record.get('r') ? record.get('r').properties : null;
 
           if (!nodes.has(startNode.name)) {
-              nodes.set(startNode.name, { ...startNode, label: startNode.label });
+              nodes.set(startNode.name, { ...startNode, label: startNodeLabel });
           }
 
           if (endNode && !nodes.has(endNode.name)) {
-              nodes.set(endNode.name, { ...endNode, label: endNode.label });
+              nodes.set(endNode.name, { ...endNode, label: endNodeLabel });
           }
       });
 
@@ -42,7 +45,8 @@ app.get('/api/nodes-relationships', async (req, res) => {
           .map(record => ({
               source: record.get('n').properties.name,
               target: record.get('m').properties.name,
-              name: record.get('r').properties.name
+              name: record.get('r').properties.name,
+              type: record.get('r').properties.type
           }));
 
       res.json({ nodes: Array.from(nodes.values()), relationships });
@@ -53,6 +57,7 @@ app.get('/api/nodes-relationships', async (req, res) => {
       await session.close();
   }
 });
+
 
 
 
