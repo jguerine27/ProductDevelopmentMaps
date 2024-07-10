@@ -1,21 +1,42 @@
-import React, { useState } from 'react';
-import Navbar from './Components/Navbar/Navbar';
-import AddNodeForm from './Components/AddNodeForm/AddNodeForm';
-import AddReferenceForm from './Components/AddReferenceForm/AddReferenceForm';
-import GraphVisualization from './Components/GraphVisualization/GraphVisualization';
+import React from 'react';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import Home from './page/Home';
+import Signup from './page/Signup/Signup';
+import Login from './page/Login/Login';
+import ProtectedRoute from './page/ProtectedRoute';
+import RedirectIfAuthenticated from './page/RedirectIfAuthenticated';
 
-const App = () => {
-    const [activeForm, setActiveForm] = useState('graph');
-
-    return (
-        <div>
-            <Navbar setActiveForm={setActiveForm} />
-            {activeForm === 'node' && <AddNodeForm />}
-            {activeForm === 'reference' && <AddReferenceForm />}
-            {activeForm === 'graph' && <GraphVisualization />}
-
-        </div>
-    );
-};
+function App() {
+  return (
+    <Router>
+      <div>
+        <section>
+          <Routes>
+            <Route path="/home" element={
+              <ProtectedRoute>
+                <Home />
+              </ProtectedRoute>
+            } />
+            <Route path="/signup" element={
+              <RedirectIfAuthenticated>
+                <Signup />
+              </RedirectIfAuthenticated>
+            } />
+            <Route path="/" element={
+              <RedirectIfAuthenticated>
+                <Login />
+              </RedirectIfAuthenticated>
+            } />
+            <Route path="/login" element={
+              <RedirectIfAuthenticated>
+                <Login />
+              </RedirectIfAuthenticated>
+            } />
+          </Routes>
+        </section>
+      </div>
+    </Router>
+  );
+}
 
 export default App;
