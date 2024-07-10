@@ -125,7 +125,7 @@ const GraphVisualization = () => {
         // Initialize simulation
         const simulation = d3.forceSimulation(filteredNodes)
             .force('link', d3.forceLink(filteredRelationships).id(d => d.name).distance(200))
-            .force('charge', d3.forceManyBody().strength(-200))
+            .force('charge', d3.forceManyBody().strength(-110))
             .force('center', d3.forceCenter(width / 2, height / 2))
             .force('boundary', boundaryForce(margin, width - margin, margin, height - margin, rowPositions))
             .on('tick', ticked);
@@ -244,7 +244,7 @@ const GraphVisualization = () => {
 
             // Check if citations property exists and is an array
             const citations = d.citations;
-            if (Array.isArray(citations)) {
+            if (Array.isArray(citations) && citations.length > 0) {
                 tooltip.html('<ul>' + citations.map(citation => `<li>${citation}</li>`).join('') + '</ul>')
                     .style('left', (event.pageX + 5) + 'px')
                     .style('top', (event.pageY - 28) + 'px');
