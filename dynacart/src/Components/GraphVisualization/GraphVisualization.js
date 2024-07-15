@@ -62,7 +62,7 @@ const GraphVisualization = () => {
     .append('path')
     .attr('d', 'M0,-5L10,0L0,5');
 
-        const color = d3.scaleOrdinal(d3.schemeCategory10);
+       // const color = d3.scaleOrdinal(d3.schemeCategory10);
 
         const linkWidth = d => {
             const linkCount = relationships.filter(rel => rel.source === d.source && rel.target === d.target).length;
@@ -121,6 +121,22 @@ const GraphVisualization = () => {
             const targetNode = filteredNodes.find(node => node.name === rel.target);
             return sourceNode && targetNode; // Include relationship if both source and target nodes are in filteredNodes
         });
+
+        const invertColor = (hex) => {
+            hex = String(hex).replace('#', ''); // Ensure hex is a string and remove the # if present
+            if (hex.length === 3) {
+                hex = hex.split('').map(char => char + char).join(''); // Convert shorthand hex (e.g., #03F) to full form (e.g., #0033FF)
+            }
+            if (hex.length !== 6 || !/^[0-9A-Fa-f]{6}$/.test(hex)) {
+                throw new Error('Invalid HEX color.');
+            }
+            let r = parseInt(hex.slice(0, 2), 16),
+                g = parseInt(hex.slice(2, 4), 16),
+                b = parseInt(hex.slice(4, 6), 16);
+            return '#' + (255 - r).toString(16).padStart(2, '0') + (255 - g).toString(16).padStart(2, '0') + (255 - b).toString(16).padStart(2, '0');
+        };
+        
+
 
         // Initialize simulation
         const simulation = d3.forceSimulation(filteredNodes)
@@ -197,7 +213,7 @@ const GraphVisualization = () => {
             .attr('height', 40)
             .attr('rx', 5)
             .attr('ry', 5)
-            .attr('fill', d => color(d.label))
+            .attr('fill', d => d.color || '#000')
             .call(d3.drag()
                 .on('start', dragstarted)
                 .on('drag', dragged)
@@ -213,15 +229,22 @@ const GraphVisualization = () => {
             });
 
         // Update node labels inside nodes
-        const nodeText = svg.selectAll('.node-labels text')
-            .data(filteredNodes)
-            .enter().append('text')
-            .attr('class', 'node-label')
-            .attr('dy', '0.4em') // Adjust vertical alignment as needed
-            .attr('text-anchor', 'middle')
-            .attr('font-size', '12px')
-            .attr('fill', 'black')
-            .text(d => d.name); // Display node name
+        // Update node labels inside nodes
+const nodeText = svg.selectAll('.node-labels text')
+.data(filteredNodes)
+.enter().append('text')
+.attr('class', 'node-label')
+.attr('dy', '0.4em') // Adjust vertical alignment as needed
+.attr('text-anchor', 'middle')
+.attr('font-size', '12px')
+.attr('fill', d => {
+    try {
+        return invertColor(d.color || '#000');
+    } catch (e) {
+        return '#000'; // Default to black if the color is invalid
+    }
+}) // Set text color to the inverse of the node color
+.text(d => d.name); // Display node name
 
         // Function to show tooltip for links
         function showTooltip(event, d) {
