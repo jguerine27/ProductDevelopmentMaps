@@ -130,7 +130,7 @@ app.get('/api/node-names/:label', async (req, res) => {
 
 // Create a node
 app.post('/api/create-node', async (req, res) => {
-  const { label, name, type, citations, tags, map } = req.body;
+  const { label, name, type, citations, tags, map, color } = req.body;
 
   const session = driver.session();
 
@@ -142,8 +142,8 @@ app.post('/api/create-node', async (req, res) => {
 
       // Create the new node with the auto-incremented ID
       const result = await session.run(
-          `CREATE (b:${label} {name: $name, type: $type, citations: $citations, tags: $tags, map: $map}) RETURN b`,
-          { id: newId, name, type, citations, tags, map }
+          `CREATE (b:${label} {name: $name, type: $type, citations: $citations, tags: $tags, map: $map, color: $color}) RETURN b`,
+          { id: newId, name, type, citations, tags, map, color }
       );
 
       if (result.records.length > 0) {
