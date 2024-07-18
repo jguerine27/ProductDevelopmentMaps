@@ -19,7 +19,7 @@ const Home = () => {
         // An error happened.
         });
     }
-   
+
     const [activeForm, setActiveForm] = useState('graph');
 
     return (

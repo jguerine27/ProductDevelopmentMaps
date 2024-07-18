@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import * as d3 from 'd3';
 import axios from 'axios';
+let detailedView = false;
 
 const GraphVisualization = () => {
     const [data, setData] = useState({ nodes: [], relationships: [] });
@@ -193,12 +194,14 @@ const GraphVisualization = () => {
             }
         })
         .on('click', (event, d) => {
+            if (!detailedView){
             if (tooltipVisible) {
                 hideTooltip();
             } else {
                 showTooltip(event, d);
             }
-            tooltipVisible = !tooltipVisible;
+            tooltipVisible = !tooltipVisible;}
+
         });
     
 
@@ -220,12 +223,14 @@ const GraphVisualization = () => {
                 .on('end', dragended))
             .attr('clip-path', 'url(#clip)') // Apply clipping path
             .on('click', (event, d) => {
+                if (!detailedView){
                 if (tooltipVisible) {
                     hideTooltip();
                 } else {
                     showNodeTooltip(event, d);
                 }
                 tooltipVisible = !tooltipVisible;
+            }
             });
 
         // Update node labels inside nodes
@@ -244,7 +249,7 @@ const nodeText = svg.selectAll('.node-labels text')
         return '#000'; // Default to black if the color is invalid
     }
 }) // Set text color to the inverse of the node color
-.text(d => d.name); // Display node name
+.text(d => detailedView ? d.name + d.citations : d.name); // Display node name if detailedView is true, otherwise display an empty string
 
         // Function to show tooltip for links
         function showTooltip(event, d) {
@@ -351,6 +356,12 @@ const nodeText = svg.selectAll('.node-labels text')
     // Get distinct map values
     const distinctMaps = [...new Set(data.nodes.map(node => node.map))];
 
+    const toggleView = () => {
+    handleMapChange({ target: { value: selectedMap } });
+    detailedView = !detailedView;
+    console.log(detailedView);
+
+     }
     return (
         <div>
             <h2>Graph Visualization</h2>
@@ -365,6 +376,7 @@ const nodeText = svg.selectAll('.node-labels text')
             </div>
             <svg ref={svgRef}></svg>
             <div ref={tooltipRef}></div>
+            <button onClick={toggleView}>Toggle View</button>
         </div>
     );
 };
