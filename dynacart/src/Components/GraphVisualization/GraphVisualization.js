@@ -203,55 +203,70 @@ const GraphVisualization = () => {
             tooltipVisible = !tooltipVisible;}
 
         });
+        const linkLabel = svg.append('g')
+        .attr('class', 'link-labels')
+        .selectAll('text')
+        .data(filteredRelationships)
+        .enter().append('text')
+        .attr('text-anchor', 'middle')
+        .attr('dy', -5)
+        .attr('font-size', '12px')
+        .text(detailedView ? d => d.citations : '');
     
 
-
-        // Add nodes
-        const node = svg.append('g')
-            .attr('class', 'nodes')
-            .selectAll('rect')
-            .data(filteredNodes)
-            .enter().append('rect')
-            .attr('width', 100)
-            .attr('height', 40)
-            .attr('rx', 5)
-            .attr('ry', 5)
-            .attr('fill', d => d.color || '#000')
-            .call(d3.drag()
-                .on('start', dragstarted)
-                .on('drag', dragged)
-                .on('end', dragended))
-            .attr('clip-path', 'url(#clip)') // Apply clipping path
-            .on('click', (event, d) => {
-                if (!detailedView){
-                if (tooltipVisible) {
-                    hideTooltip();
-                } else {
-                    showNodeTooltip(event, d);
-                }
-                tooltipVisible = !tooltipVisible;
+// Add nodes
+const node = svg.append('g')
+    .attr('class', 'nodes')
+    .selectAll('g')
+    .data(filteredNodes)
+    .enter().append('g')
+    .call(d3.drag()
+        .on('start', dragstarted)
+        .on('drag', dragged)
+        .on('end', dragended))
+//    .attr('clip-path', 'url(#clip)') // Apply clipping path
+    .on('click', (event, d) => {
+        if (!detailedView){
+            if (tooltipVisible) {
+                hideTooltip();
+            } else {
+                showNodeTooltip(event, d);
             }
-            });
+            tooltipVisible = !tooltipVisible;
+        }
+    });
 
-        // Update node labels inside nodes
-        // Update node labels inside nodes
-const nodeText = svg.selectAll('.node-labels text')
-.data(filteredNodes)
-.enter().append('text')
-.attr('class', 'node-label')
-.attr('dy', '0.4em') // Adjust vertical alignment as needed
-.attr('text-anchor', 'middle')
-.attr('font-size', '12px')
-.attr('fill', d => {
-    try {
-        return invertColor(d.color || '#000');
-    } catch (e) {
-        return '#000'; // Default to black if the color is invalid
-    }
-}) // Set text color to the inverse of the node color
-.text(d => detailedView ? d.name + d.citations : d.name); // Display node name if detailedView is true, otherwise display an empty string
+// Add the main rectangle (90% part)
+node.append('rect')
+    .attr('width', 90) // 90% of the total width
+    .attr('height', 40)
+ 
+    .attr('fill', 'none')
+    .attr('stroke', 'black'); // Add stroke for visibility
 
+// Add the color rectangle (10% part)
+node.append('rect')
+    .attr('x', 90) // Start where the main rectangle ends
+    .attr('width', 10) // 10% of the total width
+    .attr('height', 40)
+    
+    .attr('fill', d => d.color || '#000')
+    .attr('stroke', 'black'); // Add stroke for visibility
+
+// Update node labels inside nodes
+const nodeText = node.append('text')
+    .attr('class', 'node-label')
+    .attr('x', 45) // Centered within the 90% rectangle
+    .attr('y', 20) // Centered vertically
+    .attr('dy', '0.35em') // Center text vertically
+    .attr('text-anchor', 'middle')
+    .attr('font-size', '12px')
+    .attr('fill', 'black')
+    .attr('font-weight', 'bold')
+    .text(d => detailedView ? d.name + d.citations : d.name);
+    
         // Function to show tooltip for links
+
         function showTooltip(event, d) {
             tooltip.transition()
                 .duration(200)
@@ -291,26 +306,26 @@ const nodeText = svg.selectAll('.node-labels text')
         }
 
         // Function to update positions on tick
-        function ticked() {
-            link
-                .attr('x1', d => d.source.x)
-                .attr('y1', d => d.source.y)
-                .attr('x2', d => d.target.x)
-                .attr('y2', d => d.target.y);
+        
+// Function to update positions on tick
+function ticked() {
+    link
+        .attr('x1', d => d.source.x)
+        .attr('y1', d => d.source.y)
+        .attr('x2', d => d.target.x)
+        .attr('y2', d => d.target.y);
 
-            node
-                .attr('x', d => Math.max(margin, Math.min(width - margin - 100, d.x - 50)))
-                .attr('y', d => {
-                    const rowTop = rowPositions[d.label].top;
-                    const rowBottom = rowPositions[d.label].bottom;
-                    return Math.max(rowTop + margin, Math.min(rowBottom - margin - 40, d.y - 20));
-                });
+    linkLabel
+        .attr('x', d => (d.source.x + d.target.x) / 2)
+        .attr('y', d => (d.source.y + d.target.y) / 2);
 
-            nodeText
-                .attr('x', d => d.x)
-                .attr('y', d => d.y);
-        }
+    node
+        .attr('transform', d => `translate(${Math.max(margin, Math.min(width - margin - 100, d.x - 50))}, ${Math.max(rowPositions[d.label].top + margin, Math.min(rowPositions[d.label].bottom - margin - 40, d.y - 20))})`);
 
+    nodeText
+        .attr('x', 45) // Centered within the 90% rectangle
+        .attr('y', 20); // Centered vertically
+}
         // Drag functions
         function dragstarted(event, d) {
             if (!event.active) simulation.alphaTarget(0.3).restart();
