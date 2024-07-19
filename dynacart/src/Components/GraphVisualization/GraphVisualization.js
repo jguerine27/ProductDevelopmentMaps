@@ -123,19 +123,45 @@ const GraphVisualization = () => {
             return sourceNode && targetNode; // Include relationship if both source and target nodes are in filteredNodes
         });
 
-        const invertColor = (hex) => {
-            hex = String(hex).replace('#', ''); // Ensure hex is a string and remove the # if present
-            if (hex.length === 3) {
-                hex = hex.split('').map(char => char + char).join(''); // Convert shorthand hex (e.g., #03F) to full form (e.g., #0033FF)
-            }
-            if (hex.length !== 6 || !/^[0-9A-Fa-f]{6}$/.test(hex)) {
-                throw new Error('Invalid HEX color.');
-            }
-            let r = parseInt(hex.slice(0, 2), 16),
-                g = parseInt(hex.slice(2, 4), 16),
-                b = parseInt(hex.slice(4, 6), 16);
-            return '#' + (255 - r).toString(16).padStart(2, '0') + (255 - g).toString(16).padStart(2, '0') + (255 - b).toString(16).padStart(2, '0');
-        };
+        function wrapText(text, width) {
+            text.each(function() {
+                const textElement = d3.select(this);
+                const words = textElement.text().split(/\s+/).reverse();
+                let line = [];
+                let lineNumber = 0;
+                const lineHeight = 1.1; // Adjust line height as needed
+                const y = parseFloat(textElement.attr("y"));
+                const x = parseFloat(textElement.attr("x"));
+                let tspan = textElement.text(null).append("tspan").attr("x", x).attr("y", y).attr("dy", `${lineNumber * lineHeight}em`);
+        
+                let word;
+                while ((word = words.pop())) {
+                    line.push(word);
+                    tspan.text(line.join(" "));
+                    if (tspan.node().getComputedTextLength() > width) {
+                        line.pop();
+                        tspan.text(line.join(" "));
+                        line = [word];
+                        tspan = textElement.append("tspan").attr("x", x).attr("y", y).attr("dy", `${++lineNumber * lineHeight}em`).text(word);
+                    }
+                }
+            });
+        }
+        
+        
+        // const invertColor = (hex) => {
+        //     hex = String(hex).replace('#', ''); // Ensure hex is a string and remove the # if present
+        //     if (hex.length === 3) {
+        //         hex = hex.split('').map(char => char + char).join(''); // Convert shorthand hex (e.g., #03F) to full form (e.g., #0033FF)
+        //     }
+        //     if (hex.length !== 6 || !/^[0-9A-Fa-f]{6}$/.test(hex)) {
+        //         throw new Error('Invalid HEX color.');
+        //     }
+        //     let r = parseInt(hex.slice(0, 2), 16),
+        //         g = parseInt(hex.slice(2, 4), 16),
+        //         b = parseInt(hex.slice(4, 6), 16);
+        //     return '#' + (255 - r).toString(16).padStart(2, '0') + (255 - g).toString(16).padStart(2, '0') + (255 - b).toString(16).padStart(2, '0');
+        // };
         
 
 
@@ -201,18 +227,58 @@ const GraphVisualization = () => {
                 showTooltip(event, d);
             }
             tooltipVisible = !tooltipVisible;}
+           
 
         });
-        const linkLabel = svg.append('g')
+
+
+        // Track label counts for each link
+    const labelCounts = new Map();
+    filteredRelationships.forEach(rel => {
+        const key = `${rel.source}-${rel.target}`;
+        if (!labelCounts.has(key)) {
+            labelCounts.set(key, 0);
+        }
+        labelCounts.set(key, labelCounts.get(key) + 1);
+    });
+
+    // Add labels
+    const linkLabel = svg.append('g')
         .attr('class', 'link-labels')
         .selectAll('text')
         .data(filteredRelationships)
         .enter().append('text')
         .attr('text-anchor', 'middle')
-        .attr('dy', -5)
+        .attr('dy', (d, i) => {
+            // Calculate vertical offset based on label count
+            const key = `${d.source}-${d.target}`;
+            const count = labelCounts.get(key);
+            return (i - (count - 1) / 2) * 15; // Adjust spacing as needed
+        })
         .attr('font-size', '12px')
-        .text(detailedView ? d => d.citations : '');
-    
+        .text(detailedView ? d => d.name : '');
+      
+        function getClosestPointOnRectangle(node, target) {
+     //       const rectWidth = 100; // Total width of the node, including both parts
+     //       const rectHeight = 40;
+        
+            // Center of the node
+            const cx = node.x;
+            const cy = node.y;
+        
+            // Rectangle edges
+            const left = cx - 50; // Left edge
+            const right = cx + 50; // Right edge
+            const top = cy - 20; // Top edge
+            const bottom = cy + 20; // Bottom edge
+        
+            // Calculate distances to each edge
+            const dx = Math.max(left, Math.min(target.x, right));
+            const dy = Math.max(top, Math.min(target.y, bottom));
+            
+            return { x: dx, y: dy };
+        }
+        
 
 // Add nodes
 const node = svg.append('g')
@@ -252,7 +318,6 @@ node.append('rect')
     
     .attr('fill', d => d.color || '#000')
     .attr('stroke', 'black'); // Add stroke for visibility
-
 // Update node labels inside nodes
 const nodeText = node.append('text')
     .attr('class', 'node-label')
@@ -263,8 +328,8 @@ const nodeText = node.append('text')
     .attr('font-size', '12px')
     .attr('fill', 'black')
     .attr('font-weight', 'bold')
-    .text(d => detailedView ? d.name + d.citations : d.name);
-    
+    .text(d => detailedView && d.citations != null ? d.name + '\n\n' + d.citations : d.name)
+    .call(wrapText, 90); // Wrap text within 90 units width
         // Function to show tooltip for links
 
         function showTooltip(event, d) {
@@ -278,7 +343,7 @@ const nodeText = node.append('text')
                 .style('left', (event.pageX + 5) + 'px')
                 .style('top', (event.pageY - 28) + 'px');
         }
-
+        
         // Function to show tooltip for nodes
         function showNodeTooltip(event, d) {
             tooltip.transition()
@@ -306,26 +371,38 @@ const nodeText = node.append('text')
         }
 
         // Function to update positions on tick
+        function ticked() {
+            link
+                .attr('x1', d => {
+                    const pos = getClosestPointOnRectangle(d.source, d.target);
+                    return pos.x;
+                })
+                .attr('y1', d => {
+                    const pos = getClosestPointOnRectangle(d.source, d.target);
+                    return pos.y;
+                })
+                .attr('x2', d => {
+                    const pos = getClosestPointOnRectangle(d.target, d.source);
+                    return pos.x;
+                })
+                .attr('y2', d => {
+                    const pos = getClosestPointOnRectangle(d.target, d.source);
+                    return pos.y;
+                });
+    
+            linkLabel
+                .attr('x', d => (getClosestPointOnRectangle(d.source, d.target).x + getClosestPointOnRectangle(d.target, d.source).x) / 2)
+                .attr('y', d => (getClosestPointOnRectangle(d.source, d.target).y + getClosestPointOnRectangle(d.target, d.source).y) / 2);
+    
+            node
+                .attr('transform', d => `translate(${Math.max(margin, Math.min(width - margin - 100, d.x - 50))}, ${Math.max(rowPositions[d.label].top + margin, Math.min(rowPositions[d.label].bottom - margin - 40, d.y - 20))})`);
+    
+            nodeText
+                .attr('x', 45) // Centered within the 90% rectangle
+                .attr('y', 20); // Centered vertically
+        }
         
-// Function to update positions on tick
-function ticked() {
-    link
-        .attr('x1', d => d.source.x)
-        .attr('y1', d => d.source.y)
-        .attr('x2', d => d.target.x)
-        .attr('y2', d => d.target.y);
-
-    linkLabel
-        .attr('x', d => (d.source.x + d.target.x) / 2)
-        .attr('y', d => (d.source.y + d.target.y) / 2);
-
-    node
-        .attr('transform', d => `translate(${Math.max(margin, Math.min(width - margin - 100, d.x - 50))}, ${Math.max(rowPositions[d.label].top + margin, Math.min(rowPositions[d.label].bottom - margin - 40, d.y - 20))})`);
-
-    nodeText
-        .attr('x', 45) // Centered within the 90% rectangle
-        .attr('y', 20); // Centered vertically
-}
+        
         // Drag functions
         function dragstarted(event, d) {
             if (!event.active) simulation.alphaTarget(0.3).restart();
