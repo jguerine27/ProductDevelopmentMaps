@@ -230,54 +230,92 @@ const GraphVisualization = () => {
            
 
         });
+// Track label counts for each link
+const labelCounts = new Map();
+filteredRelationships.forEach(rel => {
+    const key = `${rel.source.id}-${rel.target.id}`;
+    if (!labelCounts.has(key)) {
+        labelCounts.set(key, 0);
+    }
+    labelCounts.set(key, labelCounts.get(key) + 1);
+});
 
+// Create rectangles for references at the middle of each link
+const linkReferences = svg.append('g')
+    .attr('class', 'link-references')
+    .selectAll('rect')
+    .data(filteredRelationships)
+    .enter().append('rect')
+    .attr('x', d => (d.source.x + d.target.x) / 2 - 50)
+    .attr('y', d => {
+        const key = `${d.source.id}-${d.target.id}`;
+        return (d.source.y + d.target.y) / 2 + (labelCounts.get(key) * 10) / 2;
+    })
+    .attr('width', 100)
+    .attr('height', d => {
+        const key = `${d.source.id}-${d.target.id}`;
+        return labelCounts.get(key) * 20;
+    })
+    .attr('fill', 'white')
+    .attr('stroke', 'white')
+    .attr('opacity', 0) // Hide the rectangles
+    .style('pointer-events', 'none');
 
-        // Track label counts for each link
-    const labelCounts = new Map();
-    filteredRelationships.forEach(rel => {
-        const key = `${rel.source}-${rel.target}`;
-        if (!labelCounts.has(key)) {
-            labelCounts.set(key, 0);
-        }
-        labelCounts.set(key, labelCounts.get(key) + 1);
-    });
-
-    // Add labels
-    const linkLabel = svg.append('g')
-        .attr('class', 'link-labels')
-        .selectAll('text')
-        .data(filteredRelationships)
-        .enter().append('text')
-        .attr('text-anchor', 'middle')
-        .attr('dy', (d, i) => {
-            // Calculate vertical offset based on label count
-            const key = `${d.source}-${d.target}`;
-            const count = labelCounts.get(key);
-            return (i - (count - 1) / 2) * 15; // Adjust spacing as needed
-        })
-        .attr('font-size', '12px')
-        .text(detailedView ? d => d.name : '');
+// Add text for references inside the rectangles
+let referenceText = svg.append('g')
+    .attr('class', 'reference-text')
+    .selectAll('text')
+    .data(filteredRelationships)
+    .enter().append('text')
+    .attr('x', d => (d.source.x + d.target.x) / 2)
+    .attr('y', (d, i) => {
+        const key = `${d.source.id}-${d.target.id}`;
+        const index = Array.from(filteredRelationships).filter(rel => `${rel.source.id}-${rel.target.id}` === key).indexOf(d);
+        return (d.source.y + d.target.y) / 2 - (labelCounts.get(key) * 10) / 2 + 14 + (index * 20);
+    })
+    .attr('font-size', '12px')
+    .attr('fill', 'white')
+    .attr('text-anchor', 'middle')
+    .attr('opacity', 0) // Hide the text
+    .text(d => d.name);
+    // // Add labels
+    // const linkLabel = svg.append('g')
+    //     .attr('class', 'link-labels')
+    //     .selectAll('text')
+    //     .data(filteredRelationships)
+    //     .enter().append('text')
+    //     .attr('text-anchor', 'middle')
+    //     .attr('dy', (d, i) => {
+    //         // Calculate vertical offset based on label count
+    //         const key = `${d.source}-${d.target}`;
+    //         const count = labelCounts.get(key);
+    //         return (i - (count - 1) / 2) * 15; // Adjust spacing as needed
+    //     })
+    //     .attr('font-size', '12px')
+    //     .text(detailedView ? d => d.name : '');
       
-        function getClosestPointOnRectangle(node, target) {
-     //       const rectWidth = 100; // Total width of the node, including both parts
-     //       const rectHeight = 40;
+    function getClosestPointOnRectangle(node, target) {
+        // Assuming node is a rectangle with width 90 and height 40
+        const rectWidth = 90;
+        const rectHeight = 40;
         
-            // Center of the node
-            const cx = node.x;
-            const cy = node.y;
+        // Center of the node
+        const cx = node.x;
+        const cy = node.y;
         
-            // Rectangle edges
-            const left = cx - 50; // Left edge
-            const right = cx + 50; // Right edge
-            const top = cy - 20; // Top edge
-            const bottom = cy + 20; // Bottom edge
+        // Rectangle edges
+        const left = cx - rectWidth / 2; // Left edge
+        const right = cx + rectWidth / 2; // Right edge
+        const top = cy - rectHeight / 2; // Top edge
+        const bottom = cy + rectHeight / 2; // Bottom edge
         
-            // Calculate distances to each edge
-            const dx = Math.max(left, Math.min(target.x, right));
-            const dy = Math.max(top, Math.min(target.y, bottom));
-            
-            return { x: dx, y: dy };
-        }
+        // Calculate distances to each edge
+        const dx = Math.max(left, Math.min(target.x, right));
+        const dy = Math.max(top, Math.min(target.y, bottom));
+        
+        return { x: dx, y: dy };
+    }
+    
         
 
 // Add nodes
@@ -290,7 +328,6 @@ const node = svg.append('g')
         .on('start', dragstarted)
         .on('drag', dragged)
         .on('end', dragended))
-//    .attr('clip-path', 'url(#clip)') // Apply clipping path
     .on('click', (event, d) => {
         if (!detailedView){
             if (tooltipVisible) {
@@ -370,37 +407,57 @@ const nodeText = node.append('text')
                 .style('opacity', 0);
         }
 
-        // Function to update positions on tick
-        function ticked() {
-            link
-                .attr('x1', d => {
-                    const pos = getClosestPointOnRectangle(d.source, d.target);
-                    return pos.x;
-                })
-                .attr('y1', d => {
-                    const pos = getClosestPointOnRectangle(d.source, d.target);
-                    return pos.y;
-                })
-                .attr('x2', d => {
-                    const pos = getClosestPointOnRectangle(d.target, d.source);
-                    return pos.x;
-                })
-                .attr('y2', d => {
-                    const pos = getClosestPointOnRectangle(d.target, d.source);
-                    return pos.y;
-                });
+     function ticked() {
+    link
+        .attr('x1', d => {
+            const pos = getClosestPointOnRectangle(d.source, { x: d.target.x, y: d.target.y });
+            return pos.x;
+        })
+        .attr('y1', d => {
+            const pos = getClosestPointOnRectangle(d.source, { x: d.target.x, y: d.target.y });
+            return pos.y;
+        })
+        .attr('x2', d => {
+            const pos = getClosestPointOnRectangle(d.target, { x: d.source.x, y: d.source.y });
+            return pos.x;
+        })
+        .attr('y2', d => {
+            const pos = getClosestPointOnRectangle(d.target, { x: d.source.x, y: d.source.y });
+            return pos.y;
+        });
+
+    node
+        .attr('transform', d => `translate(${Math.max(margin, Math.min(width - margin - 90, d.x - 45))}, ${Math.max(rowPositions[d.label].top + margin, Math.min(rowPositions[d.label].bottom - margin - 40, d.y - 20))})`);
     
-            linkLabel
-                .attr('x', d => (getClosestPointOnRectangle(d.source, d.target).x + getClosestPointOnRectangle(d.target, d.source).x) / 2)
-                .attr('y', d => (getClosestPointOnRectangle(d.source, d.target).y + getClosestPointOnRectangle(d.target, d.source).y) / 2);
-    
-            node
-                .attr('transform', d => `translate(${Math.max(margin, Math.min(width - margin - 100, d.x - 50))}, ${Math.max(rowPositions[d.label].top + margin, Math.min(rowPositions[d.label].bottom - margin - 40, d.y - 20))})`);
-    
-            nodeText
-                .attr('x', 45) // Centered within the 90% rectangle
-                .attr('y', 20); // Centered vertically
-        }
+    nodeText
+        .attr('x', 45) // Centered within the 90% rectangle
+        .attr('y', 20); // Centered vertically
+
+    if (detailedView) {
+        linkReferences.attr('x', d => (d.source.x + d.target.x) / 2 - 50)
+            .attr('y', d => {
+                const key = `${d.source.id}-${d.target.id}`;
+                return (d.source.y + d.target.y) / 2 - (labelCounts.get(key) * 10) / 2;
+            })
+            .attr('height', d => {
+                const key = `${d.source.id}-${d.target.id}`;
+                return labelCounts.get(key) * 20;
+            });
+
+        linkReferences.attr('opacity', 0.1); // Show the rectangles
+
+        referenceText.attr('x', d => (d.source.x + d.target.x) / 2)
+            .attr('y', (d, i) => {
+                const key = `${d.source.id}-${d.target.id}`;
+                const index = Array.from(filteredRelationships).filter(rel => `${rel.source.id}-${rel.target.id}` === key).indexOf(d);
+                return (d.source.y + d.target.y) / 2 - (labelCounts.get(key) * 10) / 2 + 14 + (index * 20);
+            });
+
+        referenceText.attr('fill', 'black'); // Show the text
+        referenceText.attr('opacity', 1);
+    }
+}
+
         
         
         // Drag functions
