@@ -4,6 +4,7 @@ const AddNodeForm = () => {
     const [nodeLabels, setNodeLabels] = useState([]);
     const [selectedLabel, setSelectedLabel] = useState('');
     const [nodeName, setNodeName] = useState('');
+    const [color, setColor] = useState('');
     const [type, setType] = useState('');
     const [citations, setCitations] = useState([]);
     const [citationInput, setCitationInput] = useState('');
@@ -67,6 +68,7 @@ const AddNodeForm = () => {
                     citations,
                     tags,
                     map: selectedMap,
+                    color
                 }),
             });
 
@@ -98,6 +100,13 @@ const AddNodeForm = () => {
                         value={nodeName}
                         onChange={(e) => setNodeName(e.target.value)}
                     />
+                </div>
+                <div>
+                    <label>Node Approach/Color in HEX:</label>
+                    <input
+                        type="text"
+                        value={color}
+                        onChange={(e) => setColor(e.target.value)}></input>
                 </div>
                 <div>
                     <label>Select Type:</label>
