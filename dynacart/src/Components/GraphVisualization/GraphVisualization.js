@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import * as d3 from 'd3';
 import axios from 'axios';
+let detailedView = false;
 
 const GraphVisualization = () => {
     const [data, setData] = useState({ nodes: [], relationships: [] });
@@ -62,7 +63,7 @@ const GraphVisualization = () => {
     .append('path')
     .attr('d', 'M0,-5L10,0L0,5');
 
-        const color = d3.scaleOrdinal(d3.schemeCategory10);
+       // const color = d3.scaleOrdinal(d3.schemeCategory10);
 
         const linkWidth = d => {
             const linkCount = relationships.filter(rel => rel.source === d.source && rel.target === d.target).length;
@@ -122,10 +123,39 @@ const GraphVisualization = () => {
             return sourceNode && targetNode; // Include relationship if both source and target nodes are in filteredNodes
         });
 
+        function wrapText(text, width) {
+            text.each(function() {
+                const textElement = d3.select(this);
+                const words = textElement.text().split(/\s+/).reverse();
+                let line = [];
+                let lineNumber = 0;
+                const lineHeight = 1.1; // Adjust line height as needed
+                const y = parseFloat(textElement.attr("y"));
+                const x = parseFloat(textElement.attr("x"));
+                let tspan = textElement.text(null).append("tspan").attr("x", x).attr("y", y).attr("dy", `${lineNumber * lineHeight}em`);
+        
+                let word;
+                while ((word = words.pop())) {
+                    line.push(word);
+                    tspan.text(line.join(" "));
+                    if (tspan.node().getComputedTextLength() > width) {
+                        line.pop();
+                        tspan.text(line.join(" "));
+                        line = [word];
+                        tspan = textElement.append("tspan").attr("x", x).attr("y", y).attr("dy", `${++lineNumber * lineHeight}em`).text(word);
+                    }
+                }
+            });
+        }
+        
+        
+     
+
+
         // Initialize simulation
         const simulation = d3.forceSimulation(filteredNodes)
-            .force('link', d3.forceLink(filteredRelationships).id(d => d.name).distance(200))
-            .force('charge', d3.forceManyBody().strength(-200))
+            .force('link', d3.forceLink(filteredRelationships).id(d => d.name).distance(220))
+            .force('charge', d3.forceManyBody().strength(-150))
             .force('center', d3.forceCenter(width / 2, height / 2))
             .force('boundary', boundaryForce(margin, width - margin, margin, height - margin, rowPositions))
             .on('tick', ticked);
@@ -177,53 +207,140 @@ const GraphVisualization = () => {
             }
         })
         .on('click', (event, d) => {
+            if (!detailedView){
             if (tooltipVisible) {
                 hideTooltip();
             } else {
                 showTooltip(event, d);
             }
-            tooltipVisible = !tooltipVisible;
+            tooltipVisible = !tooltipVisible;}
+           
+
         });
+// Track label counts for each link
+const labelCounts = new Map();
+filteredRelationships.forEach(rel => {
+    const key = `${rel.source.id}-${rel.target.id}`;
+    if (!labelCounts.has(key)) {
+        labelCounts.set(key, 0);
+    }
+    labelCounts.set(key, labelCounts.get(key) + 1);
+});
+
+// Create rectangles for references at the middle of each link
+const linkReferences = svg.append('g')
+    .attr('class', 'link-references')
+    .selectAll('rect')
+    .data(filteredRelationships)
+    .enter().append('rect')
+    .attr('x', d => (d.source.x + d.target.x) / 2 - 50)
+    .attr('y', d => {
+        const key = `${d.source.id}-${d.target.id}`;
+        return (d.source.y + d.target.y) / 2 + (labelCounts.get(key) * 10) / 2;
+    })
+    .attr('width', 100)
+    .attr('height', d => {
+        const key = `${d.source.id}-${d.target.id}`;
+        return labelCounts.get(key) * 20;
+    })
+    .attr('fill', 'white')
+    .attr('stroke', 'white')
+    .attr('opacity', 0) // Hide the rectangles
+    .style('pointer-events', 'none');
+
+// Add text for references inside the rectangles
+let referenceText = svg.append('g')
+    .attr('class', 'reference-text')
+    .selectAll('text')
+    .data(filteredRelationships)
+    .enter().append('text')
+    .attr('x', d => (d.source.x + d.target.x) / 2)
+    .attr('y', (d, i) => {
+        const key = `${d.source.id}-${d.target.id}`;
+        const index = Array.from(filteredRelationships).filter(rel => `${rel.source.id}-${rel.target.id}` === key).indexOf(d);
+        return (d.source.y + d.target.y) / 2 - (labelCounts.get(key) * 10) / 2 + 14 + (index * 20);
+    })
+    .attr('font-size', '12px')
+    .attr('fill', 'white')
+    .attr('text-anchor', 'middle')
+    .attr('opacity', 0) // Hide the text
+    .text(d => d.name);
+
+    function getClosestPointOnRectangle(node, target) {
+        // Assuming node is a rectangle with width 90 and height 40
+        const rectWidth = 90;
+        const rectHeight = 40;
+        
+        // Center of the node
+        const cx = node.x;
+        const cy = node.y;
+        
+        // Rectangle edges
+        const left = cx - rectWidth / 2; // Left edge
+        const right = cx + rectWidth / 2; // Right edge
+        const top = cy - rectHeight / 2; // Top edge
+        const bottom = cy + rectHeight / 2; // Bottom edge
+        
+        // Calculate distances to each edge
+        const dx = Math.max(left, Math.min(target.x, right));
+        const dy = Math.max(top, Math.min(target.y, bottom));
+        
+        return { x: dx, y: dy };
+    }
     
+        
 
+// Add nodes
+const node = svg.append('g')
+    .attr('class', 'nodes')
+    .selectAll('g')
+    .data(filteredNodes)
+    .enter().append('g')
+    .call(d3.drag()
+        .on('start', dragstarted)
+        .on('drag', dragged)
+        .on('end', dragended))
+    .on('click', (event, d) => {
+        if (!detailedView){
+            if (tooltipVisible) {
+                hideTooltip();
+            } else {
+                showNodeTooltip(event, d);
+            }
+            tooltipVisible = !tooltipVisible;
+        }
+    });
 
-        // Add nodes
-        const node = svg.append('g')
-            .attr('class', 'nodes')
-            .selectAll('rect')
-            .data(filteredNodes)
-            .enter().append('rect')
-            .attr('width', 100)
-            .attr('height', 40)
-            .attr('rx', 5)
-            .attr('ry', 5)
-            .attr('fill', d => color(d.label))
-            .call(d3.drag()
-                .on('start', dragstarted)
-                .on('drag', dragged)
-                .on('end', dragended))
-            .attr('clip-path', 'url(#clip)') // Apply clipping path
-            .on('click', (event, d) => {
-                if (tooltipVisible) {
-                    hideTooltip();
-                } else {
-                    showNodeTooltip(event, d);
-                }
-                tooltipVisible = !tooltipVisible;
-            });
+// Add the main rectangle (90% part)
+node.append('rect')
+    .attr('width', 90) // 90% of the total width
+    .attr('height', 40)
+ 
+    .attr('fill', 'none')
+    .attr('stroke', 'black'); // Add stroke for visibility
 
-        // Update node labels inside nodes
-        const nodeText = svg.selectAll('.node-labels text')
-            .data(filteredNodes)
-            .enter().append('text')
-            .attr('class', 'node-label')
-            .attr('dy', '0.4em') // Adjust vertical alignment as needed
-            .attr('text-anchor', 'middle')
-            .attr('font-size', '12px')
-            .attr('fill', 'black')
-            .text(d => d.name); // Display node name
-
+// Add the color rectangle (10% part)
+node.append('rect')
+    .attr('x', 90) // Start where the main rectangle ends
+    .attr('width', 10) // 10% of the total width
+    .attr('height', 40)
+    
+    .attr('fill', d => d.color || '#000')
+    .attr('stroke', 'black'); // Add stroke for visibility
+// Update node labels inside nodes
+const nodeText = node.append('text')
+    .attr('class', 'node-label')
+    .attr('x', 45) // Centered within the 90% rectangle
+    .attr('y', 20) // Centered vertically
+    .attr('dy', '0.35em') // Center text vertically
+    .attr('text-anchor', 'middle')
+    .attr('font-size', '12px')
+    .attr('fill', 'black')
+    .attr('font-weight', 'bold')
+    .text(d => detailedView && d.citations != null ? d.name + '\n\n' + d.citations : d.name)
+    .call(wrapText, 90); // Wrap text within 90 units width
         // Function to show tooltip for links
+
         function showTooltip(event, d) {
             tooltip.transition()
                 .duration(200)
@@ -235,7 +352,7 @@ const GraphVisualization = () => {
                 .style('left', (event.pageX + 5) + 'px')
                 .style('top', (event.pageY - 28) + 'px');
         }
-
+        
         // Function to show tooltip for nodes
         function showNodeTooltip(event, d) {
             tooltip.transition()
@@ -244,7 +361,7 @@ const GraphVisualization = () => {
 
             // Check if citations property exists and is an array
             const citations = d.citations;
-            if (Array.isArray(citations)) {
+            if (Array.isArray(citations) && citations.length > 0) {
                 tooltip.html('<ul>' + citations.map(citation => `<li>${citation}</li>`).join('') + '</ul>')
                     .style('left', (event.pageX + 5) + 'px')
                     .style('top', (event.pageY - 28) + 'px');
@@ -262,27 +379,59 @@ const GraphVisualization = () => {
                 .style('opacity', 0);
         }
 
-        // Function to update positions on tick
-        function ticked() {
-            link
-                .attr('x1', d => d.source.x)
-                .attr('y1', d => d.source.y)
-                .attr('x2', d => d.target.x)
-                .attr('y2', d => d.target.y);
+     function ticked() {
+    link
+        .attr('x1', d => {
+            const pos = getClosestPointOnRectangle(d.source, { x: d.target.x, y: d.target.y });
+            return pos.x;
+        })
+        .attr('y1', d => {
+            const pos = getClosestPointOnRectangle(d.source, { x: d.target.x, y: d.target.y });
+            return pos.y;
+        })
+        .attr('x2', d => {
+            const pos = getClosestPointOnRectangle(d.target, { x: d.source.x, y: d.source.y });
+            return pos.x;
+        })
+        .attr('y2', d => {
+            const pos = getClosestPointOnRectangle(d.target, { x: d.source.x, y: d.source.y });
+            return pos.y;
+        });
 
-            node
-                .attr('x', d => Math.max(margin, Math.min(width - margin - 100, d.x - 50)))
-                .attr('y', d => {
-                    const rowTop = rowPositions[d.label].top;
-                    const rowBottom = rowPositions[d.label].bottom;
-                    return Math.max(rowTop + margin, Math.min(rowBottom - margin - 40, d.y - 20));
-                });
+    node
+        .attr('transform', d => `translate(${Math.max(margin, Math.min(width - margin - 90, d.x - 45))}, ${Math.max(rowPositions[d.label].top + margin, Math.min(rowPositions[d.label].bottom - margin - 40, d.y - 20))})`);
+    
+    nodeText
+        .attr('x', 45) // Centered within the 90% rectangle
+        .attr('y', 20); // Centered vertically
 
-            nodeText
-                .attr('x', d => d.x)
-                .attr('y', d => d.y);
-        }
+    if (detailedView) {
+        linkReferences.attr('x', d => (d.source.x + d.target.x) / 2 - 50)
+            .attr('y', d => {
+                const key = `${d.source.id}-${d.target.id}`;
+                return (d.source.y + d.target.y) / 2 - (labelCounts.get(key) * 10) / 2;
+            })
+            .attr('height', d => {
+                const key = `${d.source.id}-${d.target.id}`;
+                return labelCounts.get(key) * 20;
+            });
 
+        linkReferences.attr('opacity', 0.1); // Show the rectangles
+
+        referenceText.attr('x', d => (d.source.x + d.target.x) / 2)
+            .attr('y', (d, i) => {
+                const key = `${d.source.id}-${d.target.id}`;
+                const index = Array.from(filteredRelationships).filter(rel => `${rel.source.id}-${rel.target.id}` === key).indexOf(d);
+                return (d.source.y + d.target.y) / 2 - (labelCounts.get(key) * 10) / 2 + 14 + (index * 20);
+            });
+
+        referenceText.attr('fill', 'black'); // Show the text
+        referenceText.attr('opacity', 1);
+    }
+}
+
+        
+        
         // Drag functions
         function dragstarted(event, d) {
             if (!event.active) simulation.alphaTarget(0.3).restart();
@@ -314,6 +463,7 @@ const GraphVisualization = () => {
         }
     };
 
+
     // Function to handle dropdown change
     const handleMapChange = async event => {
         setSelectedMap(event.target.value);
@@ -328,6 +478,12 @@ const GraphVisualization = () => {
     // Get distinct map values
     const distinctMaps = [...new Set(data.nodes.map(node => node.map))];
 
+    const toggleView = () => {
+    handleMapChange({ target: { value: selectedMap } });
+    detailedView = !detailedView;
+    console.log(detailedView);
+
+     }
     return (
         <div>
             <h2>Graph Visualization</h2>
@@ -342,6 +498,7 @@ const GraphVisualization = () => {
             </div>
             <svg ref={svgRef}></svg>
             <div ref={tooltipRef}></div>
+            <button onClick={toggleView}>Toggle View</button>
         </div>
     );
 };
