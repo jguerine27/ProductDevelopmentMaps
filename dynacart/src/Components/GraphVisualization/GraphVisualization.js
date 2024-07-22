@@ -149,26 +149,13 @@ const GraphVisualization = () => {
         }
         
         
-        // const invertColor = (hex) => {
-        //     hex = String(hex).replace('#', ''); // Ensure hex is a string and remove the # if present
-        //     if (hex.length === 3) {
-        //         hex = hex.split('').map(char => char + char).join(''); // Convert shorthand hex (e.g., #03F) to full form (e.g., #0033FF)
-        //     }
-        //     if (hex.length !== 6 || !/^[0-9A-Fa-f]{6}$/.test(hex)) {
-        //         throw new Error('Invalid HEX color.');
-        //     }
-        //     let r = parseInt(hex.slice(0, 2), 16),
-        //         g = parseInt(hex.slice(2, 4), 16),
-        //         b = parseInt(hex.slice(4, 6), 16);
-        //     return '#' + (255 - r).toString(16).padStart(2, '0') + (255 - g).toString(16).padStart(2, '0') + (255 - b).toString(16).padStart(2, '0');
-        // };
-        
+     
 
 
         // Initialize simulation
         const simulation = d3.forceSimulation(filteredNodes)
-            .force('link', d3.forceLink(filteredRelationships).id(d => d.name).distance(200))
-            .force('charge', d3.forceManyBody().strength(-110))
+            .force('link', d3.forceLink(filteredRelationships).id(d => d.name).distance(220))
+            .force('charge', d3.forceManyBody().strength(-150))
             .force('center', d3.forceCenter(width / 2, height / 2))
             .force('boundary', boundaryForce(margin, width - margin, margin, height - margin, rowPositions))
             .on('tick', ticked);
@@ -278,22 +265,7 @@ let referenceText = svg.append('g')
     .attr('text-anchor', 'middle')
     .attr('opacity', 0) // Hide the text
     .text(d => d.name);
-    // // Add labels
-    // const linkLabel = svg.append('g')
-    //     .attr('class', 'link-labels')
-    //     .selectAll('text')
-    //     .data(filteredRelationships)
-    //     .enter().append('text')
-    //     .attr('text-anchor', 'middle')
-    //     .attr('dy', (d, i) => {
-    //         // Calculate vertical offset based on label count
-    //         const key = `${d.source}-${d.target}`;
-    //         const count = labelCounts.get(key);
-    //         return (i - (count - 1) / 2) * 15; // Adjust spacing as needed
-    //     })
-    //     .attr('font-size', '12px')
-    //     .text(detailedView ? d => d.name : '');
-      
+
     function getClosestPointOnRectangle(node, target) {
         // Assuming node is a rectangle with width 90 and height 40
         const rectWidth = 90;
@@ -490,6 +462,7 @@ const nodeText = node.append('text')
             };
         }
     };
+
 
     // Function to handle dropdown change
     const handleMapChange = async event => {
