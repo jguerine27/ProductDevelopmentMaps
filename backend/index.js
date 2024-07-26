@@ -217,56 +217,116 @@ app.get('/api/filter/keyword/:keyword', async (req, res) => {
         await session.close();
     }
 });
+// Filter nodes and relationships by year (stored as STRING in Neo4j)
+app.get('/api/filter/year', async (req, res) => {
+  const { year } = req.query;
 
-// Filter nodes by publication date
-app.get('/api/filter/date/:date', async (req, res) => {
-    const { date } = req.params;
-    const session = driver.session();
-    try {
-        const result = await session.run(
-            `MATCH (n)
-            WHERE n.publicationDate = $date
-            RETURN n, labels(n) as nLabels`
-            , { date }
-        );
+  if (!year) {
+    return res.status(400).json({ error: 'Year parameter is required' });
+  }
 
-        const nodes = result.records.map(record => {
-            return { ...record.get('n').properties, label: record.get('nLabels')[0] };
-        });
+  const session = driver.session();
 
-        res.json(nodes);
-    } catch (error) {
-        console.error('Error filtering nodes by publication date:', error);
-        res.status(500).json({ error: 'Failed to filter nodes by publication date' });
-    } finally {
-        await session.close();
-    }
+  try {
+    // Filter nodes by year
+    const nodesResult = await session.run(
+      `MATCH (n)-[r:Reference]->(m)
+       WHERE r.year = $year
+       RETURN DISTINCT n, m, r`,
+      { year }
+    );
+
+    const nodes = new Map();
+    nodesResult.records.forEach(record => {
+      const startNode = record.get('n').properties;
+      const startNodeLabel = record.get('n').labels[0];
+      const endNode = record.get('m') ? record.get('m').properties : null;
+      const endNodeLabel = record.get('m') ? record.get('m').labels[0] : null;
+      const relationship = record.get('r').properties;
+
+      if (!nodes.has(startNode.name)) {
+        nodes.set(startNode.name, { ...startNode, label: startNodeLabel });
+      }
+
+      if (endNode && !nodes.has(endNode.name)) {
+        nodes.set(endNode.name, { ...endNode, label: endNodeLabel });
+      }
+    });
+
+    const relationships = nodesResult.records
+      .filter(record => record.get('r'))
+      .map(record => ({
+        source: record.get('n').properties.name,
+        target: record.get('m').properties.name,
+        name: record.get('r').properties.name,
+        type: record.get('r').properties.type,
+        year: record.get('r').properties.year
+      }));
+
+    res.json({ nodes: Array.from(nodes.values()), relationships });
+  } catch (error) {
+    console.error('Error filtering nodes and relationships by year:', error);
+    res.status(500).json({ error: 'Failed to filter nodes and relationships by year' });
+  } finally {
+    await session.close();
+  }
 });
 
-// Filter nodes by publication date range
-app.get('/api/filter/date-range', async (req, res) => {
-    const { startDate, endDate } = req.query;
-    const session = driver.session();
-    try {
-        const result = await session.run(
-            `MATCH (n)
-            WHERE n.publicationDate >= $startDate AND n.publicationDate <= $endDate
-            RETURN n, labels(n) as nLabels`
-            , { startDate, endDate }
-        );
+// Filter nodes and relationships by year range (years stored as STRING in Neo4j)
+app.get('/api/filter/yearrange', async (req, res) => {
+  const { startYear, endYear } = req.query;
 
-        const nodes = result.records.map(record => {
-            return { ...record.get('n').properties, label: record.get('nLabels')[0] };
-        });
+  if (!startYear || !endYear) {
+    return res.status(400).json({ error: 'Both startYear and endYear parameters are required' });
+  }
 
-        res.json(nodes);
-    } catch (error) {
-        console.error('Error filtering nodes by publication date range:', error);
-        res.status(500).json({ error: 'Failed to filter nodes by publication date range' });
-    } finally {
-        await session.close();
-    }
+  const session = driver.session();
+
+  try {
+    // Filter nodes by year range
+    const nodesResult = await session.run(
+      `MATCH (n)-[r:Reference]->(m)
+       WHERE r.year >= $startYear AND r.year <= $endYear
+       RETURN DISTINCT n, m, r`,
+      { startYear, endYear }
+    );
+
+    const nodes = new Map();
+    nodesResult.records.forEach(record => {
+      const startNode = record.get('n').properties;
+      const startNodeLabel = record.get('n').labels[0];
+      const endNode = record.get('m') ? record.get('m').properties : null;
+      const endNodeLabel = record.get('m') ? record.get('m').labels[0] : null;
+      const relationship = record.get('r').properties;
+
+      if (!nodes.has(startNode.name)) {
+        nodes.set(startNode.name, { ...startNode, label: startNodeLabel });
+      }
+
+      if (endNode && !nodes.has(endNode.name)) {
+        nodes.set(endNode.name, { ...endNode, label: endNodeLabel });
+      }
+    });
+
+    const relationships = nodesResult.records
+      .filter(record => record.get('r'))
+      .map(record => ({
+        source: record.get('n').properties.name,
+        target: record.get('m').properties.name,
+        name: record.get('r').properties.name,
+        type: record.get('r').properties.type,
+        year: record.get('r').properties.year
+      }));
+
+    res.json({ nodes: Array.from(nodes.values()), relationships });
+  } catch (error) {
+    console.error('Error filtering nodes and relationships by year range:', error);
+    res.status(500).json({ error: 'Failed to filter nodes and relationships by year range' });
+  } finally {
+    await session.close();
+  }
 });
+
 
 // Filter nodes by author/reference
 app.get('/api/filter/author-reference/:author', async (req, res) => {
