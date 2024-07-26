@@ -328,6 +328,7 @@ app.get('/api/filter/yearrange', async (req, res) => {
 });
 
 
+
 // Filter nodes by author/reference
 app.get('/api/filter/author-reference/:author', async (req, res) => {
     const { author } = req.params;
