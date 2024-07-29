@@ -9,6 +9,17 @@ const GraphVisualization = () => {
     const svgRef = useRef(null); // Ref to SVG element
     const tooltipRef = useRef(null); // Ref to tooltip element
 
+    //Filter capabilities
+    const [keyword, setKeyword] = useState('');
+    const [year, setYear] = useState('');
+    const [startYear, setStartYear] = useState('');
+    const [endYear, setEndYear] = useState('');
+    const [author, setAuthor] = useState('');
+    const [tag, setTag] = useState('');
+    const [color, setColor] = useState('');
+
+
+
     useEffect(() => {
         const fetchData = async () => {
             try {
@@ -463,7 +474,6 @@ const nodeText = node.append('text')
         }
     };
 
-
     // Function to handle dropdown change
     const handleMapChange = async event => {
         setSelectedMap(event.target.value);
@@ -475,6 +485,49 @@ const nodeText = node.append('text')
         }
     };
 
+    //Filter
+    const fetchFilteredData = async (url, params) => {
+        try {
+            const response = await axios.get(url, { params });
+            const data = response.data;
+            console.log(data);
+            if (data.nodes.length === 0) {
+                alert('No results found');
+            }
+            else{
+            setData(data)
+            }
+        } catch (error) {
+            console.error('Error fetching filtered data:', error);
+        }
+    };
+    
+    const handleFilterByKeyword = () => {
+        console.log(keyword);
+        fetchFilteredData('http://localhost:4000/api/filter/keyword/' + keyword);
+    };
+    
+    const handleFilterByYear = () => {
+        fetchFilteredData('http://localhost:4000/api/filter/year', { year });
+    };
+    
+    const handleFilterByYearRange = () => {
+        fetchFilteredData('http://localhost:4000/api/filter/yearrange', { startYear, endYear });
+    };
+    
+    const handleFilterByAuthor = () => {
+        fetchFilteredData('http://localhost:4000/api/filter/author-reference/' + author);
+    };
+    
+    const handleFilterByTag = () => {
+        fetchFilteredData('http://localhost:4000/api/filter/tag/' + tag);
+    };
+    
+    const handleFilterByColor = () => {
+        fetchFilteredData('http://localhost:4000/api/filter/color/' + color);
+    };
+    
+
     // Get distinct map values
     const distinctMaps = [...new Set(data.nodes.map(node => node.map))];
 
@@ -484,7 +537,7 @@ const nodeText = node.append('text')
     console.log(detailedView);
 
      }
-    return (
+     return (
         <div>
             <h2>Graph Visualization</h2>
             <div>
@@ -496,11 +549,77 @@ const nodeText = node.append('text')
                     ))}
                 </select>
             </div>
+            <form onSubmit={(e) => { e.preventDefault(); handleFilterByKeyword(); }}>
+            <input 
+                type="text" 
+                value={keyword} 
+                onChange={(e) => setKeyword(e.target.value)} 
+                placeholder="Filter by keyword" 
+            />
+            <button type="submit">Apply</button>
+        </form>
+
+        <form onSubmit={(e) => { e.preventDefault(); handleFilterByYear(); }}>
+            <input 
+                type="text" 
+                value={year} 
+                onChange={(e) => setYear(e.target.value)} 
+                placeholder="Filter by year" 
+            />
+            <button type="submit">Apply</button>
+        </form>
+
+        <form onSubmit={(e) => { e.preventDefault(); handleFilterByYearRange(); }}>
+            <input 
+                type="text" 
+                value={startYear} 
+                onChange={(e) => setStartYear(e.target.value)} 
+                placeholder="Filter by start year" 
+            />
+            <input 
+                type="text" 
+                value={endYear} 
+                onChange={(e) => setEndYear(e.target.value)} 
+                placeholder="Filter by end year" 
+            />
+            <button type="submit">Apply</button>
+        </form>
+
+        <form onSubmit={(e) => { e.preventDefault(); handleFilterByAuthor(); }}>
+            <input 
+                type="text" 
+                value={author} 
+                onChange={(e) => setAuthor(e.target.value)} 
+                placeholder="Filter by author/reference" 
+            />
+            <button type="submit">Apply</button>
+        </form>
+
+        <form onSubmit={(e) => { e.preventDefault(); handleFilterByTag(); }}>
+            <input 
+                type="text" 
+                value={tag} 
+                onChange={(e) => setTag(e.target.value)} 
+                placeholder="Filter by tag" 
+            />
+            <button type="submit">Apply</button>
+        </form>
+
+        <form onSubmit={(e) => { e.preventDefault(); handleFilterByColor(); }}>
+            <input 
+                type="text" 
+                value={color} 
+                onChange={(e) => setColor(e.target.value)} 
+                placeholder="Filter by color" 
+            />
+            <button type="submit">Apply</button>
+        </form>
             <svg ref={svgRef}></svg>
             <div ref={tooltipRef}></div>
             <button onClick={toggleView}>Toggle View</button>
         </div>
     );
+    
 };
 
 export default GraphVisualization;
