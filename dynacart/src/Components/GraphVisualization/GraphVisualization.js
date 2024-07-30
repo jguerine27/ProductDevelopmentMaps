@@ -18,13 +18,28 @@ const GraphVisualization = () => {
     const [tag, setTag] = useState('');
     const [color, setColor] = useState('');
 
-
+    const [years, setYears] = useState([]);
+    const [references, setReferences] = useState([]);
+    const [tags, setTags] = useState([]);
+    const [colors, setColors] = useState([]);
 
     useEffect(() => {
         const fetchData = async () => {
             try {
                 const response = await axios.get('http://localhost:4000/api/nodes-relationships');
                 setData(response.data);
+                const [yearsRes, referencesRes, tagsRes, colorsRes] = await Promise.all([
+                    axios.get('http://localhost:4000/api/get-years'),
+                    axios.get('http://localhost:4000/api/get-authors'),
+                    axios.get('http://localhost:4000/api/get-tags'),
+                    axios.get('http://localhost:4000/api/get-colors')
+                ]);
+
+                // Assuming API responses are arrays
+                setYears(yearsRes.data);
+                setReferences(referencesRes.data);
+                setTags(tagsRes.data);
+                setColors(colorsRes.data);
             } catch (error) {
                 console.error('Error fetching data:', error);
             }
@@ -508,7 +523,7 @@ const nodeText = node.append('text')
     };
     
     const handleFilterByYear = () => {
-        fetchFilteredData('http://localhost:4000/api/filter/year', { year });
+        fetchFilteredData('http://localhost:4000/api/filter/year/' + year );
     };
     
     const handleFilterByYearRange = () => {
@@ -520,10 +535,12 @@ const nodeText = node.append('text')
     };
     
     const handleFilterByTag = () => {
+        console.log(tag)
         fetchFilteredData('http://localhost:4000/api/filter/tag/' + tag);
     };
     
     const handleFilterByColor = () => {
+        console.log(color)
         fetchFilteredData('http://localhost:4000/api/filter/color/' + color);
     };
     
@@ -550,70 +567,144 @@ const nodeText = node.append('text')
                 </select>
             </div>
             <form onSubmit={(e) => { e.preventDefault(); handleFilterByKeyword(); }}>
-            <input 
-                type="text" 
-                value={keyword} 
-                onChange={(e) => setKeyword(e.target.value)} 
-                placeholder="Filter by keyword" 
-            />
-            <button type="submit">Apply</button>
-        </form>
+                <input 
+                    type="text" 
+                    value={keyword} 
+                    onChange={(e) => setKeyword(e.target.value)} 
+                    placeholder="Filter by keyword" 
+                />
+                <button type="submit">Apply</button>
+            </form>
 
-        <form onSubmit={(e) => { e.preventDefault(); handleFilterByYear(); }}>
+            <form onSubmit={(e) => { e.preventDefault(); handleFilterByYear(); }}>
+            <fieldset>
+    <legend>Filter by Year</legend>
+    <div style={{ display: 'flex', flexWrap: 'wrap' }}>
+        {years.map(y => (
+            <span key={y} style={{ margin: '0 10px 10px 0' }}>
             <input 
-                type="text" 
-                value={year} 
-                onChange={(e) => setYear(e.target.value)} 
-                placeholder="Filter by year" 
+                type="checkbox" 
+                value={y} 
+                checked={year.includes(y)}
+                onChange={(e) => {
+                    const selected = e.target.checked;
+                    setYear(prev => 
+                        selected 
+                            ? [...prev, y] 
+                            : prev.filter(item => item !== y)
+                    );
+                }}
             />
-            <button type="submit">Apply</button>
-        </form>
+            {y}
+        </span>
+        
+        ))}
+    </div>
+</fieldset>
 
-        <form onSubmit={(e) => { e.preventDefault(); handleFilterByYearRange(); }}>
-            <input 
-                type="text" 
-                value={startYear} 
-                onChange={(e) => setStartYear(e.target.value)} 
-                placeholder="Filter by start year" 
-            />
-            <input 
-                type="text" 
-                value={endYear} 
-                onChange={(e) => setEndYear(e.target.value)} 
-                placeholder="Filter by end year" 
-            />
-            <button type="submit">Apply</button>
-        </form>
+    <button type="submit">Apply</button>
+</form>
 
-        <form onSubmit={(e) => { e.preventDefault(); handleFilterByAuthor(); }}>
-            <input 
-                type="text" 
-                value={author} 
-                onChange={(e) => setAuthor(e.target.value)} 
-                placeholder="Filter by author/reference" 
-            />
-            <button type="submit">Apply</button>
-        </form>
 
-        <form onSubmit={(e) => { e.preventDefault(); handleFilterByTag(); }}>
-            <input 
-                type="text" 
-                value={tag} 
-                onChange={(e) => setTag(e.target.value)} 
-                placeholder="Filter by tag" 
-            />
-            <button type="submit">Apply</button>
-        </form>
+            <form onSubmit={(e) => { e.preventDefault(); handleFilterByYearRange(); }}>
+                <input 
+                    type="text" 
+                    value={startYear} 
+                    onChange={(e) => setStartYear(e.target.value)} 
+                    placeholder="Filter by start year" 
+                />
+                <input 
+                    type="text" 
+                    value={endYear} 
+                    onChange={(e) => setEndYear(e.target.value)} 
+                    placeholder="Filter by end year" 
+                />
+                <button type="submit">Apply</button>
+            </form>
 
-        <form onSubmit={(e) => { e.preventDefault(); handleFilterByColor(); }}>
-            <input 
-                type="text" 
-                value={color} 
-                onChange={(e) => setColor(e.target.value)} 
-                placeholder="Filter by color" 
-            />
-            <button type="submit">Apply</button>
-        </form>
+            <form onSubmit={(e) => { e.preventDefault(); handleFilterByAuthor(); }}>
+            <fieldset>
+    <legend>Filter by Author/Reference</legend>
+    <div style={{ display: 'flex', flexWrap: 'wrap' }}>
+        {references.map(ref => (
+            <span key={ref} style={{ margin: '0 10px 10px 0' }}>
+                <input 
+                    type="checkbox" 
+                    value={ref} 
+                    checked={author.includes(ref)}
+                    onChange={(e) => {
+                        const selected = e.target.checked;
+                        setAuthor(prev => 
+                            selected 
+                                ? [...prev, ref] 
+                                : prev.filter(item => item !== ref)
+                        );
+                    }}
+                />
+                {ref}
+            </span>
+        ))}
+    </div>
+</fieldset>
+
+                <button type="submit">Apply</button>
+            </form>
+
+            <form onSubmit={(e) => { e.preventDefault(); handleFilterByTag(); }}>
+            <fieldset>
+    <legend>Filter by Tag</legend>
+    <div style={{ display: 'flex', flexWrap: 'wrap' }}>
+        {tags.map(t => (
+            <span key={t} style={{ margin: '0 10px 10px 0' }}>
+                <input 
+                    type="checkbox" 
+                    value={t} 
+                    checked={tag.includes(t)}
+                    onChange={(e) => {
+                        const selected = e.target.checked;
+                        setTag(prev => 
+                            selected 
+                                ? [...prev, t] 
+                                : prev.filter(item => item !== t)
+                        );
+                    }}
+                />
+                {t}
+            </span>
+        ))}
+    </div>
+</fieldset>
+
+                <button type="submit">Apply</button>
+            </form>
+
+            <form onSubmit={(e) => { e.preventDefault(); handleFilterByColor(); }}>
+            <fieldset>
+    <legend>Filter by Color</legend>
+    <div style={{ display: 'flex', flexWrap: 'wrap' }}>
+        {colors.map(c => (
+            <span key={c} style={{ margin: '0 10px 10px 0' }}>
+                <input 
+                    type="checkbox" 
+                    value={c} 
+                    checked={color.includes(c)}
+                    onChange={(e) => {
+                        const selected = e.target.checked;
+                        setColor(prev => 
+                            selected 
+                                ? [...prev, c] 
+                                : prev.filter(item => item !== c)
+                        );
+                    }}
+                />
+                {c}
+            </span>
+        ))}
+    </div>
+</fieldset>
+
+                <button type="submit">Apply</button>
+            </form>
             <svg ref={svgRef}></svg>
             <div ref={tooltipRef}></div>
             <button onClick={toggleView}>Toggle View</button>

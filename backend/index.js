@@ -314,60 +314,66 @@ app.get('/api/filter/keyword/:keyword', async (req, res) => {
         await session.close();
       }
 });
+
 // Filter nodes and relationships by year (stored as STRING in Neo4j)
-app.get('/api/filter/year', async (req, res) => {
-  const { year } = req.query;
-
-  if (!year) {
-    return res.status(400).json({ error: 'Year parameter is required' });
-  }
-
-  const session = driver.session();
-
-  try {
-    // Filter nodes by year
-    const nodesResult = await session.run(
-      `MATCH (n)-[r:Reference]->(m)
-       WHERE r.year = $year
-       RETURN DISTINCT n, m, r`,
-      { year }
-    );
-
-    const nodes = new Map();
-    nodesResult.records.forEach(record => {
-      const startNode = record.get('n').properties;
-      const startNodeLabel = record.get('n').labels[0];
-      const endNode = record.get('m') ? record.get('m').properties : null;
-      const endNodeLabel = record.get('m') ? record.get('m').labels[0] : null;
-      const relationship = record.get('r').properties;
-
-      if (!nodes.has(startNode.name)) {
-        nodes.set(startNode.name, { ...startNode, label: startNodeLabel });
-      }
-
-      if (endNode && !nodes.has(endNode.name)) {
-        nodes.set(endNode.name, { ...endNode, label: endNodeLabel });
-      }
-    });
-
-    const relationships = nodesResult.records
-      .filter(record => record.get('r'))
-      .map(record => ({
-        source: record.get('n').properties.name,
-        target: record.get('m').properties.name,
-        name: record.get('r').properties.name,
-        type: record.get('r').properties.type,
-        year: record.get('r').properties.year
-      }));
-
-    res.json({ nodes: Array.from(nodes.values()), relationships });
-  } catch (error) {
-    console.error('Error filtering nodes and relationships by year:', error);
-    res.status(500).json({ error: 'Failed to filter nodes and relationships by year' });
-  } finally {
-    await session.close();
-  }
-});
+// Filter nodes by multiple years
+app.get('/api/filter/year/:year', async (req, res) => {
+    const { year } = req.params;
+  
+    if (!year) {
+      return res.status(400).json({ error: 'Year parameter is required' });
+    }
+  
+    // Parse year parameter into an array of years
+    const yearArray = year.split(',').map(y => y.trim());
+  
+    const session = driver.session();
+  
+    try {
+      // Filter nodes by multiple years
+      const nodesResult = await session.run(
+        `MATCH (n)-[r:Reference]->(m)
+         WHERE r.year IN $yearArray
+         RETURN DISTINCT n, m, r`,
+        { yearArray }
+      );
+  
+      const nodes = new Map();
+      nodesResult.records.forEach(record => {
+        const startNode = record.get('n').properties;
+        const startNodeLabel = record.get('n').labels[0];
+        const endNode = record.get('m') ? record.get('m').properties : null;
+        const endNodeLabel = record.get('m') ? record.get('m').labels[0] : null;
+        const relationship = record.get('r').properties;
+  
+        if (!nodes.has(startNode.name)) {
+          nodes.set(startNode.name, { ...startNode, label: startNodeLabel });
+        }
+  
+        if (endNode && !nodes.has(endNode.name)) {
+          nodes.set(endNode.name, { ...endNode, label: endNodeLabel });
+        }
+      });
+  
+      const relationships = nodesResult.records
+        .filter(record => record.get('r'))
+        .map(record => ({
+          source: record.get('n').properties.name,
+          target: record.get('m').properties.name,
+          name: record.get('r').properties.name,
+          type: record.get('r').properties.type,
+          year: record.get('r').properties.year
+        }));
+  
+      res.json({ nodes: Array.from(nodes.values()), relationships });
+    } catch (error) {
+      console.error('Error filtering nodes and relationships by year:', error);
+      res.status(500).json({ error: 'Failed to filter nodes and relationships by year' });
+    } finally {
+      await session.close();
+    }
+  });
+  
 
 // Filter nodes and relationships by year range (years stored as STRING in Neo4j)
 app.get('/api/filter/yearrange', async (req, res) => {
@@ -424,18 +430,25 @@ app.get('/api/filter/yearrange', async (req, res) => {
   }
 });
 
-
-
-// Filter nodes by author/reference
+// Filter nodes by multiple authors/references
 app.get('/api/filter/author-reference/:author', async (req, res) => {
     const { author } = req.params;
+
+    if (!author) {
+        return res.status(400).json({ error: 'Author parameter is required' });
+    }
+
+    // Parse author parameter into an array of authors
+    const authorArray = author.split(',').map(a => a.trim().toLowerCase());
+
     const session = driver.session();
+
     try {
         const result = await session.run(
             `MATCH (n)-[r:Reference]->(m)
-            WHERE toLower(r.author) CONTAINS toLower($author) OR toLower(r.reference) CONTAINS toLower($author)
-            RETURN n, labels(n) as nLabels, r, m, labels(m) as mLabels`
-            , { author }
+             WHERE ANY(a IN $authorArray WHERE toLower(r.author) CONTAINS a OR toLower(r.reference) CONTAINS a)
+             RETURN DISTINCT n, labels(n) AS nLabels, r, m, labels(m) AS mLabels`,
+            { authorArray }
         );
 
         const nodes = new Map();
@@ -443,7 +456,8 @@ app.get('/api/filter/author-reference/:author', async (req, res) => {
             const startNode = record.get('n').properties;
             const startNodeLabel = record.get('nLabels')[0];
             const endNode = record.get('m') ? record.get('m').properties : null;
-            const endNodeLabel = record.get('mLabels') ? record.get('mLabels')[0] : null;
+            const endNodeLabel = record.get('m') ? record.get('m').labels[0] : null;
+            const relationship = record.get('r').properties;
 
             if (!nodes.has(startNode.name)) {
                 nodes.set(startNode.name, { ...startNode, label: startNodeLabel });
@@ -472,18 +486,24 @@ app.get('/api/filter/author-reference/:author', async (req, res) => {
     }
 });
 
+
 // Filter nodes by tag
-app.get('/api/filter/tag/:tag', async (req, res) => {
-    const { tag } = req.params;
+app.get('/api/filter/tag/:tags', async (req, res) => {
+    const { tags } = req.params;
+
+    let tagArray;
+    tagArray = tags.split(',');
+
     const session = driver.session();
+
     try {
         const result = await session.run(
             `MATCH (n)
-     WHERE any(tag IN n.tags WHERE toLower(tag) CONTAINS toLower($tag))
-     OPTIONAL MATCH (n)-[r]->(m)
-     WHERE (m IS NULL OR any(tag IN m.tags WHERE toLower(tag) CONTAINS toLower($tag)))
-     RETURN n, labels(n) as nLabels, m, labels(m) as mLabels, r`
-            , { tag }
+             WHERE ANY(tag IN n.tags WHERE ANY(t IN $tagArray WHERE toLower(tag) CONTAINS toLower(t)))
+             OPTIONAL MATCH (n)-[r]->(m)
+             WHERE (m IS NULL OR ANY(tag IN m.tags WHERE ANY(t IN $tagArray WHERE toLower(tag) CONTAINS toLower(t))))
+             RETURN n, labels(n) AS nLabels, m, labels(m) AS mLabels, r`,
+            { tagArray }
         );
 
         const nodes = new Map();
@@ -513,30 +533,36 @@ app.get('/api/filter/tag/:tag', async (req, res) => {
 
         res.json({ nodes: Array.from(nodes.values()), relationships });
     } catch (error) {
-        console.error('Error filtering by author/reference:', error);
-        res.status(500).json({ error: 'Failed to filter by author/reference' });
+        console.error('Error filtering by tag:', error);
+        res.status(500).json({ error: 'Failed to filter by tag' });
     } finally {
         await session.close();
     }
 });
 
+
+
 // Filter nodes by color
 app.get('/api/filter/color/:color', async (req, res) => {
-    const { color } = req.params;
+    let { color } = req.params;
+    console.log(color);
+    color = color.split(',');
+
     const session = driver.session();
+
     try {
         const result = await session.run(
-
-            `
-           MATCH (n)
-           WHERE toLower(n.color) = '#' + toLower($color)
-     OPTIONAL MATCH (n)-[r]->(m)
-     WHERE toLower(n.color) = '#' + toLower($color) 
-     AND (m IS NULL OR toLower(m.color) = '#' + toLower($color))
-     RETURN n, labels(n) as nLabels, m, labels(m) as mLabels, r`
-            , { color }
+            `MATCH (n)
+             WHERE ANY(c IN $color WHERE toLower(n.color) = '#' + toLower(c))
+             OPTIONAL MATCH (n)-[r]->(m)
+             WHERE ANY(c IN $color WHERE toLower(n.color) = '#' + toLower(c))
+             AND (m IS NULL OR ANY(c IN $color WHERE toLower(m.color) = '#' + toLower(c)))
+             RETURN n, labels(n) AS nLabels, m, labels(m) AS mLabels, r`,
+            { color }
         );
+
         console.log(result);
+
         const nodes = new Map();
         result.records.forEach(record => {
             const startNode = record.get('n').properties;
@@ -564,8 +590,8 @@ app.get('/api/filter/color/:color', async (req, res) => {
 
         res.json({ nodes: Array.from(nodes.values()), relationships });
     } catch (error) {
-        console.error('Error filtering by author/reference:', error);
-        res.status(500).json({ error: 'Failed to filter by author/reference' });
+        console.error('Error filtering by color:', error);
+        res.status(500).json({ error: 'Failed to filter by color' });
     } finally {
         await session.close();
     }
