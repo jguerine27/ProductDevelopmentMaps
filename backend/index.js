@@ -200,6 +200,22 @@ app.get('/api/get-colors', async (req, res) => {
     }
 });
 
+app.get('/api/get-approaches', async (req, res) => {
+    const session = driver.session();
+    try {
+        const result = await session.run(
+            'MATCH (n) WHERE n.approach IS NOT NULL RETURN DISTINCT n.approach AS approach'
+        );
+        const approaches = result.records.map(record => record.get('approach'));
+        res.json(approaches);
+    } catch (error) {
+        console.error('Error fetching types:', error);
+        res.status(500).json({ error: 'Failed to fetch approaches' });
+    } finally {
+        await session.close();
+    }
+});
+
 // Create a node
 app.post('/api/create-node', async (req, res) => {
     const { label, name, type, citations, tags, map, color } = req.body;
@@ -266,61 +282,68 @@ app.post('/create-relationship', async (req, res) => {
     } finally {
         await session.close();
     }
-});
-
-// Filter nodes by keyword
+});// Filter nodes by keyword
+// Filter nodes and relationships by keyword, checking only string properties
 app.get('/api/filter/keyword/:keyword', async (req, res) => {
     const { keyword } = req.params;
     const session = driver.session();
     try {
-        const nodesResult = await session.run(
-            `MATCH (n)
-            WHERE toLower(n.name) CONTAINS toLower($keyword) OR any(tag IN n.tags WHERE toLower(tag) CONTAINS toLower($keyword)) 
+        const query = `
+            MATCH (n)
+            WHERE 
+                toLower(n.name) CONTAINS toLower($keyword) 
+                OR any(label IN labels(n) WHERE toLower(label) CONTAINS toLower($keyword))
+                OR any(prop IN keys(n) WHERE 
+                    (apoc.meta.type(n[prop]) = 'STRING' AND toLower(n[prop]) CONTAINS toLower($keyword)))
             OPTIONAL MATCH (n)-[r]->(m)
-            WHERE toLower(n.name) CONTAINS toLower($keyword) OR any(tag IN n.tags WHERE toLower(tag) CONTAINS toLower($keyword))
-            RETURN n, labels(n) as nLabels, r, m, labels(m) as mLabels
-`
-            , { keyword }
-        );
+            WHERE 
+                (apoc.meta.type(r.name) = 'STRING' AND toLower(r.name) CONTAINS toLower($keyword)) 
+                OR any(prop IN keys(r) WHERE 
+                    (apoc.meta.type(r[prop]) = 'STRING' AND toLower(r[prop]) CONTAINS toLower($keyword)))
+                OR (apoc.meta.type(m.name) = 'STRING' AND toLower(m.name) CONTAINS toLower($keyword))
+                OR any(label IN labels(m) WHERE toLower(label) CONTAINS toLower($keyword))
+                OR any(prop IN keys(m) WHERE 
+                    (apoc.meta.type(m[prop]) = 'STRING' AND toLower(m[prop]) CONTAINS toLower($keyword)))
+            RETURN DISTINCT n, labels(n) as nLabels, r, m, labels(m) as mLabels
+        `;
+
+        const nodesResult = await session.run(query, { keyword });
+
         const nodes = new Map();
         nodesResult.records.forEach(record => {
-          const startNode = record.get('n').properties;
-          const startNodeLabel = record.get('n').labels[0];
-          const endNode = record.get('m') ? record.get('m').properties : null;
-          const endNodeLabel = record.get('m') ? record.get('m').labels[0] : null;
-          const relationship = record.get('r').properties;
-    
-          if (!nodes.has(startNode.name)) {
-            nodes.set(startNode.name, { ...startNode, label: startNodeLabel });
-          }
-    
-          if (endNode && !nodes.has(endNode.name)) {
-            nodes.set(endNode.name, { ...endNode, label: endNodeLabel });
-          }
-        });
-    
-        const relationships = nodesResult.records
-          .filter(record => record.get('r'))
-          .map(record => ({
-            source: record.get('n').properties.name,
-            target: record.get('m').properties.name,
-            name: record.get('r').properties.name,
-            type: record.get('r').properties.type,
-            year: record.get('r').properties.year
-          }));
-    
-        res.json({ nodes: Array.from(nodes.values()), relationships });
-      } catch (error) {
-        console.error('Error filtering nodes and relationships by year:', error);
-        res.status(500).json({ error: 'Failed to filter nodes and relationships by year' });
+            const startNode = record.get('n').properties;
+            const startNodeLabel = record.get('nLabels')[0];
+            const endNode = record.get('m') ? record.get('m').properties : null;
+            const endNodeLabel = record.get('mLabels') ? record.get('mLabels')[0] : null;
 
-        const relationships = {}
-        const nodes = new Map();
+            if (!nodes.has(startNode.name)) {
+                nodes.set(startNode.name, { ...startNode, label: startNodeLabel });
+            }
+
+            if (endNode && !nodes.has(endNode.name)) {
+                nodes.set(endNode.name, { ...endNode, label: endNodeLabel });
+            }
+        });
+
+        const relationships = nodesResult.records
+            .filter(record => record.get('r'))
+            .map(record => ({
+                source: record.get('n').properties.name,
+                target: record.get('m').properties.name,
+                name: record.get('r').properties.name,
+                type: record.get('r').properties.type,
+                year: record.get('r').properties.year
+            }));
+
         res.json({ nodes: Array.from(nodes.values()), relationships });
-      } finally {
+    } catch (error) {
+        console.error('Error filtering by keyword:', error);
+        res.status(500).json({ error: 'Failed to filter by keyword' });
+    } finally {
         await session.close();
-      }
+    }
 });
+
 
 // Filter nodes and relationships by year (stored as STRING in Neo4j)
 // Filter nodes by multiple years

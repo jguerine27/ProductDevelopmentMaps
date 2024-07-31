@@ -22,17 +22,19 @@ const GraphVisualization = () => {
     const [references, setReferences] = useState([]);
     const [tags, setTags] = useState([]);
     const [colors, setColors] = useState([]);
+    const [approaches, setApproaches] = useState([]);
 
     useEffect(() => {
         const fetchData = async () => {
             try {
                 const response = await axios.get('http://localhost:4000/api/nodes-relationships');
                 setData(response.data);
-                const [yearsRes, referencesRes, tagsRes, colorsRes] = await Promise.all([
+                const [yearsRes, referencesRes, tagsRes, colorsRes, approachesRes] = await Promise.all([
                     axios.get('http://localhost:4000/api/get-years'),
                     axios.get('http://localhost:4000/api/get-authors'),
                     axios.get('http://localhost:4000/api/get-tags'),
-                    axios.get('http://localhost:4000/api/get-colors')
+                    axios.get('http://localhost:4000/api/get-colors'),
+                    axios.get('http://localhost:4000/api/get-approaches')
                 ]);
 
                 // Assuming API responses are arrays
@@ -40,6 +42,7 @@ const GraphVisualization = () => {
                 setReferences(referencesRes.data);
                 setTags(tagsRes.data);
                 setColors(colorsRes.data);
+                setApproaches(approachesRes.data);
             } catch (error) {
                 console.error('Error fetching data:', error);
             }
@@ -682,37 +685,41 @@ const nodeText = node.append('text')
             </form>
 
             <form onSubmit={(e) => { e.preventDefault(); handleFilterByColor(); }}>
-    <fieldset>
-        <legend>Filter by Color</legend>
-        <div style={{ display: 'flex', flexWrap: 'wrap' }}>
-            {colors.map(c => (
-                <span key={c} style={{ margin: '0 10px 10px 0', display: 'flex', alignItems: 'center' }}>
-                    <input 
-                        type="checkbox" 
-                        value={c} 
-                        checked={color.includes(c)}
-                        onChange={(e) => {
-                            const selected = e.target.checked;
-                            setColor(prev => 
-                                selected 
-                                    ? [...prev, c] 
-                                    : prev.filter(item => item !== c)
-                            );
-                        }}
-                    />
-                    <div 
-                        style={{ 
-                            width: '20px', 
-                            height: '20px', 
-                            backgroundColor: c, 
-                            marginLeft: '5px',
-                            border: '1px solid #000'
-                        }} 
-                    />
+            <fieldset>
+    <legend>Filter by Color</legend>
+    <div style={{ display: 'flex', flexWrap: 'wrap' }}>
+        {colors.map((c, index) => (
+            <span key={c} style={{ margin: '0 10px 10px 0', display: 'flex', alignItems: 'center' }}>
+                <input 
+                    type="checkbox" 
+                    value={c} 
+                    checked={color.includes(c)}
+                    onChange={(e) => {
+                        const selected = e.target.checked;
+                        setColor(prev => 
+                            selected 
+                                ? [...prev, c] 
+                                : prev.filter(item => item !== c)
+                        );
+                    }}
+                />
+                <div 
+                    style={{ 
+                        width: '20px', 
+                        height: '20px', 
+                        backgroundColor: c, 
+                        marginLeft: '5px',
+                        border: '1px solid #000'
+                    }} 
+                />
+                <span style={{ marginLeft: '5px' }}>
+                    {approaches[index]}
                 </span>
-            ))}
-        </div>
-    </fieldset>
+            </span>
+        ))}
+    </div>
+</fieldset>
+
     <button type="submit">Apply</button>
 </form>
 
