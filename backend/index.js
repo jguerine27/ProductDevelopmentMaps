@@ -158,16 +158,22 @@ app.get('/api/get-authors', async (req, res) => {
         await session.close();
     }
 });
-
 // Fetch all tags
 app.get('/api/get-tags', async (req, res) => {
     const session = driver.session();
     try {
         const result = await session.run(
-            'MATCH (n) WHERE n.tags IS NOT NULL RETURN DISTINCT n.tags AS tags'
+            'MATCH (n) WHERE n.tags IS NOT NULL RETURN n.tags AS tags'
         );
-        const tags = result.records.map(record => record.get('tags')).flat();
-        res.json(tags);
+        
+        // Flatten the array of tags and remove duplicates
+        const tags = result.records
+            .map(record => record.get('tags'))
+            .flat();
+        
+        const uniqueTags = Array.from(new Set(tags));
+        
+        res.json(uniqueTags);
     } catch (error) {
         console.error('Error fetching tags:', error);
         res.status(500).json({ error: 'Failed to fetch tags' });
@@ -175,6 +181,7 @@ app.get('/api/get-tags', async (req, res) => {
         await session.close();
     }
 });
+
 
 // Fetch all colors
 app.get('/api/get-colors', async (req, res) => {

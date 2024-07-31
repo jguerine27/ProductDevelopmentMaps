@@ -540,8 +540,11 @@ const nodeText = node.append('text')
     };
     
     const handleFilterByColor = () => {
-        console.log(color)
-        fetchFilteredData('http://localhost:4000/api/filter/color/' + color);
+        // Assuming color is an array of color strings
+        const sanitizedColors = color.map(c => c.replace('#', ''));
+        const sanitizedColorString = sanitizedColors.join(',');
+    
+        fetchFilteredData('http://localhost:4000/api/filter/color/' + sanitizedColorString);
     };
     
 
@@ -679,32 +682,40 @@ const nodeText = node.append('text')
             </form>
 
             <form onSubmit={(e) => { e.preventDefault(); handleFilterByColor(); }}>
-            <fieldset>
-    <legend>Filter by Color</legend>
-    <div style={{ display: 'flex', flexWrap: 'wrap' }}>
-        {colors.map(c => (
-            <span key={c} style={{ margin: '0 10px 10px 0' }}>
-                <input 
-                    type="checkbox" 
-                    value={c} 
-                    checked={color.includes(c)}
-                    onChange={(e) => {
-                        const selected = e.target.checked;
-                        setColor(prev => 
-                            selected 
-                                ? [...prev, c] 
-                                : prev.filter(item => item !== c)
-                        );
-                    }}
-                />
-                {c}
-            </span>
-        ))}
-    </div>
-</fieldset>
+    <fieldset>
+        <legend>Filter by Color</legend>
+        <div style={{ display: 'flex', flexWrap: 'wrap' }}>
+            {colors.map(c => (
+                <span key={c} style={{ margin: '0 10px 10px 0', display: 'flex', alignItems: 'center' }}>
+                    <input 
+                        type="checkbox" 
+                        value={c} 
+                        checked={color.includes(c)}
+                        onChange={(e) => {
+                            const selected = e.target.checked;
+                            setColor(prev => 
+                                selected 
+                                    ? [...prev, c] 
+                                    : prev.filter(item => item !== c)
+                            );
+                        }}
+                    />
+                    <div 
+                        style={{ 
+                            width: '20px', 
+                            height: '20px', 
+                            backgroundColor: c, 
+                            marginLeft: '5px',
+                            border: '1px solid #000'
+                        }} 
+                    />
+                </span>
+            ))}
+        </div>
+    </fieldset>
+    <button type="submit">Apply</button>
+</form>
 
-                <button type="submit">Apply</button>
-            </form>
             <svg ref={svgRef}></svg>
             <div ref={tooltipRef}></div>
             <button onClick={toggleView}>Toggle View</button>
