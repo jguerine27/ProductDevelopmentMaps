@@ -289,22 +289,24 @@ app.get('/api/filter/keyword/:keyword', async (req, res) => {
     const session = driver.session();
     try {
         const query = `
-            MATCH (n)
-            WHERE 
+            MATCH (n)-[r]->(m)
+             WHERE 
                 toLower(n.name) CONTAINS toLower($keyword) 
                 OR any(label IN labels(n) WHERE toLower(label) CONTAINS toLower($keyword))
-                OR any(prop IN keys(n) WHERE 
-                    (apoc.meta.type(n[prop]) = 'STRING' AND toLower(n[prop]) CONTAINS toLower($keyword)))
-            OPTIONAL MATCH (n)-[r]->(m)
-            WHERE 
-                (apoc.meta.type(r.name) = 'STRING' AND toLower(r.name) CONTAINS toLower($keyword)) 
-                OR any(prop IN keys(r) WHERE 
-                    (apoc.meta.type(r[prop]) = 'STRING' AND toLower(r[prop]) CONTAINS toLower($keyword)))
-                OR (apoc.meta.type(m.name) = 'STRING' AND toLower(m.name) CONTAINS toLower($keyword))
                 OR any(label IN labels(m) WHERE toLower(label) CONTAINS toLower($keyword))
-                OR any(prop IN keys(m) WHERE 
-                    (apoc.meta.type(m[prop]) = 'STRING' AND toLower(m[prop]) CONTAINS toLower($keyword)))
-            RETURN DISTINCT n, labels(n) as nLabels, r, m, labels(m) as mLabels
+             OPTIONAL MATCH (m)
+             WHERE 
+                any(label IN labels(m) WHERE toLower(label) CONTAINS toLower($keyword))
+             RETURN DISTINCT n, labels(n) AS nLabels, r, m, labels(m) AS mLabels
+             UNION
+             MATCH (n)
+             WHERE
+                toLower(n.name) CONTAINS toLower($keyword)
+                OR any(label IN labels(n) WHERE toLower(label) CONTAINS toLower($keyword))
+             OPTIONAL MATCH (n)-[r]->(m)
+             WHERE
+                m IS NULL OR any(label IN labels(m) WHERE toLower(label) CONTAINS toLower($keyword))
+             RETURN DISTINCT n, labels(n) AS nLabels, r, m, labels(m) AS mLabels
         `;
 
         const nodesResult = await session.run(query, { keyword });
