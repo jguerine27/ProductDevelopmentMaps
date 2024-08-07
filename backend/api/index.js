@@ -7,7 +7,7 @@ const bodyParser = require('body-parser');
 
 
 // Replace with the path to your service account key file
-const serviceAccount = require('../dynacart-ba40e-firebase-adminsdk-kutg0-4344c5ba7f.json');
+const serviceAccount = require('./dynacart-ba40e-firebase-adminsdk-kutg0-4344c5ba7f.json');
 
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
@@ -25,38 +25,50 @@ app.get('/orcid/login', (req, res) => {
   const authorizationUrl = `https://orcid.org/oauth/authorize?client_id=${ORCID_CLIENT_ID}&response_type=code&scope=/authenticate&redirect_uri=${ORCID_REDIRECT_URI}`;
   res.redirect(authorizationUrl);
 });
-
 app.get('/orcid/callback', async (req, res) => {
-  const { code } = req.query;
-
-  try {
-    const tokenResponse = await axios.post('https://orcid.org/oauth/token', {
-      client_id: ORCID_CLIENT_ID,
-      client_secret: ORCID_CLIENT_SECRET,
-      grant_type: 'authorization_code',
-      code,
-      redirect_uri: ORCID_REDIRECT_URI
-    });
-
-    const { access_token } = tokenResponse.data;
-
-    // Retrieve ORCID iD and other user information
-    const userResponse = await axios.get('https://orcid.org/v2.1/userinfo', {
-      headers: { Authorization: `Bearer ${access_token}` }
-    });
-
-    const orcidId = userResponse.data.sub;
-
-    // Create a custom token for Firebase authentication
-    const firebaseToken = await admin.auth().createCustomToken(orcidId);
-
-    // Redirect back to your frontend with the custom token
-    res.redirect(`http://localhost:3000/orcid/callback?firebaseToken=${firebaseToken}`);
-  } catch (error) {
-    console.error('Error during ORCID authentication:', error);
-    res.status(500).send('Authentication failed');
-  }
-});
+    const { code } = req.query;
+  
+    try {
+      const tokenResponse = await axios.post('https://orcid.org/oauth/token', {
+        client_id: ORCID_CLIENT_ID,
+        client_secret: ORCID_CLIENT_SECRET,
+        grant_type: 'authorization_code',
+        code,
+        redirect_uri: ORCID_REDIRECT_URI
+      });
+  
+      const { access_token } = tokenResponse.data;
+  
+      // Retrieve ORCID iD and other user information
+      const userResponse = await axios.get('https://orcid.org/v2.1/userinfo', {
+        headers: { Authorization: `Bearer ${access_token}` }
+      });
+  
+      const orcidId = userResponse.data.sub;
+  
+      // Check if the user exists in Firebase
+      let userRecord;
+      try {
+        userRecord = await admin.auth().getUser(orcidId);
+      } catch (error) {
+        // User does not exist, create a new user
+        userRecord = await admin.auth().createUser({
+          uid: orcidId,
+          displayName: userResponse.data.name || 'ORCID User',
+          email: userResponse.data.email || null,
+        });
+      }
+  
+      // Create a custom token for Firebase authentication
+      const firebaseToken = await admin.auth().createCustomToken(orcidId);
+  
+      // Redirect back to your frontend with the custom token
+      res.redirect(`http://localhost:3000/orcid/callback?firebaseToken=${firebaseToken}`);
+    } catch (error) {
+      console.error('Error during ORCID authentication:', error);
+      res.status(500).send('Authentication failed');
+    }
+  });
 
 const port = process.env.PORT || 4000;
 
