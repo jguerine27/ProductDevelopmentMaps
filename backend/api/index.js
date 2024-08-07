@@ -19,7 +19,7 @@ app.use(bodyParser.json());
 
 const ORCID_CLIENT_ID = process.env.ORCID_CLIENT_ID;
 const ORCID_CLIENT_SECRET = process.env.ORCID_CLIENT_SECRET;
-const ORCID_REDIRECT_URI = process.env.ORCID_REDIRECT_URI; // Change to your actual redirect URI
+const ORCID_REDIRECT_URI = 'https://maps-frontend-git-orcid-api-muhammad-bilals-projects-bd7acfbb.vercel.app/home'; // Change to your actual redirect URI
 
 console.log(ORCID_CLIENT_ID)
 app.get('/orcid/login', (req, res) => {
