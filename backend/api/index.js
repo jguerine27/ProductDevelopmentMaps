@@ -2,12 +2,67 @@ const express = require('express');
 const neo4j = require('neo4j-driver');
 const cors = require('cors');
 require('dotenv').config();
+const admin = require('firebase-admin');
+const bodyParser = require('body-parser');
+
+
+// Replace with the path to your service account key file
+const serviceAccount = require('./dynacart-ba40e-firebase-adminsdk-kutg0-4344c5ba7f.json');
+
+admin.initializeApp({
+  credential: admin.credential.cert(serviceAccount),
+  databaseURL: 'https://console.firebase.google.com/u/0/project/dynacart-ba40e/database/dynacart-ba40e-default-rtdb/data/~2F'
+});
 
 const app = express();
+app.use(bodyParser.json());
+
+const ORCID_CLIENT_ID = process.env.ORCID_CLIENT_ID;
+const ORCID_CLIENT_SECRET = process.env.ORCID_CLIENT_SECRET;
+const ORCID_REDIRECT_URI = process.env.ORCID_REDIRECT_URI; // Change to your actual redirect URI
+
+app.get('/orcid/login', (req, res) => {
+  const authorizationUrl = `https://orcid.org/oauth/authorize?client_id=${ORCID_CLIENT_ID}&response_type=code&scope=/authenticate&redirect_uri=${ORCID_REDIRECT_URI}`;
+  res.redirect(authorizationUrl);
+});
+
+app.get('/orcid/callback', async (req, res) => {
+  const { code } = req.query;
+
+  try {
+    const tokenResponse = await axios.post('https://orcid.org/oauth/token', {
+      client_id: ORCID_CLIENT_ID,
+      client_secret: ORCID_CLIENT_SECRET,
+      grant_type: 'authorization_code',
+      code,
+      redirect_uri: ORCID_REDIRECT_URI
+    });
+
+    const { access_token } = tokenResponse.data;
+
+    // Retrieve ORCID iD and other user information
+    const userResponse = await axios.get('https://orcid.org/v2.1/userinfo', {
+      headers: { Authorization: `Bearer ${access_token}` }
+    });
+
+    const orcidId = userResponse.data.sub;
+
+    // Create a custom token for Firebase authentication
+    const firebaseToken = await admin.auth().createCustomToken(orcidId);
+
+    // Redirect back to your frontend with the custom token
+    res.redirect(`http://localhost:3000/orcid/callback?firebaseToken=${firebaseToken}`);
+  } catch (error) {
+    console.error('Error during ORCID authentication:', error);
+    res.status(500).send('Authentication failed');
+  }
+});
+
 const port = process.env.PORT || 4000;
 
 app.use(cors());
 app.use(express.json());
+
 
 const URI = process.env.NEO4J_URI;
 const USER = process.env.NEO4J_USER;
@@ -628,6 +683,118 @@ app.get('/api/filter/color/:color', async (req, res) => {
         await session.close();
     }
 });
+// Apply all filters API
+app.get('/api/filter/all', async (req, res) => {
+    const { keyword, year, startYear, endYear, author, tags, color } = req.query;
+
+    console.log('keyword', keyword);
+    console.log('year', year);
+    console.log('startYear', startYear);
+    console.log('endYear', endYear);
+    console.log('author', author);
+    console.log('tags', tags);
+    console.log('color', color);
+
+    const session = driver.session();
+    
+    try {
+        const queryParts = [];
+        const params = {};
+
+        // Keyword filter
+        if (keyword && keyword.length > 0) {
+            queryParts.push(`
+                (
+                    toLower(n.name) CONTAINS toLower($keyword) 
+                    OR any(label IN labels(n) WHERE toLower(label) CONTAINS toLower($keyword))
+                    OR any(label IN labels(m) WHERE toLower(label) CONTAINS toLower($keyword))
+                )
+            `);
+            params.keyword = keyword;
+        }
+
+        // Year filter
+        if (year && year.length > 0) {
+            const yearArray = Array.isArray(year) ? year : year.split(',').map(y => y.trim());
+            queryParts.push(`r.year IN $yearArray`);
+            params.yearArray = yearArray;
+        }
+
+        // Year range filter
+        if (startYear && startYear.length > 0 && endYear && endYear.length > 0) {
+            queryParts.push(`r.year >= $startYear AND r.year <= $endYear`);
+            params.startYear = startYear;
+            params.endYear = endYear;
+        }
+
+        // Author/reference filter
+        if (author && author.length > 0) {
+            const authorArray = Array.isArray(author) ? author : author.split(',').map(a => a.trim().toLowerCase());
+            queryParts.push(`ANY(a IN $authorArray WHERE toLower(r.author) CONTAINS a OR toLower(r.reference) CONTAINS a)`);
+            params.authorArray = authorArray;
+        }
+
+        // Tag filter
+        if (tags && tags.length > 0) {
+            const tagArray = Array.isArray(tags) ? tags : tags.split(',').map(t => t.trim().toLowerCase());
+            queryParts.push(`ANY(tag IN n.tags WHERE ANY(t IN $tagArray WHERE toLower(tag) CONTAINS toLower(t)))`);
+            params.tagArray = tagArray;
+        }
+
+        // Color filter
+        if (color && color.length > 0) {
+            const colorArray = Array.isArray(color) ? color : color.split(',').map(c => c.trim().toLowerCase());
+            queryParts.push(`ANY(c IN $colorArray WHERE toLower(n.color) = toLower(c))`);
+            params.colorArray = colorArray;
+        }
+
+        // Combine all query parts
+        const query = `
+            MATCH (n)-[r]->(m)
+            ${queryParts.length > 0 ? `WHERE ${queryParts.join(' AND ')}` : ''}
+            OPTIONAL MATCH (m)
+            RETURN DISTINCT n, labels(n) AS nLabels, r, m, labels(m) AS mLabels
+        `;
+        console.log(query);
+        const result = await session.run(query, params);
+
+        const nodes = new Map();
+        result.records.forEach(record => {
+            const startNode = record.get('n').properties;
+            const startNodeLabel = record.get('nLabels')[0];
+            const endNode = record.get('m') ? record.get('m').properties : null;
+            const endNodeLabel = record.get('mLabels') ? record.get('mLabels')[0] : null;
+
+            if (!nodes.has(startNode.name)) {
+                nodes.set(startNode.name, { ...startNode, label: startNodeLabel });
+            }
+
+            if (endNode && !nodes.has(endNode.name)) {
+                nodes.set(endNode.name, { ...endNode, label: endNodeLabel });
+            }
+        });
+
+        const relationships = result.records
+            .filter(record => record.get('r'))
+            .map(record => ({
+                source: record.get('n').properties.name,
+                target: record.get('m').properties.name,
+                name: record.get('r').properties.name,
+                type: record.get('r').properties.type,
+                year: record.get('r').properties.year
+            }));
+
+        res.json({ nodes: Array.from(nodes.values()), relationships });
+    } catch (error) {
+        console.error('Error applying filters:', error);
+        res.status(500).json({ error: 'Failed to apply filters' });
+    } finally {
+        await session.close();
+    }
+});
+
+
+
 
 app.listen(port, () => {
     console.log(`Server is running on http://localhost:${port}`);
