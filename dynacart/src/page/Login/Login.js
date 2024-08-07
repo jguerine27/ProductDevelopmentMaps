@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { signInWithCustomToken } from 'firebase/auth';
-import { signInWithEmailAndPassword } from 'firebase/auth';
+import { signInWithCustomToken, signInWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '../../firebase';
 import { NavLink, useNavigate } from 'react-router-dom';
 import './Login.css'; // Import the CSS file
@@ -34,7 +33,7 @@ const Login = () => {
     };
 
     const onOrcidLogin = () => {
-        window.location.href = 'https://maps-backend-git-orcid-api-muhammad-bilals-projects-bd7acfbb.vercel.app//orcid/login'; // Redirect to your server's ORCID login endpoint
+        window.location.href = 'http://localhost:4000/orcid/login'; // Redirect to your server's ORCID login endpoint
     };
 
     const handleCustomTokenLogin = async (firebaseToken) => {
