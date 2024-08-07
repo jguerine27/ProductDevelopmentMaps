@@ -33,7 +33,7 @@ const Login = () => {
     };
 
     const onOrcidLogin = () => {
-        window.location.href = 'http://localhost:4000/orcid/login'; // Redirect to your server's ORCID login endpoint
+        window.location.href = 'https://maps-backend-hqytucreb-muhammad-bilals-projects-bd7acfbb.vercel.app//orcid/login'; // Redirect to your server's ORCID login endpoint
     };
 
     const handleCustomTokenLogin = async (firebaseToken) => {
