@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import * as d3 from 'd3';
 import axios from 'axios';
+//import { set } from '../../../../backend';
 let detailedView = false;
 
 const GraphVisualization = () => {
@@ -18,13 +19,31 @@ const GraphVisualization = () => {
     const [tag, setTag] = useState('');
     const [color, setColor] = useState('');
 
-
+    const [years, setYears] = useState([]);
+    const [references, setReferences] = useState([]);
+    const [tags, setTags] = useState([]);
+    const [colors, setColors] = useState([]);
+    const [approaches, setApproaches] = useState([]);
 
     useEffect(() => {
         const fetchData = async () => {
             try {
                 const response = await axios.get('http://localhost:4000/api/nodes-relationships');
                 setData(response.data);
+                const [yearsRes, referencesRes, tagsRes, colorsRes, approachesRes] = await Promise.all([
+                    axios.get('http://localhost:4000/api/get-years'),
+                    axios.get('http://localhost:4000/api/get-authors'),
+                    axios.get('http://localhost:4000/api/get-tags'),
+                    axios.get('http://localhost:4000/api/get-colors'),
+                    axios.get('http://localhost:4000/api/get-approaches')
+                ]);
+
+                // Assuming API responses are arrays
+                setYears(yearsRes.data);
+                setReferences(referencesRes.data);
+                setTags(tagsRes.data);
+                setColors(colorsRes.data);
+                setApproaches(approachesRes.data);
             } catch (error) {
                 console.error('Error fetching data:', error);
             }
@@ -473,7 +492,7 @@ const nodeText = node.append('text')
             };
         }
     };
-
+    
     // Function to handle dropdown change
     const handleMapChange = async event => {
         setSelectedMap(event.target.value);
@@ -508,23 +527,31 @@ const nodeText = node.append('text')
     };
     
     const handleFilterByYear = () => {
-        fetchFilteredData('http://localhost:4000/api/filter/year', { year });
+        console.log(year);
+        fetchFilteredData('http://localhost:4000/api/filter/year/' + year );
     };
     
     const handleFilterByYearRange = () => {
+        console.log(startYear, endYear);
         fetchFilteredData('http://localhost:4000/api/filter/yearrange', { startYear, endYear });
     };
     
     const handleFilterByAuthor = () => {
+        console.log(author);
         fetchFilteredData('http://localhost:4000/api/filter/author-reference/' + author);
     };
     
     const handleFilterByTag = () => {
+        console.log(tag)
         fetchFilteredData('http://localhost:4000/api/filter/tag/' + tag);
     };
     
     const handleFilterByColor = () => {
-        fetchFilteredData('http://localhost:4000/api/filter/color/' + color);
+        // Assuming color is an array of color strings
+        const sanitizedColors = color.map(c => c.replace('#', ''));
+        const sanitizedColorString = sanitizedColors.join(',');
+        console.log(sanitizedColorString);
+        fetchFilteredData('http://localhost:4000/api/filter/color/' + sanitizedColorString);
     };
     
 
@@ -532,12 +559,62 @@ const nodeText = node.append('text')
     const distinctMaps = [...new Set(data.nodes.map(node => node.map))];
 
     const toggleView = () => {
-    handleMapChange({ target: { value: selectedMap } });
-    detailedView = !detailedView;
-    console.log(detailedView);
-
-     }
-     return (
+        handleMapChange({ target: { value: selectedMap } });
+        detailedView = !detailedView;
+        console.log(detailedView);
+    };
+    const handleApplyAllFilters = async () => {
+        try {
+            const response = await axios.get('http://localhost:4000/api/filter/all', {
+                params: {
+                    keyword: keyword || "",
+                    year: year.length ? year : "",
+                    startYear: startYear || "",
+                    endYear: endYear || "",
+                    author: author.length ? author : "",
+                    tag: tag.length ? tag : "",
+                    color: color.length ? color : "",
+                }
+            });
+            console.log(response.data);
+            // Update your graph visualization with the returned nodes and relationships
+            setData(response.data);
+        } catch (error) {
+            console.error('Error applying all filters:', error);
+        }
+    };
+    const handleResetFilters = async () => {
+        // Reset all filter states
+        setKeyword('');
+        setYear([]);
+        setStartYear('');
+        setEndYear('');
+        setAuthor([]);
+        setTag([]);
+        setColor([]);
+    
+        try {
+            // Fetch all nodes and relationships without any filters
+            const response = await axios.get('http://localhost:4000/api/filter/all', {
+                params: {
+                    keyword: '',
+                    year: '',
+                    startYear: '',
+                    endYear: '',
+                    author: '',
+                    tags: '',
+                    color: ''
+                }
+            });
+            const { nodes, relationships } = response.data;
+            // Update your graph visualization with the returned nodes and relationships
+            setData({ nodes, relationships });
+        } catch (error) {
+            console.error('Error resetting filters:', error);
+        }
+    };
+    
+    return (
         <div>
             <h2>Graph Visualization</h2>
             <div>
@@ -550,75 +627,158 @@ const nodeText = node.append('text')
                 </select>
             </div>
             <form onSubmit={(e) => { e.preventDefault(); handleFilterByKeyword(); }}>
-            <input 
-                type="text" 
-                value={keyword} 
-                onChange={(e) => setKeyword(e.target.value)} 
-                placeholder="Filter by keyword" 
-            />
-            <button type="submit">Apply</button>
-        </form>
-
-        <form onSubmit={(e) => { e.preventDefault(); handleFilterByYear(); }}>
-            <input 
-                type="text" 
-                value={year} 
-                onChange={(e) => setYear(e.target.value)} 
-                placeholder="Filter by year" 
-            />
-            <button type="submit">Apply</button>
-        </form>
-
-        <form onSubmit={(e) => { e.preventDefault(); handleFilterByYearRange(); }}>
-            <input 
-                type="text" 
-                value={startYear} 
-                onChange={(e) => setStartYear(e.target.value)} 
-                placeholder="Filter by start year" 
-            />
-            <input 
-                type="text" 
-                value={endYear} 
-                onChange={(e) => setEndYear(e.target.value)} 
-                placeholder="Filter by end year" 
-            />
-            <button type="submit">Apply</button>
-        </form>
-
-        <form onSubmit={(e) => { e.preventDefault(); handleFilterByAuthor(); }}>
-            <input 
-                type="text" 
-                value={author} 
-                onChange={(e) => setAuthor(e.target.value)} 
-                placeholder="Filter by author/reference" 
-            />
-            <button type="submit">Apply</button>
-        </form>
-
-        <form onSubmit={(e) => { e.preventDefault(); handleFilterByTag(); }}>
-            <input 
-                type="text" 
-                value={tag} 
-                onChange={(e) => setTag(e.target.value)} 
-                placeholder="Filter by tag" 
-            />
-            <button type="submit">Apply</button>
-        </form>
-
-        <form onSubmit={(e) => { e.preventDefault(); handleFilterByColor(); }}>
-            <input 
-                type="text" 
-                value={color} 
-                onChange={(e) => setColor(e.target.value)} 
-                placeholder="Filter by color" 
-            />
-            <button type="submit">Apply</button>
-        </form>
+                <input 
+                    type="text" 
+                    value={keyword} 
+                    onChange={(e) => setKeyword(e.target.value)} 
+                    placeholder="Filter by keyword" 
+                />
+                <button type="submit">Apply</button>
+            </form>
+    
+            <form onSubmit={(e) => { e.preventDefault(); handleFilterByYear(); }}>
+                <fieldset>
+                    <legend>Filter by Year</legend>
+                    <div style={{ display: 'flex', flexWrap: 'wrap' }}>
+                        {years.map(y => (
+                            <span key={y} style={{ margin: '0 10px 10px 0' }}>
+                                <input 
+                                    type="checkbox" 
+                                    value={y} 
+                                    checked={year.includes(y)}
+                                    onChange={(e) => {
+                                        const selected = e.target.checked;
+                                        setYear(prev => 
+                                            selected 
+                                                ? [...prev, y] 
+                                                : prev.filter(item => item !== y)
+                                        );
+                                    }}
+                                />
+                                {y}
+                            </span>
+                        ))}
+                    </div>
+                </fieldset>
+                <button type="submit">Apply</button>
+            </form>
+    
+            <form onSubmit={(e) => { e.preventDefault(); handleFilterByYearRange(); }}>
+                <input 
+                    type="text" 
+                    value={startYear} 
+                    onChange={(e) => setStartYear(e.target.value)} 
+                    placeholder="Filter by start year" 
+                />
+                <input 
+                    type="text" 
+                    value={endYear} 
+                    onChange={(e) => setEndYear(e.target.value)} 
+                    placeholder="Filter by end year" 
+                />
+                <button type="submit">Apply</button>
+            </form>
+    
+            <form onSubmit={(e) => { e.preventDefault(); handleFilterByAuthor(); }}>
+                <fieldset>
+                    <legend>Filter by Author/Reference</legend>
+                    <div style={{ display: 'flex', flexWrap: 'wrap' }}>
+                        {references.map(ref => (
+                            <span key={ref} style={{ margin: '0 10px 10px 0' }}>
+                                <input 
+                                    type="checkbox" 
+                                    value={ref} 
+                                    checked={author.includes(ref)}
+                                    onChange={(e) => {
+                                        const selected = e.target.checked;
+                                        setAuthor(prev => 
+                                            selected 
+                                                ? [...prev, ref] 
+                                                : prev.filter(item => item !== ref)
+                                        );
+                                    }}
+                                />
+                                {ref}
+                            </span>
+                        ))}
+                    </div>
+                </fieldset>
+                <button type="submit">Apply</button>
+            </form>
+    
+            <form onSubmit={(e) => { e.preventDefault(); handleFilterByTag(); }}>
+                <fieldset>
+                    <legend>Filter by Tag</legend>
+                    <div style={{ display: 'flex', flexWrap: 'wrap' }}>
+                        {tags.map(t => (
+                            <span key={t} style={{ margin: '0 10px 10px 0' }}>
+                                <input 
+                                    type="checkbox" 
+                                    value={t} 
+                                    checked={tag.includes(t)}
+                                    onChange={(e) => {
+                                        const selected = e.target.checked;
+                                        setTag(prev => 
+                                            selected 
+                                                ? [...prev, t] 
+                                                : prev.filter(item => item !== t)
+                                        );
+                                    }}
+                                />
+                                {t}
+                            </span>
+                        ))}
+                    </div>
+                </fieldset>
+                <button type="submit">Apply</button>
+            </form>
+    
+            <form onSubmit={(e) => { e.preventDefault(); handleFilterByColor(); }}>
+                <fieldset>
+                    <legend>Filter by Color</legend>
+                    <div style={{ display: 'flex', flexWrap: 'wrap' }}>
+                        {colors.map((c, index) => (
+                            <span key={c} style={{ margin: '0 10px 10px 0', display: 'flex', alignItems: 'center' }}>
+                                <input 
+                                    type="checkbox" 
+                                    value={c} 
+                                    checked={color.includes(c)}
+                                    onChange={(e) => {
+                                        const selected = e.target.checked;
+                                        setColor(prev => 
+                                            selected 
+                                                ? [...prev, c] 
+                                                : prev.filter(item => item !== c)
+                                        );
+                                    }}
+                                />
+                                <div 
+                                    style={{ 
+                                        width: '20px', 
+                                        height: '20px', 
+                                        backgroundColor: c, 
+                                        marginLeft: '5px',
+                                        border: '1px solid #000'
+                                    }} 
+                                />
+                                <span style={{ marginLeft: '5px' }}>
+                                    {approaches[index]}
+                                </span>
+                            </span>
+                        ))}
+                    </div>
+                </fieldset>
+                <button type="submit">Apply</button>
+            </form>
+    
+            <button onClick={handleApplyAllFilters}>Apply All</button>
+            <button onClick={handleResetFilters}>Reset Filters</button>
             <svg ref={svgRef}></svg>
             <div ref={tooltipRef}></div>
             <button onClick={toggleView}>Toggle View</button>
         </div>
     );
+    
     
 };
 
