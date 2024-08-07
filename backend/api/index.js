@@ -63,7 +63,7 @@ app.get('/orcid/callback', async (req, res) => {
       const firebaseToken = await admin.auth().createCustomToken(orcidId);
   
       // Redirect back to your frontend with the custom token
-      res.redirect(`http://localhost:3000/orcid/callback?firebaseToken=${firebaseToken}`);
+      res.redirect(`https://maps-frontend-git-orcid-api-muhammad-bilals-projects-bd7acfbb.vercel.app//orcid/callback?firebaseToken=${firebaseToken}`);
     } catch (error) {
       console.error('Error during ORCID authentication:', error);
       res.status(500).send('Authentication failed');
