@@ -21,6 +21,7 @@ const ORCID_CLIENT_ID = process.env.ORCID_CLIENT_ID;
 const ORCID_CLIENT_SECRET = process.env.ORCID_CLIENT_SECRET;
 const ORCID_REDIRECT_URI = process.env.ORCID_REDIRECT_URI; // Change to your actual redirect URI
 
+console.log(ORCID_CLIENT_ID)
 app.get('/orcid/login', (req, res) => {
   const authorizationUrl = `https://orcid.org/oauth/authorize?client_id=${ORCID_CLIENT_ID}&response_type=code&scope=/authenticate&redirect_uri=${ORCID_REDIRECT_URI}`;
   res.redirect(authorizationUrl);
