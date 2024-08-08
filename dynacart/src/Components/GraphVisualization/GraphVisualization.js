@@ -1,7 +1,10 @@
 import React, { useEffect, useState, useRef } from 'react';
 import * as d3 from 'd3';
 import axios from 'axios';
+import './GraphVisualization.css'
+//import { set } from '../../../../backend';
 let detailedView = false;
+
 
 const GraphVisualization = () => {
     const [data, setData] = useState({ nodes: [], relationships: [] });
@@ -9,11 +12,48 @@ const GraphVisualization = () => {
     const svgRef = useRef(null); // Ref to SVG element
     const tooltipRef = useRef(null); // Ref to tooltip element
 
+    //Filter capabilities
+    const [keyword, setKeyword] = useState('');
+    const [year, setYear] = useState('');
+    const [startYear, setStartYear] = useState('');
+    const [endYear, setEndYear] = useState('');
+    const [author, setAuthor] = useState('');
+    const [tag, setTag] = useState('');
+    const [color, setColor] = useState('');
+    const [isYearInputActive, setIsYearInputActive] = useState(false);
+    const [isYearRangeInputActive, setIsYearRangeInputActive] = useState(false);
+
+    // Update the state based on inputs
+    useEffect(() => {
+        setIsYearInputActive(year.length > 0);
+        setIsYearRangeInputActive(startYear !== '' || endYear !== '');
+    }, [year, startYear, endYear]);
+
+    const [years, setYears] = useState([]);
+    const [references, setReferences] = useState([]);
+    const [tags, setTags] = useState([]);
+    const [colors, setColors] = useState([]);
+    const [approaches, setApproaches] = useState([]);
+
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const response = await axios.get('http://localhost:4000/api/nodes-relationships');
+                const response = await axios.get(process.env.REACT_APP_BACKEND+'/api/nodes-relationships');
                 setData(response.data);
+                const [yearsRes, referencesRes, tagsRes, colorsRes, approachesRes] = await Promise.all([
+                    axios.get(process.env.REACT_APP_BACKEND+'/api/get-years'),
+                    axios.get(process.env.REACT_APP_BACKEND+'/api/get-authors'),
+                    axios.get(process.env.REACT_APP_BACKEND+'/api/get-tags'),
+                    axios.get(process.env.REACT_APP_BACKEND+'/api/get-colors'),
+                    axios.get(process.env.REACT_APP_BACKEND+'/api/get-approaches')
+                ]);
+
+                // Assuming API responses are arrays
+                setYears(yearsRes.data);
+                setReferences(referencesRes.data);
+                setTags(tagsRes.data);
+                setColors(colorsRes.data);
+                setApproaches(approachesRes.data);
             } catch (error) {
                 console.error('Error fetching data:', error);
             }
@@ -24,13 +64,20 @@ const GraphVisualization = () => {
 
     useEffect(() => {
         if (data.nodes.length > 0) {
+            console.log(data)
             drawGraph(data);
+                // You can also update the state or perform other actions here
+           
         }
+       
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [data, selectedMap]);
 
+    
+
     const drawGraph = ({ nodes, relationships }) => {
-        const width = 800;
+
+        const width = window.innerWidth - 50;
         const height = 800; // Increased height for four rows
         const margin = 20; // Margin to keep nodes within bounds
 
@@ -462,30 +509,157 @@ const nodeText = node.append('text')
             };
         }
     };
-
-
+    
     // Function to handle dropdown change
     const handleMapChange = async event => {
         setSelectedMap(event.target.value);
         try {
-            const response = await axios.get('http://localhost:4000/api/nodes-relationships');
+            const response = await axios.get(process.env.REACT_APP_BACKEND+'/api/nodes-relationships');
             setData(response.data);
         } catch (error) {
             console.error('Error fetching data:', error);
         }
     };
 
+    //Filter
+    const fetchFilteredData = async (url, params) => {
+        try {
+            const response = await axios.get(url, { params });
+            const data = response.data;
+            
+            if (data.nodes.length === 0) {
+                showPopup('No results found! Try again');
+            }
+            else{
+            setData(data)
+            }
+        } catch (error) {
+            console.error('Error fetching filtered data:', error);
+        }
+    };
+    
+    const handleFilterByKeyword = () => {
+        console.log(keyword);
+        fetchFilteredData(process.env.REACT_APP_BACKEND+'/api/filter/keyword/' + keyword);
+    };
+    
+    const handleFilterByYear = () => {
+        console.log(year);
+        fetchFilteredData(process.env.REACT_APP_BACKEND+'/api/filter/year/' + year );
+    };
+    
+    const handleFilterByYearRange = () => {
+        console.log(startYear, endYear);
+        fetchFilteredData(process.env.REACT_APP_BACKEND+'/api/filter/yearrange', { startYear, endYear });
+    };
+    
+    const handleFilterByAuthor = () => {
+        console.log(author);
+        fetchFilteredData(process.env.REACT_APP_BACKEND+'/api/filter/author-reference/' + author);
+    };
+    
+    const handleFilterByTag = () => {
+        console.log(tag)
+        fetchFilteredData(process.env.REACT_APP_BACKEND+'/api/filter/tag/' + tag);
+    };
+    
+    const handleFilterByColor = () => {
+        // Assuming color is an array of color strings
+        const sanitizedColors = color.map(c => c.replace('#', ''));
+        const sanitizedColorString = sanitizedColors.join(',');
+        console.log(sanitizedColorString);
+        fetchFilteredData(process.env.REACT_APP_BACKEND+'/api/filter/color/' + sanitizedColorString);
+    };
+    
+
     // Get distinct map values
     const distinctMaps = [...new Set(data.nodes.map(node => node.map))];
 
     const toggleView = () => {
-    handleMapChange({ target: { value: selectedMap } });
-    detailedView = !detailedView;
-    console.log(detailedView);
+        handleMapChange({ target: { value: selectedMap } });
+        detailedView = !detailedView;
+        console.log(detailedView);
+    };
+    const handleApplyAllFilters = async () => {
+        try {
+            const response = await axios.get(process.env.REACT_APP_BACKEND+'/api/filter/all', {
+                params: {
+                    keyword: keyword || "",
+                    year: year.length ? year : "",
+                    startYear: startYear || "",
+                    endYear: endYear || "",
+                    author: author.length ? author : "",
+                    tags: tag.length ? tag : "",
+                    color: color.length ? color : "",
+                }
+            });
+            console.log(response.data);
+            if (response.data.nodes.length > 0){
+    
+            // Update your graph visualization with the returned nodes and relationships
+            setData(response.data);}
+            else{
+                showPopup("No results found!")
+                const response = await axios.get(process.env.REACT_APP_BACKEND+'/api/nodes-relationships');
+                setData(response.data);
 
-     }
+            }
+        } catch (error) {
+            console.error('Error applying all filters:', error);
+        }
+    };
+    const handleResetFilters = async () => {
+        // Reset all filter states
+        setKeyword('');
+        setYear([]);
+        setStartYear('');
+        setEndYear('');
+        setAuthor([]);
+        setTag([]);
+        setColor([]);
+    
+        try {
+            // Fetch all nodes and relationships without any filters
+            const response = await axios.get(process.env.REACT_APP_BACKEND+'/api/filter/all', {
+                params: {
+                    keyword: '',
+                    year: '',
+                    startYear: '',
+                    endYear: '',
+                    author: '',
+                    tags: '',
+                    color: ''
+                }
+            });
+            const { nodes, relationships } = response.data;
+            // Update your graph visualization with the returned nodes and relationships
+            setData({ nodes, relationships });
+        } catch (error) {
+            console.error('Error resetting filters:', error);
+        }
+    };
+    function showPopup(message) {
+        const popup = document.getElementById('popup-notification');
+        popup.textContent = message;
+        popup.classList.remove('hidden');
+        popup.classList.add('popup');
+        popup.classList.add('show');
+    
+        setTimeout(() => {
+            popup.classList.remove('show');
+            setTimeout(() => {
+                popup.classList.add('hidden');
+            }, 500); // Wait for the fade-out transition to complete
+        }, 2500); // Popup will be visible for 5 seconds
+    }
+    
+    // Usage example:
+    // showPopup('No result found');
+    
     return (
         <div>
+            
+            <div id="popup-notification" class="hidden">No result found</div>
             <h2>Graph Visualization</h2>
             <div>
                 <label htmlFor="mapSelect">Select Map:</label>
@@ -496,11 +670,185 @@ const nodeText = node.append('text')
                     ))}
                 </select>
             </div>
+            <form onSubmit={(e) => { e.preventDefault(); handleFilterByKeyword(); }}>
+                <input 
+                    type="text" 
+                    value={keyword} 
+                    onChange={(e) => setKeyword(e.target.value)} 
+                    placeholder="Filter by keyword" 
+                />
+                <button type="submit">Apply</button>
+            </form>
+            <form onSubmit={(e) => { e.preventDefault(); handleFilterByYear(); }}>
+                <fieldset>
+                    <legend>Filter by Year</legend>
+                    <div style={{ display: 'flex', flexWrap: 'wrap' }}>
+                        {years.map(y => (
+                            <span key={y} style={{ margin: '0 10px 10px 0' }}>
+                                <input 
+                                    type="checkbox" 
+                                    value={y} 
+                                    checked={year.includes(y)}
+                                    onChange={(e) => {
+                                        const selected = e.target.checked;
+                                        setYear(prev => 
+                                            selected 
+                                                ? [...prev, y] 
+                                                : prev.filter(item => item !== y)
+                                        );
+                                    }}
+                                    disabled={isYearRangeInputActive}
+                                />
+                                {y}
+                            </span>
+                        ))}
+                    </div>
+                </fieldset>
+                <button type="submit">Apply</button>
+            </form>
+            <form onSubmit={(e) => { 
+    e.preventDefault(); 
+    handleFilterByYearRange(); 
+}}>
+    <input 
+        type="text" 
+        value={startYear} 
+        onChange={(e) => {
+            const value = e.target.value;
+        
+            if (value.length < 4) {
+                setStartYear(value); // Allow input for the first 3 digits
+            } else if (value.length === 4) {
+                const numericValue = parseInt(value, 10);
+                if (numericValue >= Math.min(...years)) {
+                    setStartYear(value);
+                } else {
+                    showPopup(`Start year cannot be less than ${Math.min(...years)}`);
+                }
+            }
+        }}
+        
+        placeholder={`Filter by start year (min: ${Math.min(...years)})`} 
+        disabled={isYearInputActive}
+    />
+    <input 
+        type="text" 
+        value={endYear} 
+        onChange={(e) => {
+            const value = e.target.value;
+            if (value <= Math.max(...years)) {
+                setEndYear(value);
+            } else {
+                showPopup(`End year cannot be greater than ${Math.max(...years)}`);
+            }
+        }} 
+        placeholder={`Filter by end year (max: ${Math.max(...years)})`} 
+        disabled={isYearInputActive}
+    />
+    <button type="submit">Apply</button>
+</form>
+
+            <form onSubmit={(e) => { e.preventDefault(); handleFilterByAuthor(); }}>
+                <fieldset>
+                    <legend>Filter by Author/Reference</legend>
+                    <div style={{ display: 'flex', flexWrap: 'wrap' }}>
+                        {references.map(ref => (
+                            <span key={ref} style={{ margin: '0 10px 10px 0' }}>
+                                <input 
+                                    type="checkbox" 
+                                    value={ref} 
+                                    checked={author.includes(ref)}
+                                    onChange={(e) => {
+                                        const selected = e.target.checked;
+                                        setAuthor(prev => 
+                                            selected 
+                                                ? [...prev, ref] 
+                                                : prev.filter(item => item !== ref)
+                                        );
+                                    }}
+                                />
+                                {ref}
+                            </span>
+                        ))}
+                    </div>
+                </fieldset>
+                <button type="submit">Apply</button>
+            </form>
+    
+            <form onSubmit={(e) => { e.preventDefault(); handleFilterByTag(); }}>
+                <fieldset>
+                    <legend>Filter by Tag</legend>
+                    <div style={{ display: 'flex', flexWrap: 'wrap' }}>
+                        {tags.map(t => (
+                            <span key={t} style={{ margin: '0 10px 10px 0' }}>
+                                <input 
+                                    type="checkbox" 
+                                    value={t} 
+                                    checked={tag.includes(t)}
+                                    onChange={(e) => {
+                                        const selected = e.target.checked;
+                                        setTag(prev => 
+                                            selected 
+                                                ? [...prev, t] 
+                                                : prev.filter(item => item !== t)
+                                        );
+                                    }}
+                                />
+                                {t}
+                            </span>
+                        ))}
+                    </div>
+                </fieldset>
+                <button type="submit">Apply</button>
+            </form>
+    
+            <form onSubmit={(e) => { e.preventDefault(); handleFilterByColor(); }}>
+                <fieldset>
+                    <legend>Filter by Color</legend>
+                    <div style={{ display: 'flex', flexWrap: 'wrap' }}>
+                        {colors.map((c, index) => (
+                            <span key={c} style={{ margin: '0 10px 10px 0', display: 'flex', alignItems: 'center' }}>
+                                <input 
+                                    type="checkbox" 
+                                    value={c} 
+                                    checked={color.includes(c)}
+                                    onChange={(e) => {
+                                        const selected = e.target.checked;
+                                        setColor(prev => 
+                                            selected 
+                                                ? [...prev, c] 
+                                                : prev.filter(item => item !== c)
+                                        );
+                                    }}
+                                />
+                                <div 
+                                    style={{ 
+                                        width: '20px', 
+                                        height: '20px', 
+                                        backgroundColor: c, 
+                                        marginLeft: '5px',
+                                        border: '1px solid #000'
+                                    }} 
+                                />
+                                <span style={{ marginLeft: '5px' }}>
+                                    {approaches[index]}
+                                </span>
+                            </span>
+                        ))}
+                    </div>
+                </fieldset>
+                <button type="submit">Apply</button>
+            </form>
+    
+            <button onClick={handleApplyAllFilters}>Apply All</button>
+            <button onClick={handleResetFilters}>Reset Filters</button>
             <svg ref={svgRef}></svg>
             <div ref={tooltipRef}></div>
             <button onClick={toggleView}>Toggle View</button>
         </div>
     );
+    
+    
 };
 
 export default GraphVisualization;
