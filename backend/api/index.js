@@ -667,6 +667,7 @@ app.get('/api/filter/all', async (req, res) => {
         }
 
         // Year range filter
+        
         if (startYear && startYear.length > 0 && endYear && endYear.length > 0) {
             queryParts.push(`r.year >= $startYear AND r.year <= $endYear`);
             params.startYear = startYear;
