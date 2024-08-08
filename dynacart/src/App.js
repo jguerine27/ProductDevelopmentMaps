@@ -5,6 +5,7 @@ import Signup from './page/Signup/Signup';
 import Login from './page/Login/Login';
 import ProtectedRoute from './page/ProtectedRoute';
 import RedirectIfAuthenticated from './page/RedirectIfAuthenticated';
+import RedirectIfORCIDAuth from './page/RedirectIfORCIDAuth';
 
 function App() {
   return (
@@ -13,9 +14,11 @@ function App() {
         <section>
           <Routes>
             <Route path="/home" element={
-              <ProtectedRoute>
-                <Home />
-              </ProtectedRoute>
+              <RedirectIfORCIDAuth>
+                <ProtectedRoute>
+                  <Home />
+                </ProtectedRoute>
+              </RedirectIfORCIDAuth>
             } />
             <Route path="/signup" element={
               <RedirectIfAuthenticated>
