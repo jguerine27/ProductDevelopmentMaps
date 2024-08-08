@@ -510,6 +510,7 @@ const nodeText = node.append('text')
             const response = await axios.get(url, { params });
             const data = response.data;
             console.log(data);
+            console.log(data.length);
             if (data.nodes.length === 0) {
                 alert('No results found');
             }
@@ -577,8 +578,16 @@ const nodeText = node.append('text')
                 }
             });
             console.log(response.data);
+            if (response.data.nodes.length > 0){
+    
             // Update your graph visualization with the returned nodes and relationships
-            setData(response.data);
+            setData(response.data);}
+            else{
+                alert("No results found!")
+                const response = await axios.get('http://localhost:4000/api/nodes-relationships');
+                setData(response.data);
+
+            }
         } catch (error) {
             console.error('Error applying all filters:', error);
         }
