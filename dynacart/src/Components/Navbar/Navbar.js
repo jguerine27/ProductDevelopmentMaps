@@ -8,12 +8,7 @@ const Navbar = ({ setActiveForm }) => {
                 <li>
                     <button onClick={() => setActiveForm('home')}>Home</button>
                 </li>
-                <li>
-                    <button onClick={() => setActiveForm('node')}>Add a Node</button>
-                </li>
-                <li>
-                    <button onClick={() => setActiveForm('reference')}>Add a Reference/Relation</button>
-                </li>
+               
                 <li>
                     <button onClick={() => setActiveForm('graph')}>View Graph</button>
                 </li>
