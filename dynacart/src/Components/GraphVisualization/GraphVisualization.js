@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import * as d3 from 'd3';
 import axios from 'axios';
+import './GraphVisualization.css'
 //import { set } from '../../../../backend';
 let detailedView = false;
 
@@ -512,7 +513,7 @@ const nodeText = node.append('text')
             console.log(data);
             console.log(data.length);
             if (data.nodes.length === 0) {
-                alert('No results found');
+                showPopup('No results found! Try again');
             }
             else{
             setData(data)
@@ -573,7 +574,7 @@ const nodeText = node.append('text')
                     startYear: startYear || "",
                     endYear: endYear || "",
                     author: author.length ? author : "",
-                    tag: tag.length ? tag : "",
+                    tags: tag.length ? tag : "",
                     color: color.length ? color : "",
                 }
             });
@@ -583,7 +584,7 @@ const nodeText = node.append('text')
             // Update your graph visualization with the returned nodes and relationships
             setData(response.data);}
             else{
-                alert("No results found!")
+                showPopup("No results found!")
                 const response = await axios.get('http://localhost:4000/api/nodes-relationships');
                 setData(response.data);
 
@@ -622,9 +623,28 @@ const nodeText = node.append('text')
             console.error('Error resetting filters:', error);
         }
     };
+    function showPopup(message) {
+        const popup = document.getElementById('popup-notification');
+        popup.textContent = message;
+        popup.classList.remove('hidden');
+        popup.classList.add('popup');
+        popup.classList.add('show');
+    
+        setTimeout(() => {
+            popup.classList.remove('show');
+            setTimeout(() => {
+                popup.classList.add('hidden');
+            }, 500); // Wait for the fade-out transition to complete
+        }, 2500); // Popup will be visible for 5 seconds
+    }
+    
+    // Usage example:
+    // showPopup('No result found');
     
     return (
         <div>
+            
+            <div id="popup-notification" class="hidden">No result found</div>
             <h2>Graph Visualization</h2>
             <div>
                 <label htmlFor="mapSelect">Select Map:</label>
