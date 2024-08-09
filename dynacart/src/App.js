@@ -10,6 +10,7 @@ function App() {
 
   useEffect(() => {
     const orcidAuth = localStorage.getItem('orcidAuth');
+    console.log(orcidAuth);
     if (orcidAuth) {
       setIsORCIDLogin(true);
     }
