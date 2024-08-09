@@ -33,7 +33,8 @@ const Login = () => {
     };
 
     const onOrcidLogin = () => {
-        window.location.href = 'https://maps-backend-hqytucreb-muhammad-bilals-projects-bd7acfbb.vercel.app/orcid/login'; // Redirect to your server's ORCID login endpoint
+        const backendUrl = process.env.REACT_APP_BACKEND;
+        window.location.href = `${backendUrl}/orcid/login`; // Redirect to your server's ORCID login endpoint
     };
 
     useEffect(() => {
