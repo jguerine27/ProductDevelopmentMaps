@@ -28,6 +28,8 @@ app.get('/orcid/login', (req, res) => {
 
 app.get('/orcid/callback', async (req, res) => {
     const { code, error, error_description } = req.query;
+    console.log("Code" + code);
+    console.log("error" + error);
     
     if (error) {
         // Handle the case where the user denied access or there was an error
