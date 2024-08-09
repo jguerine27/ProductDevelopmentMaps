@@ -39,6 +39,7 @@ const Login = () => {
     const handleCustomTokenLogin = async (firebaseToken) => {
         try {
             await signInWithCustomToken(auth, firebaseToken);
+            localStorage.setItem('orcidAuth', 'true'); // Save ORCID login state
             navigate('/home');
         } catch (error) {
             setError('ORCID authentication failed');
@@ -47,6 +48,7 @@ const Login = () => {
             }, 5000);
         }
     };
+    
 
     // Call this function after redirecting back from ORCID and getting the token
     const handleOrcidCallback = () => {

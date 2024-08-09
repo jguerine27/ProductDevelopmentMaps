@@ -7,7 +7,7 @@ const bodyParser = require('body-parser');
 
 
 // Replace with the path to your service account key file
-const serviceAccount = require('../dynacart-ba40e-firebase-adminsdk-kutg0-4344c5ba7f.json');
+const serviceAccount = require('./dynacart-ba40e-firebase-adminsdk-kutg0-4344c5ba7f.json');
 
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),

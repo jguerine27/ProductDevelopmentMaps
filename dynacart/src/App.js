@@ -5,12 +5,10 @@ import Signup from './page/Signup/Signup';
 import Login from './page/Login/Login';
 import ProtectedRoute from './page/ProtectedRoute';
 import RedirectIfAuthenticated from './page/RedirectIfAuthenticated';
-
 function App() {
   const [isORCIDLogin, setIsORCIDLogin] = useState(false);
 
   useEffect(() => {
-    // Check if the user logged in via ORCID
     const orcidAuth = localStorage.getItem('orcidAuth');
     if (orcidAuth) {
       setIsORCIDLogin(true);
@@ -24,7 +22,7 @@ function App() {
           <Routes>
             <Route path="/home" element={
               isORCIDLogin ? (
-                  <Home />
+                <Home />
               ) : (
                 <ProtectedRoute>
                   <Home />
