@@ -36,6 +36,21 @@ const Login = () => {
         window.location.href = 'https://maps-backend-hqytucreb-muhammad-bilals-projects-bd7acfbb.vercel.app//orcid/login'; // Redirect to your server's ORCID login endpoint
     };
 
+    
+    
+    useEffect(() => {
+        handleOrcidCallback();
+    }, []);
+
+    // Call this function after redirecting back from ORCID and getting the token
+    const handleOrcidCallback = () => {
+        const urlParams = new URLSearchParams(window.location.search);
+        const firebaseToken = urlParams.get('firebaseToken');
+        console.log('Firebase Token:', firebaseToken);
+        if (firebaseToken) {
+            handleCustomTokenLogin(firebaseToken);
+        }
+    };
     const handleCustomTokenLogin = async (firebaseToken) => {
         try {
             await signInWithCustomToken(auth, firebaseToken);
@@ -48,20 +63,8 @@ const Login = () => {
             }, 5000);
         }
     };
-    
 
-    // Call this function after redirecting back from ORCID and getting the token
-    const handleOrcidCallback = () => {
-        const urlParams = new URLSearchParams(window.location.search);
-        const firebaseToken = urlParams.get('firebaseToken');
-        if (firebaseToken) {
-            handleCustomTokenLogin(firebaseToken);
-        }
-    };
-
-    useEffect(() => {
-        handleOrcidCallback();
-    }, []);
+   
 
     return (
         <div className="container">

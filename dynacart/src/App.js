@@ -20,15 +20,11 @@ function App() {
       <div>
         <section>
           <Routes>
-            <Route path="/home" element={
-              isORCIDLogin ? (
-                <Home />
-              ) : (
-                <ProtectedRoute>
-                  <Home />
-                </ProtectedRoute>
-              )
-            } />
+          <Route path="/home" element={
+  <ProtectedRoute ORCIDUser={isORCIDLogin}>
+    <Home />
+  </ProtectedRoute>
+} />
             <Route path="/signup" element={
               <RedirectIfAuthenticated>
                 <Signup />
