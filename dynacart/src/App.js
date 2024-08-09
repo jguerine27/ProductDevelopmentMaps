@@ -10,12 +10,20 @@ function App() {
   const [isORCIDLogin, setIsORCIDLogin] = useState(false);
 
   useEffect(() => {
-    const orcidAuth = localStorage.getItem('orcidAuth');
-    console.log('ORCID Auth State:', orcidAuth);
-    if (orcidAuth === 'true') {
-      setIsORCIDLogin(true);
+    const urlParams = new URLSearchParams(window.location.search);
+    const orcidUser = urlParams.get('ORCIDUser');
+    
+    if (orcidUser === 'true') {
+        localStorage.setItem('orcidAuth', 'true');
+        setIsORCIDLogin(true);
+    } else {
+        localStorage.setItem('orcidAuth', 'false');
+        setIsORCIDLogin(false);
     }
-  }, []);
+
+    console.log('ORCID Auth State:', orcidUser);
+}, []);
+
 
   return (
     <Router>

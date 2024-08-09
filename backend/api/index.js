@@ -56,7 +56,7 @@ try {
     res.redirect(`https://maps-frontend-git-orcid-api-muhammad-bilals-projects-bd7acfbb.vercel.app/home?ORCIDUser=true`);
 } catch (error) {
     console.error('Error during ORCID authentication:', error);
-    res.redirect(`https://maps-frontend-git-orcid-api-muhammad-bilals-projects-bd7acfbb.vercel.app/home?ORCIDUser=true`);
+    res.redirect(`https://maps-frontend-git-orcid-api-muhammad-bilals-projects-bd7acfbb.vercel.app/home?ORCIDUser=false`);
 }
 
       // Redirect back to your frontend with ORCIDUser=True
