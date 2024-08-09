@@ -10,6 +10,7 @@ function App() {
   const [isORCIDLogin, setIsORCIDLogin] = useState(false);
 
   useEffect(() => {
+    console.log(window.location.href);
     const orcidUser = window.location.href.includes('ORCIDUser=true');
 
     if (orcidUser === 'true') {
