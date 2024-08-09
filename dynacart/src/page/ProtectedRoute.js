@@ -14,6 +14,7 @@ const ProtectedRoute = ({ children, ORCIDUser }) => {
     return <div>Error: {error.message}</div>;
   }
 
+  // Allow access if the user is authenticated via Firebase or ORCID
   if (!user && !ORCIDUser) {
     return <Navigate to="/" />;
   }

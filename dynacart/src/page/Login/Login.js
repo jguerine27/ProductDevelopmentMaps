@@ -33,38 +33,27 @@ const Login = () => {
     };
 
     const onOrcidLogin = () => {
-        window.location.href = 'https://maps-backend-hqytucreb-muhammad-bilals-projects-bd7acfbb.vercel.app//orcid/login'; // Redirect to your server's ORCID login endpoint
+        window.location.href = 'https://maps-backend-hqytucreb-muhammad-bilals-projects-bd7acfbb.vercel.app/orcid/login'; // Redirect to your server's ORCID login endpoint
     };
 
-    
-    
     useEffect(() => {
         handleOrcidCallback();
     }, []);
 
-    // Call this function after redirecting back from ORCID and getting the token
     const handleOrcidCallback = () => {
         const urlParams = new URLSearchParams(window.location.search);
-        const firebaseToken = urlParams.get('firebaseToken');
-        console.log('Firebase Token:', firebaseToken);
-        if (firebaseToken) {
-            handleCustomTokenLogin(firebaseToken);
-        }
-    };
-    const handleCustomTokenLogin = async (firebaseToken) => {
-        try {
-            await signInWithCustomToken(auth, firebaseToken);
+        const orcidUser = urlParams.get('ORCIDUser');
+        console.log('ORCID User:', orcidUser);
+        if (orcidUser === 'true') {
             localStorage.setItem('orcidAuth', 'true'); // Save ORCID login state
             navigate('/home');
-        } catch (error) {
+        } else if (orcidUser === 'false') {
             setError('ORCID authentication failed');
             setTimeout(() => {
                 setError('');
             }, 5000);
         }
     };
-
-   
 
     return (
         <div className="container">

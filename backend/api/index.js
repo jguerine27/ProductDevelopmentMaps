@@ -26,6 +26,7 @@ app.get('/orcid/login', (req, res) => {
   const authorizationUrl = `https://orcid.org/oauth/authorize?client_id=${ORCID_CLIENT_ID}&response_type=code&scope=/authenticate&redirect_uri=${ORCID_REDIRECT_URI}`;
   res.redirect(authorizationUrl);
 });
+
 app.get('/orcid/callback', async (req, res) => {
     const { code } = req.query;
   
@@ -45,29 +46,16 @@ app.get('/orcid/callback', async (req, res) => {
         headers: { Authorization: `Bearer ${access_token}` }
       });
   
+      // Successful login
       const orcidId = userResponse.data.sub;
-  
-      // Check if the user exists in Firebase
-      let userRecord;
-      try {
-        userRecord = await admin.auth().getUser(orcidId);
-      } catch (error) {
-        // User does not exist, create a new user
-        userRecord = await admin.auth().createUser({
-          uid: orcidId,
-          displayName: userResponse.data.name || 'ORCID User',
-          email: userResponse.data.email || null,
-        });
-      }
-  
-      // Create a custom token for Firebase authentication
-      const firebaseToken = await admin.auth().createCustomToken(orcidId);
-  
-      // Redirect back to your frontend with the custom token
-      res.redirect(`https://maps-frontend-git-orcid-api-muhammad-bilals-projects-bd7acfbb.vercel.app//orcid/callback?firebaseToken=${firebaseToken}`);
+      
+      // Redirect back to your frontend with ORCIDUser=True
+      res.redirect(`https://maps-frontend-git-orcid-api-muhammad-bilals-projects-bd7acfbb.vercel.app/orcid/callback?ORCIDUser=True`);
     } catch (error) {
       console.error('Error during ORCID authentication:', error);
-      res.status(500).send('Authentication failed');
+  
+      // Redirect back to your frontend with ORCIDUser=False
+      res.redirect(`https://maps-frontend-git-orcid-api-muhammad-bilals-projects-bd7acfbb.vercel.app/orcid/callback?ORCIDUser=False`);
     }
   });
 

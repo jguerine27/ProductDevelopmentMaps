@@ -5,13 +5,14 @@ import Signup from './page/Signup/Signup';
 import Login from './page/Login/Login';
 import ProtectedRoute from './page/ProtectedRoute';
 import RedirectIfAuthenticated from './page/RedirectIfAuthenticated';
+
 function App() {
   const [isORCIDLogin, setIsORCIDLogin] = useState(false);
 
   useEffect(() => {
     const orcidAuth = localStorage.getItem('orcidAuth');
-    console.log(orcidAuth);
-    if (orcidAuth) {
+    console.log('ORCID Auth State:', orcidAuth);
+    if (orcidAuth === 'true') {
       setIsORCIDLogin(true);
     }
   }, []);
@@ -21,11 +22,11 @@ function App() {
       <div>
         <section>
           <Routes>
-          <Route path="/home" element={
-  <ProtectedRoute ORCIDUser={isORCIDLogin}>
-    <Home />
-  </ProtectedRoute>
-} />
+            <Route path="/home" element={
+              <ProtectedRoute ORCIDUser={isORCIDLogin}>
+                <Home />
+              </ProtectedRoute>
+            } />
             <Route path="/signup" element={
               <RedirectIfAuthenticated>
                 <Signup />
