@@ -10,9 +10,8 @@ function App() {
   const [isORCIDLogin, setIsORCIDLogin] = useState(false);
 
   useEffect(() => {
-    const urlParams = new URLSearchParams(window.location.search);
-    const orcidUser = urlParams.get('ORCIDUser');
-    
+    const orcidUser = window.location.href.includes('ORCIDUser=true');
+
     if (orcidUser === 'true') {
         localStorage.setItem('orcidAuth', 'true');
         setIsORCIDLogin(true);
