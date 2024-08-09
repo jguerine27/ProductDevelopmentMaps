@@ -21,50 +21,52 @@ const ORCID_CLIENT_ID = process.env.ORCID_CLIENT_ID;
 const ORCID_CLIENT_SECRET = process.env.ORCID_CLIENT_SECRET;
 const ORCID_REDIRECT_URI = 'https://maps-frontend-git-orcid-api-muhammad-bilals-projects-bd7acfbb.vercel.app/home'; // Change to your actual redirect URI
 
-console.log(ORCID_CLIENT_ID)
 app.get('/orcid/login', (req, res) => {
   const authorizationUrl = `https://orcid.org/oauth/authorize?client_id=${ORCID_CLIENT_ID}&response_type=code&scope=/authenticate&redirect_uri=${ORCID_REDIRECT_URI}`;
   res.redirect(authorizationUrl);
 });
 
 app.get('/orcid/callback', async (req, res) => {
-    const { code } = req.query;
+    const { code, error, error_description } = req.query;
+    
+    if (error) {
+        // Handle the case where the user denied access or there was an error
+        console.error('ORCID authentication error:', error_description);
+        return res.redirect(`https://maps-frontend-git-orcid-api-muhammad-bilals-projects-bd7acfbb.vercel.app/home?ORCIDUser=false`);
+    }
+  
+    if (!code) {
+        // Handle missing code (e.g., bad callback)
+        return res.redirect(`https://maps-frontend-git-orcid-api-muhammad-bilals-projects-bd7acfbb.vercel.app/home?ORCIDUser=false`);
+    }
   
     try {
-      const tokenResponse = await axios.post('https://orcid.org/oauth/token', {
-        client_id: ORCID_CLIENT_ID,
-        client_secret: ORCID_CLIENT_SECRET,
-        grant_type: 'authorization_code',
-        code,
-        redirect_uri: ORCID_REDIRECT_URI
-      });
-  
-      const { access_token } = tokenResponse.data;
-  
-      // Retrieve ORCID iD and other user information
-      const userResponse = await axios.get('https://orcid.org/v2.1/userinfo', {
-        headers: { Authorization: `Bearer ${access_token}` }
-      });
-  
-      // Successful login
-      const orcidId = userResponse.data.sub;
-      console.log(orcidId);
-      
-      // Inside /orcid/callback in backend
-try {
-    // Assuming ORCID authentication is successful
-    res.redirect(`https://maps-frontend-git-orcid-api-muhammad-bilals-projects-bd7acfbb.vercel.app/home?ORCIDUser=true`);
-} catch (error) {
-    console.error('Error during ORCID authentication:', error);
-    res.redirect(`https://maps-frontend-git-orcid-api-muhammad-bilals-projects-bd7acfbb.vercel.app/home?ORCIDUser=false`);
-}
+        // Exchange the authorization code for an access token
+        const tokenResponse = await axios.post('https://orcid.org/oauth/token', {
+            client_id: ORCID_CLIENT_ID,
+            client_secret: ORCID_CLIENT_SECRET,
+            grant_type: 'authorization_code',
+            code,
+            redirect_uri: ORCID_REDIRECT_URI
+        });
 
-      // Redirect back to your frontend with ORCIDUser=True
-    } catch (error) {
-      console.error('Error during ORCID authentication:', error);
+        const { access_token } = tokenResponse.data;
   
+        // Retrieve ORCID iD and other user information
+        const userResponse = await axios.get('https://orcid.org/v2.1/userinfo', {
+            headers: { Authorization: `Bearer ${access_token}` }
+        });
+  
+        const orcidId = userResponse.data.sub;
+        console.log('ORCID ID:', orcidId);
+  
+        // Assuming ORCID authentication is successful
+        res.redirect(`https://maps-frontend-git-orcid-api-muhammad-bilals-projects-bd7acfbb.vercel.app/home?ORCIDUser=true`);
+    } catch (error) {
+        console.error('Error during ORCID authentication:', error);
+        res.redirect(`https://maps-frontend-git-orcid-api-muhammad-bilals-projects-bd7acfbb.vercel.app/home?ORCIDUser=false`);
     }
-  });
+});
 
 const port = process.env.PORT || 4000;
 
