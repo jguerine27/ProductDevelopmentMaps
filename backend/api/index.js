@@ -48,14 +48,21 @@ app.get('/orcid/callback', async (req, res) => {
   
       // Successful login
       const orcidId = userResponse.data.sub;
+      console.log(orcidId);
       
+      // Inside /orcid/callback in backend
+try {
+    // Assuming ORCID authentication is successful
+    res.redirect(`https://maps-frontend-git-orcid-api-muhammad-bilals-projects-bd7acfbb.vercel.app/home?ORCIDUser=true`);
+} catch (error) {
+    console.error('Error during ORCID authentication:', error);
+    res.redirect(`https://maps-frontend-git-orcid-api-muhammad-bilals-projects-bd7acfbb.vercel.app/home?ORCIDUser=false`);
+}
+
       // Redirect back to your frontend with ORCIDUser=True
-      res.redirect(`https://maps-frontend-git-orcid-api-muhammad-bilals-projects-bd7acfbb.vercel.app/orcid/callback?ORCIDUser=True`);
     } catch (error) {
       console.error('Error during ORCID authentication:', error);
   
-      // Redirect back to your frontend with ORCIDUser=False
-      res.redirect(`https://maps-frontend-git-orcid-api-muhammad-bilals-projects-bd7acfbb.vercel.app/orcid/callback?ORCIDUser=False`);
     }
   });
 

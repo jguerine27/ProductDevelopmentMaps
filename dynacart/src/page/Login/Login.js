@@ -42,6 +42,7 @@ const Login = () => {
 
     const handleOrcidCallback = () => {
         const urlParams = new URLSearchParams(window.location.search);
+        console.log(urlParams)
         const orcidUser = urlParams.get('ORCIDUser');
         console.log('ORCID User:', orcidUser);
         if (orcidUser === 'true') {
