@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import './AddNodeForm.css';
+
 const AddNodeForm = () => {
     const [nodeLabels, setNodeLabels] = useState([]);
     const [selectedLabel, setSelectedLabel] = useState('');
@@ -45,6 +46,10 @@ const AddNodeForm = () => {
         }
     };
 
+    const handleRemoveCitation = (index) => {
+        setCitations(citations.filter((_, i) => i !== index));
+    };
+
     const handleAddTag = () => {
         if (tagInput) {
             setTags([...tags, tagInput]);
@@ -52,8 +57,18 @@ const AddNodeForm = () => {
         }
     };
 
+    const handleRemoveTag = (index) => {
+        setTags(tags.filter((_, i) => i !== index));
+    };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
+
+        // Validation
+        if (!selectedLabel || !nodeName || !color || !type || !selectedMap) {
+            setMessage('Please fill in all required fields.');
+            return;
+        }
 
         try {
             const response = await fetch('http://localhost:4000/api/create-node', {
@@ -106,7 +121,7 @@ const AddNodeForm = () => {
                     <input
                         type="text"
                         value={color}
-                        onChange={(e) => setColor(e.target.value)}></input>
+                        onChange={(e) => setColor(e.target.value)} />
                 </div>
                 <div>
                     <label>Select Type:</label>
@@ -126,7 +141,10 @@ const AddNodeForm = () => {
                     <button type="button" onClick={handleAddCitation}>Add</button>
                     <ul>
                         {citations.map((citation, index) => (
-                            <li key={index}>{citation}</li>
+                            <li key={index}>
+                                {citation}
+                                <button type="button" onClick={() => handleRemoveCitation(index)}>Remove</button>
+                            </li>
                         ))}
                     </ul>
                 </div>
@@ -140,7 +158,10 @@ const AddNodeForm = () => {
                     <button type="button" onClick={handleAddTag}>Add</button>
                     <ul>
                         {tags.map((tag, index) => (
-                            <li key={index}>{tag}</li>
+                            <li key={index}>
+                                {tag}
+                                <button type="button" onClick={() => handleRemoveTag(index)}>Remove</button>
+                            </li>
                         ))}
                     </ul>
                 </div>
