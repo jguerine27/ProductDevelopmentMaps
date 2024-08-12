@@ -7,6 +7,7 @@ import {  signOut } from "firebase/auth";
 import {auth} from '../firebase';
 import { useNavigate } from 'react-router-dom';
 import ReviewableNodes from '../Components/ReviewNodes/ReviewableNodes';
+import ReviewReferences from '../Components/ReviewReference/ReviewReferences';
  
 const Home = () => {
     const navigate = useNavigate();
@@ -31,6 +32,7 @@ const Home = () => {
             {activeForm === 'reference' && <AddReferenceForm />}
             {activeForm === 'graph' && <GraphVisualization />}
             {activeForm === 'reviewNode' && <ReviewableNodes />}
+            {activeForm === 'reviewReference' && <ReviewReferences />}
             <button onClick={handleLogout}>Logout</button>
 
         </div>

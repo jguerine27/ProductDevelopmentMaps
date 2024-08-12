@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 
-const AddReferenceForm = ({ fetchNodeLabels }) => {
+const AddReferenceForm = () => {
     const [nodeLabels, setNodeLabels] = useState([]);
     const [selectedLabel1, setSelectedLabel1] = useState('');
     const [nodeNames1, setNodeNames1] = useState([]);
@@ -61,8 +61,14 @@ const AddReferenceForm = ({ fetchNodeLabels }) => {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
+        // Form validation
+        if (!selectedLabel1 || !selectedNodeName1 || !selectedLabel2 || !selectedNodeName2 || !relationshipName || !year || !author || !type) {
+            setMessage('Submit all fields');
+            return;
+        }
+
         try {
-            const response = await fetch('http://localhost:4000/create-relationship', {
+            const response = await fetch('http://localhost:4000/api/submit-reference-for-review', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -80,9 +86,9 @@ const AddReferenceForm = ({ fetchNodeLabels }) => {
             });
 
             const data = await response.json();
-            setMessage(data.message || 'Reference created successfully');
+            setMessage(data.message || 'Reference submitted for review.');
         } catch (error) {
-            console.error('Error creating reference:', error);
+            console.error('Error submitting reference for review:', error);
             setMessage('An error occurred');
         }
     };
@@ -159,10 +165,10 @@ const AddReferenceForm = ({ fetchNodeLabels }) => {
                         <option value="">Select a type</option>
                         <option value="ec">Link expressly cited between concepts or techniques (ec)</option>
                         <option value="oc">Link created according to our understanding for overall comprehension (oc)</option>
-                        <option value="h">Link pointing towards an hybridization or a derivate of a concept or a technique (h)</option>
+                        <option value="h">Link pointing towards a hybridization or derivative of a concept or technique (h)</option>
                     </select>
                 </div>
-                <button type="submit">Add Reference</button>
+                <button type="submit">Submit for Review</button>
             </form>
             {message && <p>{message}</p>}
         </div>

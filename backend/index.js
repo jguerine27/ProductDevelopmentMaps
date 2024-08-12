@@ -36,9 +36,9 @@ app.get('/api/nodes-relationships', async (req, res) => {
     try {
         const result = await session.run(
             `MATCH (n)
-WHERE NOT 'ReviewableNode' IN labels(n)
+WHERE NONE(label IN labels(n) WHERE label IN ['ReviewableNode', 'ReviewableReference'])
 OPTIONAL MATCH (n)-[r]->(m)
-WHERE m IS NULL OR NOT 'ReviewableNode' IN labels(m)
+WHERE m IS NULL OR NONE(label IN labels(m) WHERE label IN ['ReviewableNode', 'ReviewableReference'])
 RETURN n, labels(n) AS nLabels, r, m, labels(m) AS mLabels
 `
         );
@@ -83,7 +83,7 @@ app.get('/api/node-labels', async (req, res) => {
     const session = driver.session();
     try {
         const result = await session.run('CALL db.labels()');
-        const labels = result.records.map(record => record.get(0)).filter(label => label !== 'ReviewableNode');
+        const labels = result.records.map(record => record.get(0)).filter(label => label !== 'ReviewableNode' || label !== 'ReviewableReference');
         res.json(labels);
     } catch (error) {
         console.error('Error fetching node labels:', error);
@@ -232,6 +232,145 @@ app.get('/api/reviewable-nodes', async (req, res) => {
     } catch (error) {
         console.error('Error retrieving reviewable nodes:', error);
         res.status(500).json({ error: 'An error occurred while retrieving reviewable nodes' });
+    } finally {
+        await session.close();
+    }
+});
+
+
+// Submit reference for review
+app.post('/api/submit-reference-for-review', async (req, res) => {
+    const { nodeLabel1, nodeName1, nodeLabel2, nodeName2, referenceName, year, author, type } = req.body;
+
+    const session = driver.session();
+
+    try {
+        // Create a new reference node with the label "ReviewableReference"
+        const result = await session.run(
+            `CREATE (r:ReviewableReference {
+                nodeLabel1: $nodeLabel1,
+                nodeName1: $nodeName1,
+                nodeLabel2: $nodeLabel2,
+                nodeName2: $nodeName2,
+                referenceName: $referenceName,
+                year: $year,
+                author: $author,
+                type: $type
+            })
+            RETURN r`,
+            {
+                nodeLabel1,
+                nodeName1,
+                nodeLabel2,
+                nodeName2,
+                referenceName,
+                year,
+                author,
+                type
+            }
+        );
+
+        if (result.records.length > 0) {
+            const reference = result.records[0].get('r');
+            res.status(200).json({ message: 'Reference submitted for review', reference });
+        } else {
+            res.status(500).json({ error: 'Failed to submit reference for review' });
+        }
+    } catch (error) {
+        console.error('Error submitting reference for review:', error);
+        res.status(500).json({ error: 'An error occurred while submitting reference for review' });
+    } finally {
+        await session.close();
+    }
+});
+
+
+// Fetch all reviewable references
+app.get('/api/reviewable-references', async (req, res) => {
+    const session = driver.session();
+
+    try {
+        const result = await session.run(
+            `MATCH (r:ReviewableReference)
+             RETURN r`
+        );
+
+        const reviewableReferences = result.records.map(record => record.get('r').properties);
+
+        res.json(reviewableReferences);
+    } catch (error) {
+        console.error('Error fetching reviewable references:', error);
+        res.status(500).json({ error: 'Failed to fetch reviewable references' });
+    } finally {
+        await session.close();
+    }
+});
+
+// Confirm reference addition and create a relationship
+app.post('/api/confirm-reference-addition/:referenceId', async (req, res) => {
+    const { referenceId } = req.params;
+    const { nodeLabel1, nodeName1, nodeLabel2, nodeName2, referenceName, year, author, type } = req.body;
+
+    console.log(referenceId)
+    console.log(req.body);
+    const session = driver.session();
+
+    try {
+        // Match the ReviewableReference node and extract its properties
+        const result = await session.run(
+            `MATCH (r:ReviewableReference {referenceName: $referenceId})
+            DELETE (r)
+             RETURN r`,
+            { referenceId }
+        );
+
+        if (result.records.length === 0) {
+            res.status(404).json({ error: 'Reference not found for confirmation' });
+            return;
+        }
+
+        // Create relationship between the nodes based on the reference details
+        await session.run(
+            `MATCH (n1 {name: $nodeName1}), 
+                      (n2 {name: $nodeName2})
+             CREATE (n1)-[rel:Reference {name: $referenceName,type: $type, source:$nodeName1 , target: $nodeName2, year: $year, author: $author}]->(n2)
+             RETURN (n1)
+             `,
+            { nodeLabel1, nodeName1, nodeLabel2, nodeName2, referenceName, year, author, type, referenceId }
+        );
+
+        res.status(200).json({ message: 'Reference confirmed and relationship added to the database' });
+    } catch (error) {
+        console.error('Error confirming reference addition:', error);
+        res.status(500).json({ error: 'An error occurred while confirming reference addition' });
+    } finally {
+        await session.close();
+    }
+});
+
+
+// Reject reference addition (delete the "ReviewableReference")
+app.post('/api/reject-reference-addition/:referenceId', async (req, res) => {
+    const { referenceId } = req.params;
+    console.log(referenceId)
+
+    const session = driver.session();
+
+    try {
+        const result = await session.run(
+            `MATCH (r:ReviewableReference) WHERE r.referenceName = $referenceId
+             DELETE r`,
+            { referenceId }
+        );
+
+        if (result.summary.counters.nodesDeleted > 0) {
+            res.status(200).json({ message: 'Reference rejected and deleted' });
+        } else {
+            res.status(404).json({ error: 'Reference not found for rejection' });
+        }
+    } catch (error) {
+        console.error('Error rejecting reference addition:', error);
+        res.status(500).json({ error: 'An error occurred while rejecting reference addition' });
     } finally {
         await session.close();
     }
