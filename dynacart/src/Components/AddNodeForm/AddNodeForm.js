@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
+import { ChromePicker } from 'react-color'; // Import the ChromePicker from react-color
 import './AddNodeForm.css';
 
 const AddNodeForm = () => {
     const [nodeLabels, setNodeLabels] = useState([]);
     const [selectedLabel, setSelectedLabel] = useState('');
     const [nodeName, setNodeName] = useState('');
-    const [color, setColor] = useState('');
+    const [color, setColor] = useState('#000000'); // Initialize with a default color
     const [type, setType] = useState('');
     const [citations, setCitations] = useState([]);
     const [citationInput, setCitationInput] = useState('');
@@ -117,11 +118,11 @@ const AddNodeForm = () => {
                     />
                 </div>
                 <div>
-                    <label>Node Approach/Color in HEX:</label>
-                    <input
-                        type="text"
-                        value={color}
-                        onChange={(e) => setColor(e.target.value)} />
+                    <label>Node Approach/Color:</label>
+                    <ChromePicker
+                        color={color}
+                        onChangeComplete={(color) => setColor(color.hex)}
+                    />
                 </div>
                 <div>
                     <label>Select Type:</label>
