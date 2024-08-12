@@ -8,7 +8,7 @@ const AddReferenceForm = () => {
     const [selectedLabel2, setSelectedLabel2] = useState('');
     const [nodeNames2, setNodeNames2] = useState([]);
     const [selectedNodeName2, setSelectedNodeName2] = useState('');
-    const [relationshipName, setRelationshipName] = useState('');
+    const [referenceName, setReferenceName] = useState(''); // Use referenceName instead of relationshipName
     const [year, setYear] = useState('');
     const [author, setAuthor] = useState('');
     const [type, setType] = useState('');
@@ -58,11 +58,20 @@ const AddReferenceForm = () => {
         setSelectedNodeName2('');
     };
 
+    // Update the referenceName whenever author or year changes
+    useEffect(() => {
+        if (author && year) {
+            setReferenceName(`${author} ${year}`);
+        } else {
+            setReferenceName('');
+        }
+    }, [author, year]);
+
     const handleSubmit = async (e) => {
         e.preventDefault();
 
         // Form validation
-        if (!selectedLabel1 || !selectedNodeName1 || !selectedLabel2 || !selectedNodeName2 || !relationshipName || !year || !author || !type) {
+        if (!selectedLabel1 || !selectedNodeName1 || !selectedLabel2 || !selectedNodeName2 || !referenceName || !year || !author || !type) {
             setMessage('Submit all fields');
             return;
         }
@@ -78,7 +87,7 @@ const AddReferenceForm = () => {
                     nodeName1: selectedNodeName1,
                     nodeLabel2: selectedLabel2,
                     nodeName2: selectedNodeName2,
-                    referenceName: relationshipName,
+                    referenceName: referenceName, // Use referenceName
                     year: year,
                     author: author,
                     type
@@ -139,8 +148,8 @@ const AddReferenceForm = () => {
                     <label>Reference Name:</label>
                     <input
                         type="text"
-                        value={relationshipName}
-                        onChange={(e) => setRelationshipName(e.target.value)}
+                        value={referenceName}
+                        readOnly // Make it read-only since it is auto-filled
                     />
                 </div>
                 <div>

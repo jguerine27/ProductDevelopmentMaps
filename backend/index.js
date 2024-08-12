@@ -359,15 +359,13 @@ app.post('/api/reject-reference-addition/:referenceId', async (req, res) => {
     try {
         const result = await session.run(
             `MATCH (r:ReviewableReference) WHERE r.referenceName = $referenceId
-             DELETE r`,
+             DELETE r
+             RETURN r`,
             { referenceId }
         );
 
-        if (result.summary.counters.nodesDeleted > 0) {
-            res.status(200).json({ message: 'Reference rejected and deleted' });
-        } else {
-            res.status(404).json({ error: 'Reference not found for rejection' });
-        }
+        res.status(200).json({ message: 'Reference rejected and deleted' });
+        
     } catch (error) {
         console.error('Error rejecting reference addition:', error);
         res.status(500).json({ error: 'An error occurred while rejecting reference addition' });
