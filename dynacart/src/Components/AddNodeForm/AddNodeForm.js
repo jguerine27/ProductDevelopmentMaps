@@ -61,18 +61,17 @@ const AddNodeForm = () => {
     const handleRemoveTag = (index) => {
         setTags(tags.filter((_, i) => i !== index));
     };
-
     const handleSubmit = async (e) => {
         e.preventDefault();
-
+    
         // Validation
         if (!selectedLabel || !nodeName || !color || !type || !selectedMap) {
             setMessage('Please fill in all required fields.');
             return;
         }
-
+    
         try {
-            const response = await fetch('http://localhost:4000/api/create-node', {
+            const response = await fetch('http://localhost:4000/api/submit-node-for-review', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -87,14 +86,15 @@ const AddNodeForm = () => {
                     color
                 }),
             });
-
+    
             const data = await response.json();
-            setMessage(data.message || 'Node created successfully');
+            setMessage(data.message || 'Node submitted for review');
         } catch (error) {
-            console.error('Error creating node:', error);
+            console.error('Error submitting node for review:', error);
             setMessage('An error occurred');
         }
     };
+    
 
     return (
         <div>

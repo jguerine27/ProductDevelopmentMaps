@@ -12,6 +12,9 @@ const Navbar = ({ setActiveForm }) => {
                     <button onClick={() => setActiveForm('node')}>Add a Node</button>
                 </li>
                 <li>
+                    <button onClick={()=> setActiveForm('reviewNode')}>Review added nodes</button>
+                </li>
+                <li>
                     <button onClick={() => setActiveForm('reference')}>Add a Reference/Relation</button>
                 </li>
                 <li>

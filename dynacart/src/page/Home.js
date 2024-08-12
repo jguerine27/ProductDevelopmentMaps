@@ -6,6 +6,7 @@ import GraphVisualization from '../Components/GraphVisualization/GraphVisualizat
 import {  signOut } from "firebase/auth";
 import {auth} from '../firebase';
 import { useNavigate } from 'react-router-dom';
+import ReviewableNodes from '../Components/ReviewNodes/ReviewableNodes';
  
 const Home = () => {
     const navigate = useNavigate();
@@ -29,6 +30,7 @@ const Home = () => {
             {activeForm === 'node' && <AddNodeForm />}
             {activeForm === 'reference' && <AddReferenceForm />}
             {activeForm === 'graph' && <GraphVisualization />}
+            {activeForm === 'reviewNode' && <ReviewableNodes />}
             <button onClick={handleLogout}>Logout</button>
 
         </div>

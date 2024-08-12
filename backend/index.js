@@ -36,8 +36,11 @@ app.get('/api/nodes-relationships', async (req, res) => {
     try {
         const result = await session.run(
             `MATCH (n)
-            OPTIONAL MATCH (n)-[r]->(m)
-            RETURN n, labels(n) as nLabels, r, m, labels(m) as mLabels`
+WHERE NOT 'ReviewableNode' IN labels(n)
+OPTIONAL MATCH (n)-[r]->(m)
+WHERE m IS NULL OR NOT 'ReviewableNode' IN labels(m)
+RETURN n, labels(n) AS nLabels, r, m, labels(m) AS mLabels
+`
         );
 
         const nodes = new Map();
@@ -80,7 +83,7 @@ app.get('/api/node-labels', async (req, res) => {
     const session = driver.session();
     try {
         const result = await session.run('CALL db.labels()');
-        const labels = result.records.map(record => record.get(0));
+        const labels = result.records.map(record => record.get(0)).filter(label => label !== 'ReviewableNode');
         res.json(labels);
     } catch (error) {
         console.error('Error fetching node labels:', error);
@@ -216,6 +219,106 @@ app.get('/api/get-approaches', async (req, res) => {
         await session.close();
     }
 });
+
+app.get('/api/reviewable-nodes', async (req, res) => {
+    const session = driver.session();
+
+    try {
+        const result = await session.run(`MATCH (b:ReviewableNode) RETURN b`);
+
+        const nodes = result.records.map(record => record.get('b').properties);
+
+        res.status(200).json(nodes);
+    } catch (error) {
+        console.error('Error retrieving reviewable nodes:', error);
+        res.status(500).json({ error: 'An error occurred while retrieving reviewable nodes' });
+    } finally {
+        await session.close();
+    }
+});
+
+
+app.post('/api/submit-node-for-review', async (req, res) => {
+    const { label, name, type, citations, tags, map, color } = req.body;
+
+    const session = driver.session();
+
+    try {
+        // Create the new node with the "Reviewable Node" label
+        const result = await session.run(
+            `CREATE (b:ReviewableNode {name: $name, label: $label, type: $type, citations: $citations, tags: $tags, map: $map, color: $color}) RETURN b`,
+            { name, label, type, citations, tags, map, color }
+        );
+
+        if (result.records.length > 0) {
+            const node = result.records[0].get('b');
+            res.status(200).json({ message: 'Node submitted for review', node });
+        } else {
+            res.status(500).json({ error: 'Failed to submit node for review' });
+        }
+    } catch (error) {
+        console.error('Error submitting node for review:', error);
+        res.status(500).json({ error: 'An error occurred while submitting node for review' });
+    } finally {
+        await session.close();
+    }
+});
+
+
+app.post('/api/confirm-node-addition/:id', async (req, res) => {
+    const { id } = req.params;
+
+    const session = driver.session();
+
+    try {
+        // Find the reviewable node and update its label
+        const result = await session.run(
+            `MATCH (b:ReviewableNode {name: $id})
+             REMOVE b:ReviewableNode
+             SET b:$label
+             RETURN b`,
+            { id }
+        );
+
+        if (result.records.length > 0) {
+            const node = result.records[0].get('b');
+            res.status(200).json({ message: 'Node confirmed and added to the database', node });
+        } else {
+            res.status(500).json({ error: 'Failed to confirm node addition' });
+        }
+    } catch (error) {
+        console.error('Error confirming node addition:', error);
+        res.status(500).json({ error: 'An error occurred while confirming node addition' });
+    } finally {
+        await session.close();
+    }
+});
+
+app.post('/api/reject-node-addition/:id', async (req, res) => {
+    const { id } = req.params;
+
+    const session = driver.session();
+
+    try {
+        // Delete the reviewable node
+        const result = await session.run(
+            `MATCH (b:ReviewableNode {name: $id}) DETACH DELETE b`,
+            { id }
+        );
+
+        if (result.summary.counters.updates().nodesDeleted > 0) {
+            res.status(200).json({ message: 'Node rejected and removed from reviewable nodes' });
+        } else {
+            res.status(500).json({ error: 'Failed to reject node addition' });
+        }
+    } catch (error) {
+        console.error('Error rejecting node addition:', error);
+        res.status(500).json({ error: 'An error occurred while rejecting node addition' });
+    } finally {
+        await session.close();
+    }
+});
+
 
 // Create a node
 app.post('/api/create-node', async (req, res) => {
