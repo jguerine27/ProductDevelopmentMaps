@@ -5,7 +5,6 @@ import Signup from './page/Signup/Signup';
 import Login from './page/Login/Login';
 import ProtectedRoute from './page/ProtectedRoute';
 import RedirectIfAuthenticated from './page/RedirectIfAuthenticated';
-import RedirectIfORCIDAuth from './page/RedirectIfORCIDAuth';
 
 function App() {
   const [isORCIDLogin, setIsORCIDLogin] = useState(false);
