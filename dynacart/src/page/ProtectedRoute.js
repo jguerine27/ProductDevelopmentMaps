@@ -5,7 +5,7 @@ import { auth } from '../firebase';
 
 const ProtectedRoute = ({ children, ORCIDUser }) => {
   const [user, loading, error] = useAuthState(auth);
-  console.log(ORCIDUser)
+
   if (loading) {
     return <div>Loading...</div>;
   }

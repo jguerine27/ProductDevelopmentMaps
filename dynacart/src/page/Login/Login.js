@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { signInWithCustomToken, signInWithEmailAndPassword } from 'firebase/auth';
+import { signInWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '../../firebase';
 import { NavLink, useNavigate } from 'react-router-dom';
 import './Login.css'; // Import the CSS file
@@ -38,24 +38,25 @@ const Login = () => {
     };
 
     useEffect(() => {
-        handleOrcidCallback();
-    }, []);
+        const handleOrcidCallback = () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const code = urlParams.get('code');
+            const error = urlParams.get('error');
 
-    const handleOrcidCallback = () => {
-        const urlParams = new URLSearchParams(window.location.search);
-        console.log(urlParams)
-        const orcidUser = urlParams.get('ORCIDUser');
-        console.log('ORCID User:', orcidUser);
-        if (orcidUser === 'true') {
-            localStorage.setItem('orcidAuth', 'true'); // Save ORCID login state
-            navigate('/home');
-        } else if (orcidUser === 'false') {
-            setError('ORCID authentication failed');
-            setTimeout(() => {
-                setError('');
-            }, 5000);
-        }
-    };
+            if (code) {
+                localStorage.setItem('orcidAuth', 'true'); // Save ORCID login state
+                navigate('/home');
+            } else if (error) {
+                setError('ORCID authentication failed');
+                localStorage.setItem('orcidAuth', 'false');
+                setTimeout(() => {
+                    setError('');
+                }, 5000);
+            }
+        };
+
+        handleOrcidCallback();
+    }, [navigate]);
 
     return (
         <div className="container">
