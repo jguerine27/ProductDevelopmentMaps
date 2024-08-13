@@ -6,12 +6,12 @@ const RedirectIfORCIDAuth = ({ children }) => {
 
   useEffect(() => {
     // Check for ORCID API authentication from URL parameters
-    const urlParams = new URLSearchParams(window.location.search);
-    const orcidUser = urlParams.get('code') || urlParams.get('error');
-    
-    if (orcidUser === 'code') {
+    const orcidAuth = localStorage.getItem('orcidAuth');
+  const orcidUser = orcidAuth === 'true';
+
+    if (orcidUser) {
       setIsORCIDAuthenticated(true);
-    } else if (urlParams.get('error')) {
+    } else {
       setIsORCIDAuthenticated(false);
     }
   }, []);
