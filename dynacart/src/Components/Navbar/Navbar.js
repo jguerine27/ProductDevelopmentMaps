@@ -21,6 +21,9 @@ const Navbar = ({ setActiveForm }) => {
                     <button onClick={() => setActiveForm('reviewReference')}>Review added references</button>
                 </li>
                 <li>
+                    <button onClick={() => setActiveForm('delete')}>Delete References/Nodes</button>
+                </li>
+                <li>
                     <button onClick={() => setActiveForm('graph')}>View Graph</button>
                 </li>
             </ul>

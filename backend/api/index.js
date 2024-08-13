@@ -234,35 +234,49 @@ app.get('/api/reviewable-nodes', async (req, res) => {
     }
 });
 
-
 app.post('/api/confirm-node-addition/:id', async (req, res) => {
     const { id } = req.params;
+    const { label } = req.body; // Assume the correct label is passed in the request body
 
     const session = driver.session();
 
     try {
-        // Find the reviewable node and update its label
+        // Find the reviewable node and get all its properties
         const result = await session.run(
-            `MATCH (b:ReviewableNode {name: $id})
-             REMOVE b:ReviewableNode
-             SET b:$label
-             RETURN b`,
+            `MATCH (n:ReviewableNode {name: $id})
+             RETURN n`,
             { id }
         );
 
         if (result.records.length > 0) {
-            const node = result.records[0].get('b');
-            res.status(200).json({ message: 'Node confirmed and added to the database', node });
+            const reviewableNode = result.records[0].get('n').properties;
+
+            // Create a new node with the correct label and the same properties
+            await session.run(
+                `CREATE (n:$label $props)
+                 RETURN n`,
+                { label, props: reviewableNode }
+            );
+
+            // Delete the original ReviewableNode
+            await session.run(
+                `MATCH (n:ReviewableNode {name: $id})
+                 DETACH DELETE n`,
+                { id }
+            );
+
+            res.status(200).json({ message: 'Node confirmed, added to the database, and the reviewable node was deleted.' });
         } else {
-            res.status(500).json({ error: 'Failed to confirm node addition' });
+            res.status(404).json({ error: 'Reviewable node not found.' });
         }
     } catch (error) {
         console.error('Error confirming node addition:', error);
-        res.status(500).json({ error: 'An error occurred while confirming node addition' });
+        res.status(500).json({ error: 'An error occurred while confirming node addition.' });
     } finally {
         await session.close();
     }
 });
+
 
 
 app.post('/api/reject-node-addition/:id', async (req, res) => {

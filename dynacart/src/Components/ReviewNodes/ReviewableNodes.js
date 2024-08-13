@@ -18,15 +18,25 @@ const ReviewableNodes = () => {
         fetchReviewableNodes();
     }, []);
 
-    const handleConfirmAddition = async (nodeId) => {
+    const handleConfirmAddition = async (nodeId, nodeProperties, nodeLabel) => {
         try {
+            
             const response = await fetch(`http://localhost:4000/api/confirm-node-addition/${nodeId}`, {
                 method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    label: nodeLabel,
+                    properties: nodeProperties,
+                }),
             });
-            console.log(response)
+    
             if (response.ok) {
+                console.log(nodeProperties)
                 setMessage('Node added to the database.');
                 setReviewableNodes(reviewableNodes.filter(node => node.id !== nodeId));
+                
             } else {
                 setMessage('Failed to add node to the database.');
             }
@@ -34,6 +44,7 @@ const ReviewableNodes = () => {
             console.error('Error confirming node addition:', error);
         }
     };
+    
 
     const handleRejectAddition = async (nodeId) => {
         try {
@@ -59,7 +70,7 @@ const ReviewableNodes = () => {
                 {reviewableNodes.map(node => (
                     <li key={node.id}>
                         <p><strong>{node.name}</strong> - {node.label}</p>
-                        <button onClick={() => handleConfirmAddition(node.name)}>Confirm addition</button>
+                        <button onClick={() => handleConfirmAddition(node.name,node,node.label)}>Confirm addition</button>
                         <button onClick={() => handleRejectAddition(node.name)}>Reject addition</button>
                     </li>
                 ))}

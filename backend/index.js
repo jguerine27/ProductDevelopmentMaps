@@ -83,8 +83,10 @@ app.get('/api/node-labels', async (req, res) => {
     const session = driver.session();
     try {
         const result = await session.run('CALL db.labels()');
-        const labels = result.records.map(record => record.get(0)).filter(label => label !== 'ReviewableNode' || label !== 'ReviewableReference');
-        res.json(labels);
+const labels = result.records.map(record => record.get(0))
+    .filter(label => !['ReviewableNode', 'ReviewableReference'].includes(label));
+res.json(labels);
+
     } catch (error) {
         console.error('Error fetching node labels:', error);
         res.status(500).json({ error: 'Failed to fetch node labels' });
@@ -192,7 +194,7 @@ app.get('/api/get-colors', async (req, res) => {
     const session = driver.session();
     try {
         const result = await session.run(
-            'MATCH (n) WHERE n.color IS NOT NULL RETURN DISTINCT n.color AS color'
+            'MATCH (n) WHERE n.color IS NOT NULL AND NOT ("ReviewableNode" IN labels(n) OR "ReviewableReference" IN labels(n)) RETURN DISTINCT n.color AS color'
         );
         const colors = result.records.map(record => record.get('color'));
         res.json(colors);
@@ -279,6 +281,48 @@ app.post('/api/submit-reference-for-review', async (req, res) => {
     } catch (error) {
         console.error('Error submitting reference for review:', error);
         res.status(500).json({ error: 'An error occurred while submitting reference for review' });
+    } finally {
+        await session.close();
+    }
+});
+
+
+// Delete a node by name
+app.delete('/api/delete-node/:nodeName', async (req, res) => {
+    const { nodeName } = req.params;
+    const session = driver.session();
+    try {
+        // Run the Cypher query to delete the node
+        await session.run(
+            `MATCH (n {name: $nodeName})
+             DETACH DELETE n`,
+            { nodeName }
+        );
+        res.status(200).json({ message: 'Node deleted successfully.' });
+    } catch (error) {
+        console.error('Error deleting node:', error);
+        res.status(500).json({ error: 'Failed to delete node.' });
+    } finally {
+        await session.close();
+    }
+});
+
+
+// Delete a relationship by name
+app.delete('/api/delete-relationship/:relationshipName', async (req, res) => {
+    const { relationshipName } = req.params;
+    const session = driver.session();
+    try {
+        // Run the Cypher query to delete the relationship
+        await session.run(
+            `MATCH ()-[r {name: $relationshipName}]->()
+             DELETE r`,
+            { relationshipName }
+        );
+        res.status(200).json({ message: 'Relationship deleted successfully.' });
+    } catch (error) {
+        console.error('Error deleting relationship:', error);
+        res.status(500).json({ error: 'Failed to delete relationship.' });
     } finally {
         await session.close();
     }
@@ -400,29 +444,38 @@ app.post('/api/submit-node-for-review', async (req, res) => {
         await session.close();
     }
 });
-
-
 app.post('/api/confirm-node-addition/:id', async (req, res) => {
     const { id } = req.params;
+    const { label, properties } = req.body;
 
     const session = driver.session();
 
     try {
-        // Find the reviewable node and update its label
-        const result = await session.run(
-            `MATCH (b:ReviewableNode {name: $id})
-             REMOVE b:ReviewableNode
-             SET b:$label
-             RETURN b`,
+        // Find the reviewable node by its ID
+        const findResult = await session.run(
+            `MATCH (n:ReviewableNode {name: $id})
+            DETACH DELETE n
+             RETURN n`,
             { id }
         );
 
-        if (result.records.length > 0) {
-            const node = result.records[0].get('b');
-            res.status(200).json({ message: 'Node confirmed and added to the database', node });
-        } else {
-            res.status(500).json({ error: 'Failed to confirm node addition' });
+        if (findResult.records.length === 0) {
+            return res.status(404).json({ error: 'Reviewable node not found' });
         }
+        console.log(properties)
+        // Get the properties from the found node
+        const nodeProperties = findResult.records[0].get('n').properties;
+        const result = await session.run(
+            `CREATE (n:${label} $props)     
+             RETURN n`,
+            {
+                props: { ...nodeProperties, ...properties }
+            }
+        );
+
+        const node = result.records[0].get('n');
+        res.status(200).json({ message: 'Node confirmed and added to the database', node });
+
     } catch (error) {
         console.error('Error confirming node addition:', error);
         res.status(500).json({ error: 'An error occurred while confirming node addition' });
@@ -430,6 +483,7 @@ app.post('/api/confirm-node-addition/:id', async (req, res) => {
         await session.close();
     }
 });
+
 
 app.post('/api/reject-node-addition/:id', async (req, res) => {
     const { id } = req.params;
