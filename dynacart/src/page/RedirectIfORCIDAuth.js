@@ -7,6 +7,7 @@ const RedirectIfORCIDAuth = ({ children }) => {
   useEffect(() => {
     // Check for ORCID API authentication from URL parameters
     const orcidAuth = localStorage.getItem('orcidAuth');
+    console.log(orcidAuth)
   const orcidUser = orcidAuth === 'true';
 
     if (orcidUser) {

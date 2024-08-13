@@ -62,24 +62,6 @@ function App() {
               </RedirectIfAuthenticated>
               
             } />
-            <Route path="/login" element={
-              <RedirectIfORCIDAuth>
-                <Login />
-                </RedirectIfORCIDAuth>
-              
-            } />
-            <Route path="/" element={
-              <RedirectIfORCIDAuth>
-                <Login />
-                </RedirectIfORCIDAuth>
-              
-            } />
-            <Route path="/signup" element={
-              <RedirectIfORCIDAuth>
-                <Login />
-              </RedirectIfORCIDAuth>
-              
-            } />
           </Routes>
         </section>
       </div>
