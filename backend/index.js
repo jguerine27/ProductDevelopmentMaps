@@ -111,22 +111,46 @@ app.get('/api/node-maps', async (req, res) => {
         await session.close();
     }
 });
-
-// Fetch all node names for a given label
 app.get('/api/node-names/:label', async (req, res) => {
     const { label } = req.params;
     const session = driver.session();
+
     try {
         const result = await session.run(
             `MATCH (n:${label}) RETURN n.name AS name`
         );
-        const names = result.records.map(record => record.get('name'));
-        res.json(names);
+
+        const nodeNames = result.records.map(record => record.get('name'));
+        res.json(nodeNames);
     } catch (error) {
         console.error(`Error fetching node names for label ${label}:`, error);
-        res.status(500).json({ error: `Failed to fetch node names for label ${label}` });
-    } finally {
-        await session.close();
+        res.status(500).json({ error: 'Failed to fetch node names' });
+    }
+});
+
+
+app.get('/api/node-details/:nodeName', async (req, res) => {
+    const { nodeName } = req.params;
+    const session = driver.session();
+
+    try {
+        const result = await session.run(
+            `MATCH (n) 
+             WHERE n.name = $nodeName AND NOT (n:ReviewableNode) AND NOT (n:ReviewableReference)
+             RETURN n`,
+            { nodeName }
+        );
+
+        if (result.records.length === 0) {
+            return res.status(404).json({ error: 'Node not found' });
+        }
+
+        const node = result.records[0].get('n').properties;
+
+        res.json(node);
+    } catch (error) {
+        console.error('Error fetching node details:', error);
+        res.status(500).json({ error: 'An error occurred while fetching node details' });
     }
 });
 
@@ -240,6 +264,46 @@ app.get('/api/reviewable-nodes', async (req, res) => {
 });
 
 
+// Update Node API
+app.post('/api/update-node', async (req, res) => {
+    let {oldName,newName, tags,citations} = req.body;
+    console.log(req.body)
+    if (!citations) {
+        citations = ''
+    }
+    if (!tags){
+        tags = ''
+    }
+
+    if (!newName) {
+        return res.status(400).json({ error: 'Name, tags, and citations are required' });
+    }
+
+    const session = driver.session();
+
+    try {
+        const result = await session.run(
+            `MATCH (n {name: $oldName})
+SET n.tags = $tags,
+    n.name = $newName,
+    n.citations = $citations
+RETURN n
+`,
+            { oldName, newName,tags, citations }
+        );
+
+        if (result.records.length > 0) {
+            res.json({ message: 'Node updated successfully' });
+        } else {
+            res.status(404).json({ error: 'Node not found' });
+        }
+    } catch (error) {
+        console.error('Error updating node:', error);
+        res.status(500).json({ error: 'Failed to update node' });
+    } finally {
+        await session.close();
+    }
+});
 // Submit reference for review
 app.post('/api/submit-reference-for-review', async (req, res) => {
     const { nodeLabel1, nodeName1, nodeLabel2, nodeName2, referenceName, year, author, type } = req.body;

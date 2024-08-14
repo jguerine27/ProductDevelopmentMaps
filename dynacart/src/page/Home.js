@@ -9,6 +9,7 @@ import { useNavigate } from 'react-router-dom';
 import ReviewableNodes from '../Components/ReviewNodes/ReviewableNodes';
 import ReviewReferences from '../Components/ReviewReference/ReviewReferences';
 import DeleteOption from '../Components/DeleteOption/DeleteOption';
+import UpdateNode from '../Components/UpdateNode/UpdateNode';
  
 const Home = () => {
     const navigate = useNavigate();
@@ -35,6 +36,7 @@ const Home = () => {
             {activeForm === 'reviewNode' && <ReviewableNodes />}
             {activeForm === 'reviewReference' && <ReviewReferences />}
             {activeForm === 'delete' && <DeleteOption />}
+            {activeForm === 'updateNode' && <UpdateNode/>}
 
             <button onClick={handleLogout}>Logout</button>
 
