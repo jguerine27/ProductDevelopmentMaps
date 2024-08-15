@@ -1,6 +1,7 @@
 const express = require('express');
 const neo4j = require('neo4j-driver');
 const cors = require('cors');
+const axios = require('axios');
 require('dotenv').config();
 
 const app = express();
@@ -987,6 +988,8 @@ app.get('/api/filter/color/:color', async (req, res) => {
         await session.close();
     }
 });
+
+
 // Apply all filters API
 app.get('/api/filter/all', async (req, res) => {
     const { keyword, year, startYear, endYear, author, tags, color } = req.query;
@@ -1002,31 +1005,38 @@ app.get('/api/filter/all', async (req, res) => {
     const session = driver.session();
     
     try {
-        const queryParts = [];
+        const nodeQueryParts = [];
+        const referenceQueryParts = [];
         const params = {};
 
         // Keyword filter
         if (keyword && keyword.length > 0) {
-            queryParts.push(`
+            nodeQueryParts.push(`
                 (
                     toLower(n.name) CONTAINS toLower($keyword) 
                     OR any(label IN labels(n) WHERE toLower(label) CONTAINS toLower($keyword))
                     OR any(label IN labels(m) WHERE toLower(label) CONTAINS toLower($keyword))
                 )
             `);
+            referenceQueryParts.push(`
+                (
+                    toLower(n.name) CONTAINS toLower($keyword) 
+                    OR any(label IN labels(n) WHERE toLower(label) CONTAINS toLower($keyword))
+                    OR any(label IN labels(m) WHERE toLower(label) CONTAINS toLower($keyword))
+                )`);
             params.keyword = keyword;
         }
 
         // Year filter
         if (year && year.length > 0) {
             const yearArray = Array.isArray(year) ? year : year.split(',').map(y => y.trim());
-            queryParts.push(`r.year IN $yearArray`);
+            referenceQueryParts.push(`r.year IN $yearArray`);
             params.yearArray = yearArray;
         }
 
         // Year range filter
         if (startYear && startYear.length > 0 && endYear && endYear.length > 0) {
-            queryParts.push(`r.year >= $startYear AND r.year <= $endYear`);
+            referenceQueryParts.push(`r.year >= $startYear AND r.year <= $endYear`);
             params.startYear = startYear;
             params.endYear = endYear;
         }
@@ -1034,29 +1044,32 @@ app.get('/api/filter/all', async (req, res) => {
         // Author/reference filter
         if (author && author.length > 0) {
             const authorArray = Array.isArray(author) ? author : author.split(',').map(a => a.trim().toLowerCase());
-            queryParts.push(`ANY(a IN $authorArray WHERE toLower(r.author) CONTAINS a OR toLower(r.reference) CONTAINS a)`);
+            referenceQueryParts.push(`ANY(a IN $authorArray WHERE toLower(r.author) CONTAINS a OR toLower(r.reference) CONTAINS a)`);
             params.authorArray = authorArray;
         }
 
         // Tag filter
         if (tags && tags.length > 0) {
             const tagArray = Array.isArray(tags) ? tags : tags.split(',').map(t => t.trim().toLowerCase());
-            queryParts.push(`ANY(tag IN n.tags WHERE ANY(t IN $tagArray WHERE toLower(tag) CONTAINS toLower(t)))`);
+            nodeQueryParts.push(`ANY(tag IN n.tags WHERE ANY(t IN $tagArray WHERE toLower(tag) CONTAINS toLower(t)))`);
+            referenceQueryParts.push(`ANY(tag IN n.tags WHERE ANY(t IN $tagArray WHERE toLower(tag) CONTAINS toLower(t)))`);
             params.tagArray = tagArray;
         }
 
         // Color filter
         if (color && color.length > 0) {
             const colorArray = Array.isArray(color) ? color : color.split(',').map(c => c.trim().toLowerCase());
-            queryParts.push(`ANY(c IN $colorArray WHERE toLower(n.color) = toLower(c))`);
+            nodeQueryParts.push(`ANY(c IN $colorArray WHERE toLower(n.color) = toLower(c))`);
+            referenceQueryParts.push(`ANY(c IN $colorArray WHERE toLower(n.color) = toLower(c))`);
             params.colorArray = colorArray;
         }
 
         // Combine all query parts
         const query = `
-            MATCH (n)-[r]->(m)
-            ${queryParts.length > 0 ? `WHERE ${queryParts.join(' AND ')}` : ''}
-            OPTIONAL MATCH (m)
+            MATCH (n)
+            ${nodeQueryParts.length > 0 ? `WHERE ${nodeQueryParts.join(' AND ')}` : ''}
+            OPTIONAL MATCH (n)-[r]->(m)
+            ${referenceQueryParts.length > 0 ? `WHERE ${referenceQueryParts.join(' AND ')}` : ''}
             RETURN DISTINCT n, labels(n) AS nLabels, r, m, labels(m) AS mLabels
         `;
         console.log(query);
@@ -1096,7 +1109,6 @@ app.get('/api/filter/all', async (req, res) => {
         await session.close();
     }
 });
-
 
 
 

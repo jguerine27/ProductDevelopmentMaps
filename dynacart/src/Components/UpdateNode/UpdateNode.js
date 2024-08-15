@@ -164,7 +164,7 @@ const UpdateNode = () => {
                         <h3>Are you sure you want to update this node?</h3>
                         <button onClick={handleConfirmUpdate}>Confirm</button>
                         <button onClick={handleDiscardUpdate}>Discard</button>
-                    </div>
+                    </div>y
                 </div>
             )}
         </div>
