@@ -8,7 +8,7 @@ const AddReferenceForm = () => {
     const [selectedLabel2, setSelectedLabel2] = useState('');
     const [nodeNames2, setNodeNames2] = useState([]);
     const [selectedNodeName2, setSelectedNodeName2] = useState('');
-    const [referenceName, setReferenceName] = useState(''); // Use referenceName instead of relationshipName
+    const [referenceName, setReferenceName] = useState('');
     const [year, setYear] = useState('');
     const [author, setAuthor] = useState('');
     const [type, setType] = useState('');
@@ -46,19 +46,33 @@ const AddReferenceForm = () => {
         }
     };
 
+    useEffect(() => {
+        if (selectedLabel1) {
+            fetchNodeNames(selectedLabel1, setNodeNames1);
+        }
+    }, [selectedLabel1]);
+
+    useEffect(() => {
+        if (selectedLabel2) {
+            fetchNodeNames(selectedLabel2, setNodeNames2);
+        }
+    }, [selectedLabel2]);
+
+    useEffect(() => {
+        // Exclude selectedNodeName1 from nodeNames2
+        setNodeNames2(prevNames => prevNames.filter(name => name !== selectedNodeName1));
+    }, [selectedNodeName1]);
+
     const handleNodeLabel1Change = (label) => {
         setSelectedLabel1(label);
-        fetchNodeNames(label, setNodeNames1);
         setSelectedNodeName1('');
     };
 
     const handleNodeLabel2Change = (label) => {
         setSelectedLabel2(label);
-        fetchNodeNames(label, setNodeNames2);
         setSelectedNodeName2('');
     };
 
-    // Update the referenceName whenever author or year changes
     useEffect(() => {
         if (author && year) {
             setReferenceName(`${author} ${year}`);
@@ -70,9 +84,12 @@ const AddReferenceForm = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        // Form validation
         if (!selectedLabel1 || !selectedNodeName1 || !selectedLabel2 || !selectedNodeName2 || !referenceName || !year || !author || !type) {
             setMessage('Submit all fields');
+            return;
+        }
+        if (selectedLabel1 === selectedLabel2 && selectedNodeName1 === selectedNodeName2) {
+            setMessage('Cannot select the same node for both labels');
             return;
         }
 
@@ -87,7 +104,7 @@ const AddReferenceForm = () => {
                     nodeName1: selectedNodeName1,
                     nodeLabel2: selectedLabel2,
                     nodeName2: selectedNodeName2,
-                    referenceName: referenceName, // Use referenceName
+                    referenceName: referenceName,
                     year: year,
                     author: author,
                     type
@@ -149,7 +166,7 @@ const AddReferenceForm = () => {
                     <input
                         type="text"
                         value={referenceName}
-                        readOnly // Make it read-only since it is auto-filled
+                        readOnly
                     />
                 </div>
                 <div>
