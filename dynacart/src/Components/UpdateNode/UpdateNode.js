@@ -7,6 +7,8 @@ const UpdateNode = () => {
     const [selectedNode, setSelectedNode] = useState('');
     const [nodeDetails, setNodeDetails] = useState({});
     const [originalNodeName, setOriginalNodeName] = useState('');
+    const [originalTags, setOriginalTags] = useState([]);
+    const [originalCitations, setOriginalCitations] = useState([]);
     const [message, setMessage] = useState('');
     const [showPopup, setShowPopup] = useState(false);
 
@@ -30,9 +32,11 @@ const UpdateNode = () => {
         setSelectedNode('');
         setNodeDetails({});
         setOriginalNodeName('');
+        setOriginalTags([]);
+        setOriginalCitations([]);
 
         try {
-            const response = await fetch(`http://localhost:4000/api/node-names/` + label);
+            const response = await fetch(`http://localhost:4000/api/node-names/${label}`);
             const data = await response.json();
             setNodes(data);
         } catch (error) {
@@ -49,6 +53,8 @@ const UpdateNode = () => {
             const data = await response.json();
             setNodeDetails(data);
             setOriginalNodeName(nodeName); // Store the original name
+            setOriginalTags(data.tags || []); // Store original tags
+            setOriginalCitations(data.citations || []); // Store original citations
         } catch (error) {
             console.error('Error fetching node details:', error);
         }
@@ -69,15 +75,15 @@ const UpdateNode = () => {
     };
 
     // Ensure tags and citations are always passed as lists of strings
-    const ensureListFormat = (value) => {
+    const ensureListFormat = (value, originalValue) => {
         if (typeof value === 'string') {
             const trimmedValue = value.trim();
             if (trimmedValue === '') {
-                return []; // Return empty list if input is empty or contains only whitespace
+                return originalValue; // Use original value if input is empty
             }
             return trimmedValue.split(',').map(item => item.trim());
         }
-        return []; // Return empty list for non-string inputs
+        return originalValue; // Use original value for non-string inputs
     };
 
     // Handle the confirmation of the update
@@ -89,8 +95,8 @@ const UpdateNode = () => {
                 body: JSON.stringify({
                     oldName: originalNodeName, // Pass the old name
                     newName: nodeDetails.name || '', // Pass the new name, default to empty string if not provided
-                    tags: ensureListFormat(nodeDetails.tags || ''), // Ensure tags are a list of strings
-                    citations: ensureListFormat(nodeDetails.citations || '') // Ensure citations are a list of strings
+                    tags: ensureListFormat(nodeDetails.tags, originalTags), // Ensure tags are a list of strings
+                    citations: ensureListFormat(nodeDetails.citations, originalCitations) // Ensure citations are a list of strings
                 })
             });
 
@@ -164,7 +170,7 @@ const UpdateNode = () => {
                         <h3>Are you sure you want to update this node?</h3>
                         <button onClick={handleConfirmUpdate}>Confirm</button>
                         <button onClick={handleDiscardUpdate}>Discard</button>
-                    </div>y
+                    </div>
                 </div>
             )}
         </div>
