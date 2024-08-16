@@ -10,7 +10,6 @@ const bodyParser = require('body-parser');
 // Replace with the path to your service account key file
 const serviceAccount = require('./dynacart-ba40e-firebase-adminsdk-kutg0-4344c5ba7f.json');
 
-app.use(cors());
 
 
 admin.initializeApp({
@@ -19,6 +18,7 @@ admin.initializeApp({
 });
 
 const app = express();
+app.use(cors());
 app.use(bodyParser.json());
 
 const ORCID_CLIENT_ID = process.env.ORCID_CLIENT_ID;
