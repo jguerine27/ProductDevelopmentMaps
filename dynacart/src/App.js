@@ -59,7 +59,7 @@ function App() {
               <RedirectIfAuthenticated>
                 <Login />
               </RedirectIfAuthenticated>
-              
+
             } />
           </Routes>
         </section>
@@ -67,5 +67,4 @@ function App() {
     </Router>
   );
 }
-
 export default App;
