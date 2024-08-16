@@ -11,7 +11,8 @@ const bodyParser = require('body-parser');
 const serviceAccount = require('./dynacart-ba40e-firebase-adminsdk-kutg0-4344c5ba7f.json');
 
 app.use(cors({
-    origin: 'https://maps-frontend-git-orcid-api-muhammad-bilals-projects-bd7acfbb.vercel.app'
+    origin: 'https://maps-frontend-git-orcid-api-muhammad-bilals-projects-bd7acfbb.vercel.app',
+    credentials: true // If you're sending cookies or HTTP authentication with the request
 }));
 
 admin.initializeApp({
