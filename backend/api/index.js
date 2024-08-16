@@ -6,9 +6,10 @@ require('dotenv').config();
 const admin = require('firebase-admin');
 const bodyParser = require('body-parser');
 
+const app = express();
 
 // Replace with the path to your service account key file
-const serviceAccount = require('./dynacart-ba40e-firebase-adminsdk-kutg0-4344c5ba7f.json');
+const serviceAccount = require('../dynacart-ba40e-firebase-adminsdk-kutg0-4344c5ba7f.json');
 
 
 
@@ -17,7 +18,6 @@ admin.initializeApp({
   databaseURL: 'https://console.firebase.google.com/u/0/project/dynacart-ba40e/database/dynacart-ba40e-default-rtdb/data/~2F'
 });
 
-const app = express();
 app.use(cors());
 app.use(bodyParser.json());
 
