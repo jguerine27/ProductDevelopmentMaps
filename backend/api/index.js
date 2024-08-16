@@ -14,6 +14,10 @@ admin.initializeApp({
   databaseURL: 'https://console.firebase.google.com/u/0/project/dynacart-ba40e/database/dynacart-ba40e-default-rtdb/data/~2F'
 });
 
+app.use(cors({
+    origin: 'https://maps-frontend-git-orcid-api-muhammad-bilals-projects-bd7acfbb.vercel.app'
+}));
+
 const app = express();
 app.use(bodyParser.json());
 
@@ -72,7 +76,6 @@ app.get('/orcid/callback', async (req, res) => {
 
 const port = process.env.PORT || 4000;
 
-app.use(cors());
 app.use(express.json());
 
 
