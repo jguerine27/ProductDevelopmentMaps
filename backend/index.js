@@ -1,6 +1,7 @@
 const express = require('express');
 const neo4j = require('neo4j-driver');
 const cors = require('cors');
+const axios = require('axios');
 require('dotenv').config();
 
 const app = express();
@@ -36,8 +37,11 @@ app.get('/api/nodes-relationships', async (req, res) => {
     try {
         const result = await session.run(
             `MATCH (n)
-            OPTIONAL MATCH (n)-[r]->(m)
-            RETURN n, labels(n) as nLabels, r, m, labels(m) as mLabels`
+WHERE NONE(label IN labels(n) WHERE label IN ['ReviewableNode', 'ReviewableReference'])
+OPTIONAL MATCH (n)-[r]->(m)
+WHERE m IS NULL OR NONE(label IN labels(m) WHERE label IN ['ReviewableNode', 'ReviewableReference'])
+RETURN n, labels(n) AS nLabels, r, m, labels(m) AS mLabels
+`
         );
 
         const nodes = new Map();
@@ -80,8 +84,10 @@ app.get('/api/node-labels', async (req, res) => {
     const session = driver.session();
     try {
         const result = await session.run('CALL db.labels()');
-        const labels = result.records.map(record => record.get(0));
-        res.json(labels);
+const labels = result.records.map(record => record.get(0))
+    .filter(label => !['ReviewableNode', 'ReviewableReference'].includes(label));
+res.json(labels);
+
     } catch (error) {
         console.error('Error fetching node labels:', error);
         res.status(500).json({ error: 'Failed to fetch node labels' });
@@ -106,22 +112,46 @@ app.get('/api/node-maps', async (req, res) => {
         await session.close();
     }
 });
-
-// Fetch all node names for a given label
 app.get('/api/node-names/:label', async (req, res) => {
     const { label } = req.params;
     const session = driver.session();
+
     try {
         const result = await session.run(
             `MATCH (n:${label}) RETURN n.name AS name`
         );
-        const names = result.records.map(record => record.get('name'));
-        res.json(names);
+
+        const nodeNames = result.records.map(record => record.get('name'));
+        res.json(nodeNames);
     } catch (error) {
         console.error(`Error fetching node names for label ${label}:`, error);
-        res.status(500).json({ error: `Failed to fetch node names for label ${label}` });
-    } finally {
-        await session.close();
+        res.status(500).json({ error: 'Failed to fetch node names' });
+    }
+});
+
+
+app.get('/api/node-details/:nodeName', async (req, res) => {
+    const { nodeName } = req.params;
+    const session = driver.session();
+
+    try {
+        const result = await session.run(
+            `MATCH (n) 
+             WHERE n.name = $nodeName AND NOT (n:ReviewableNode) AND NOT (n:ReviewableReference)
+             RETURN n`,
+            { nodeName }
+        );
+
+        if (result.records.length === 0) {
+            return res.status(404).json({ error: 'Node not found' });
+        }
+
+        const node = result.records[0].get('n').properties;
+
+        res.json(node);
+    } catch (error) {
+        console.error('Error fetching node details:', error);
+        res.status(500).json({ error: 'An error occurred while fetching node details' });
     }
 });
 
@@ -189,7 +219,7 @@ app.get('/api/get-colors', async (req, res) => {
     const session = driver.session();
     try {
         const result = await session.run(
-            'MATCH (n) WHERE n.color IS NOT NULL RETURN DISTINCT n.color AS color'
+            'MATCH (n) WHERE n.color IS NOT NULL AND NOT ("ReviewableNode" IN labels(n) OR "ReviewableReference" IN labels(n)) RETURN DISTINCT n.color AS color'
         );
         const colors = result.records.map(record => record.get('color'));
         res.json(colors);
@@ -216,6 +246,335 @@ app.get('/api/get-approaches', async (req, res) => {
         await session.close();
     }
 });
+
+app.get('/api/reviewable-nodes', async (req, res) => {
+    const session = driver.session();
+
+    try {
+        const result = await session.run(`MATCH (b:ReviewableNode) RETURN b`);
+
+        const nodes = result.records.map(record => record.get('b').properties);
+
+        res.status(200).json(nodes);
+    } catch (error) {
+        console.error('Error retrieving reviewable nodes:', error);
+        res.status(500).json({ error: 'An error occurred while retrieving reviewable nodes' });
+    } finally {
+        await session.close();
+    }
+});
+
+
+// Update Node API
+app.post('/api/update-node', async (req, res) => {
+    let {oldName,newName, tags,citations} = req.body;
+    console.log(req.body)
+    if (!citations) {
+        citations = ''
+    }
+    if (!tags){
+        tags = ''
+    }
+
+    if (!newName) {
+        return res.status(400).json({ error: 'Name, tags, and citations are required' });
+    }
+
+    const session = driver.session();
+
+    try {
+        const result = await session.run(
+            `MATCH (n {name: $oldName})
+SET n.tags = $tags,
+    n.name = $newName,
+    n.citations = $citations
+RETURN n
+`,
+            { oldName, newName,tags, citations }
+        );
+
+        if (result.records.length > 0) {
+            res.json({ message: 'Node updated successfully' });
+        } else {
+            res.status(404).json({ error: 'Node not found' });
+        }
+    } catch (error) {
+        console.error('Error updating node:', error);
+        res.status(500).json({ error: 'Failed to update node' });
+    } finally {
+        await session.close();
+    }
+});
+// Submit reference for review
+app.post('/api/submit-reference-for-review', async (req, res) => {
+    const { nodeLabel1, nodeName1, nodeLabel2, nodeName2, referenceName, year, author, type } = req.body;
+
+    const session = driver.session();
+
+    try {
+        // Create a new reference node with the label "ReviewableReference"
+        const result = await session.run(
+            `CREATE (r:ReviewableReference {
+                nodeLabel1: $nodeLabel1,
+                nodeName1: $nodeName1,
+                nodeLabel2: $nodeLabel2,
+                nodeName2: $nodeName2,
+                referenceName: $referenceName,
+                year: $year,
+                author: $author,
+                type: $type
+            })
+            RETURN r`,
+            {
+                nodeLabel1,
+                nodeName1,
+                nodeLabel2,
+                nodeName2,
+                referenceName,
+                year,
+                author,
+                type
+            }
+        );
+
+        if (result.records.length > 0) {
+            const reference = result.records[0].get('r');
+            res.status(200).json({ message: 'Reference submitted for review', reference });
+        } else {
+            res.status(500).json({ error: 'Failed to submit reference for review' });
+        }
+    } catch (error) {
+        console.error('Error submitting reference for review:', error);
+        res.status(500).json({ error: 'An error occurred while submitting reference for review' });
+    } finally {
+        await session.close();
+    }
+});
+
+
+// Delete a node by name
+app.delete('/api/delete-node/:nodeName', async (req, res) => {
+    const { nodeName } = req.params;
+    const session = driver.session();
+    try {
+        // Run the Cypher query to delete the node
+        await session.run(
+            `MATCH (n {name: $nodeName})
+             DETACH DELETE n`,
+            { nodeName }
+        );
+        res.status(200).json({ message: 'Node deleted successfully.' });
+    } catch (error) {
+        console.error('Error deleting node:', error);
+        res.status(500).json({ error: 'Failed to delete node.' });
+    } finally {
+        await session.close();
+    }
+});
+
+
+// Delete a relationship by name
+app.delete('/api/delete-relationship/:relationshipName', async (req, res) => {
+    const { relationshipName } = req.params;
+    const session = driver.session();
+    try {
+        // Run the Cypher query to delete the relationship
+        await session.run(
+            `MATCH ()-[r {name: $relationshipName}]->()
+             DELETE r`,
+            { relationshipName }
+        );
+        res.status(200).json({ message: 'Relationship deleted successfully.' });
+    } catch (error) {
+        console.error('Error deleting relationship:', error);
+        res.status(500).json({ error: 'Failed to delete relationship.' });
+    } finally {
+        await session.close();
+    }
+});
+
+
+// Fetch all reviewable references
+app.get('/api/reviewable-references', async (req, res) => {
+    const session = driver.session();
+
+    try {
+        const result = await session.run(
+            `MATCH (r:ReviewableReference)
+             RETURN r`
+        );
+
+        const reviewableReferences = result.records.map(record => record.get('r').properties);
+
+        res.json(reviewableReferences);
+    } catch (error) {
+        console.error('Error fetching reviewable references:', error);
+        res.status(500).json({ error: 'Failed to fetch reviewable references' });
+    } finally {
+        await session.close();
+    }
+});
+
+// Confirm reference addition and create a relationship
+app.post('/api/confirm-reference-addition/:referenceId', async (req, res) => {
+    const { referenceId } = req.params;
+    const { nodeLabel1, nodeName1, nodeLabel2, nodeName2, referenceName, year, author, type } = req.body;
+
+    console.log(referenceId)
+    console.log(req.body);
+    const session = driver.session();
+
+    try {
+        // Match the ReviewableReference node and extract its properties
+        const result = await session.run(
+            `MATCH (r:ReviewableReference {referenceName: $referenceId})
+            DELETE (r)
+             RETURN r`,
+            { referenceId }
+        );
+
+        if (result.records.length === 0) {
+            res.status(404).json({ error: 'Reference not found for confirmation' });
+            return;
+        }
+
+        // Create relationship between the nodes based on the reference details
+        await session.run(
+            `MATCH (n1 {name: $nodeName1}), 
+                      (n2 {name: $nodeName2})
+             CREATE (n1)-[rel:Reference {name: $referenceName,type: $type, source:$nodeName1 , target: $nodeName2, year: $year, author: $author}]->(n2)
+             RETURN (n1)
+             `,
+            { nodeLabel1, nodeName1, nodeLabel2, nodeName2, referenceName, year, author, type, referenceId }
+        );
+
+        res.status(200).json({ message: 'Reference confirmed and relationship added to the database' });
+    } catch (error) {
+        console.error('Error confirming reference addition:', error);
+        res.status(500).json({ error: 'An error occurred while confirming reference addition' });
+    } finally {
+        await session.close();
+    }
+});
+
+
+// Reject reference addition (delete the "ReviewableReference")
+app.post('/api/reject-reference-addition/:referenceId', async (req, res) => {
+    const { referenceId } = req.params;
+    console.log(referenceId)
+
+    const session = driver.session();
+
+    try {
+        const result = await session.run(
+            `MATCH (r:ReviewableReference) WHERE r.referenceName = $referenceId
+             DELETE r
+             RETURN r`,
+            { referenceId }
+        );
+
+        res.status(200).json({ message: 'Reference rejected and deleted' });
+        
+    } catch (error) {
+        console.error('Error rejecting reference addition:', error);
+        res.status(500).json({ error: 'An error occurred while rejecting reference addition' });
+    } finally {
+        await session.close();
+    }
+});
+
+
+app.post('/api/submit-node-for-review', async (req, res) => {
+    const { label, name, type, citations, tags, map, color } = req.body;
+
+    const session = driver.session();
+
+    try {
+        // Create the new node with the "Reviewable Node" label
+        const result = await session.run(
+            `CREATE (b:ReviewableNode {name: $name, label: $label, type: $type, citations: $citations, tags: $tags, map: $map, color: $color}) RETURN b`,
+            { name, label, type, citations, tags, map, color }
+        );
+
+        if (result.records.length > 0) {
+            const node = result.records[0].get('b');
+            res.status(200).json({ message: 'Node submitted for review', node });
+        } else {
+            res.status(500).json({ error: 'Failed to submit node for review' });
+        }
+    } catch (error) {
+        console.error('Error submitting node for review:', error);
+        res.status(500).json({ error: 'An error occurred while submitting node for review' });
+    } finally {
+        await session.close();
+    }
+});
+app.post('/api/confirm-node-addition/:id', async (req, res) => {
+    const { id } = req.params;
+    const { label, properties } = req.body;
+
+    const session = driver.session();
+
+    try {
+        // Find the reviewable node by its ID
+        const findResult = await session.run(
+            `MATCH (n:ReviewableNode {name: $id})
+            DETACH DELETE n
+             RETURN n`,
+            { id }
+        );
+
+        if (findResult.records.length === 0) {
+            return res.status(404).json({ error: 'Reviewable node not found' });
+        }
+        console.log(properties)
+        // Get the properties from the found node
+        const nodeProperties = findResult.records[0].get('n').properties;
+        const result = await session.run(
+            `CREATE (n:${label} $props)     
+             RETURN n`,
+            {
+                props: { ...nodeProperties, ...properties }
+            }
+        );
+
+        const node = result.records[0].get('n');
+        res.status(200).json({ message: 'Node confirmed and added to the database', node });
+
+    } catch (error) {
+        console.error('Error confirming node addition:', error);
+        res.status(500).json({ error: 'An error occurred while confirming node addition' });
+    } finally {
+        await session.close();
+    }
+});
+
+
+app.post('/api/reject-node-addition/:id', async (req, res) => {
+    const { id } = req.params;
+
+    const session = driver.session();
+
+    try {
+        // Delete the reviewable node
+        const result = await session.run(
+            `MATCH (b:ReviewableNode {name: $id}) DETACH DELETE b`,
+            { id }
+        );
+
+        if (result.summary.counters.updates().nodesDeleted > 0) {
+            res.status(200).json({ message: 'Node rejected and removed from reviewable nodes' });
+        } else {
+            res.status(500).json({ error: 'Failed to reject node addition' });
+        }
+    } catch (error) {
+        console.error('Error rejecting node addition:', error);
+        res.status(500).json({ error: 'An error occurred while rejecting node addition' });
+    } finally {
+        await session.close();
+    }
+});
+
 
 // Create a node
 app.post('/api/create-node', async (req, res) => {
@@ -629,6 +988,8 @@ app.get('/api/filter/color/:color', async (req, res) => {
         await session.close();
     }
 });
+
+
 // Apply all filters API
 app.get('/api/filter/all', async (req, res) => {
     const { keyword, year, startYear, endYear, author, tags, color } = req.query;
@@ -644,31 +1005,38 @@ app.get('/api/filter/all', async (req, res) => {
     const session = driver.session();
     
     try {
-        const queryParts = [];
+        const nodeQueryParts = [];
+        const referenceQueryParts = [];
         const params = {};
 
         // Keyword filter
         if (keyword && keyword.length > 0) {
-            queryParts.push(`
+            nodeQueryParts.push(`
                 (
                     toLower(n.name) CONTAINS toLower($keyword) 
                     OR any(label IN labels(n) WHERE toLower(label) CONTAINS toLower($keyword))
                     OR any(label IN labels(m) WHERE toLower(label) CONTAINS toLower($keyword))
                 )
             `);
+            referenceQueryParts.push(`
+                (
+                    toLower(n.name) CONTAINS toLower($keyword) 
+                    OR any(label IN labels(n) WHERE toLower(label) CONTAINS toLower($keyword))
+                    OR any(label IN labels(m) WHERE toLower(label) CONTAINS toLower($keyword))
+                )`);
             params.keyword = keyword;
         }
 
         // Year filter
         if (year && year.length > 0) {
             const yearArray = Array.isArray(year) ? year : year.split(',').map(y => y.trim());
-            queryParts.push(`r.year IN $yearArray`);
+            referenceQueryParts.push(`r.year IN $yearArray`);
             params.yearArray = yearArray;
         }
 
         // Year range filter
         if (startYear && startYear.length > 0 && endYear && endYear.length > 0) {
-            queryParts.push(`r.year >= $startYear AND r.year <= $endYear`);
+            referenceQueryParts.push(`r.year >= $startYear AND r.year <= $endYear`);
             params.startYear = startYear;
             params.endYear = endYear;
         }
@@ -676,29 +1044,32 @@ app.get('/api/filter/all', async (req, res) => {
         // Author/reference filter
         if (author && author.length > 0) {
             const authorArray = Array.isArray(author) ? author : author.split(',').map(a => a.trim().toLowerCase());
-            queryParts.push(`ANY(a IN $authorArray WHERE toLower(r.author) CONTAINS a OR toLower(r.reference) CONTAINS a)`);
+            referenceQueryParts.push(`ANY(a IN $authorArray WHERE toLower(r.author) CONTAINS a OR toLower(r.reference) CONTAINS a)`);
             params.authorArray = authorArray;
         }
 
         // Tag filter
         if (tags && tags.length > 0) {
             const tagArray = Array.isArray(tags) ? tags : tags.split(',').map(t => t.trim().toLowerCase());
-            queryParts.push(`ANY(tag IN n.tags WHERE ANY(t IN $tagArray WHERE toLower(tag) CONTAINS toLower(t)))`);
+            nodeQueryParts.push(`ANY(tag IN n.tags WHERE ANY(t IN $tagArray WHERE toLower(tag) CONTAINS toLower(t)))`);
+            referenceQueryParts.push(`ANY(tag IN n.tags WHERE ANY(t IN $tagArray WHERE toLower(tag) CONTAINS toLower(t)))`);
             params.tagArray = tagArray;
         }
 
         // Color filter
         if (color && color.length > 0) {
             const colorArray = Array.isArray(color) ? color : color.split(',').map(c => c.trim().toLowerCase());
-            queryParts.push(`ANY(c IN $colorArray WHERE toLower(n.color) = toLower(c))`);
+            nodeQueryParts.push(`ANY(c IN $colorArray WHERE toLower(n.color) = toLower(c))`);
+            referenceQueryParts.push(`ANY(c IN $colorArray WHERE toLower(n.color) = toLower(c))`);
             params.colorArray = colorArray;
         }
 
         // Combine all query parts
         const query = `
-            MATCH (n)-[r]->(m)
-            ${queryParts.length > 0 ? `WHERE ${queryParts.join(' AND ')}` : ''}
-            OPTIONAL MATCH (m)
+            MATCH (n)
+            ${nodeQueryParts.length > 0 ? `WHERE ${nodeQueryParts.join(' AND ')}` : ''}
+            OPTIONAL MATCH (n)-[r]->(m)
+            ${referenceQueryParts.length > 0 ? `WHERE ${referenceQueryParts.join(' AND ')}` : ''}
             RETURN DISTINCT n, labels(n) AS nLabels, r, m, labels(m) AS mLabels
         `;
         console.log(query);
@@ -738,7 +1109,6 @@ app.get('/api/filter/all', async (req, res) => {
         await session.close();
     }
 });
-
 
 
 

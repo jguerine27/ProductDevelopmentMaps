@@ -1,0 +1,123 @@
+/* DeleteOption.css */
+
+/* Container for centering content */
+.containeri {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+}
+
+/* Title styling */
+.title {
+    font-size: 2rem;
+    margin-bottom: 10px;
+}
+
+.message {
+    color: #d9534f; /* Red color for error messages */
+    margin-bottom: 20px;
+}
+
+/* Wrapper for table containers */
+.table-wrapper {
+    width: 100%;
+    max-width: 1200px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+/* Table container for scroll functionality */
+.table-container {
+    max-height: 500px; /* Set a fixed height for scrolling */
+    overflow-y: auto; /* Enable vertical scroll */
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+/* Table styling */
+.data-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.data-table th,
+.data-table td {
+    padding: 12px;
+    text-align: left;
+}
+
+.data-table th {
+    background-color: #f4f4f4;
+    border-bottom: 2px solid #ddd;
+}
+
+.data-table tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+.data-table tr:hover {
+    background-color: #f1f1f1;
+}
+
+.table-title {
+    font-size: 1.5rem;
+    margin: 10px;
+    padding: 10px;
+    background-color: #f4f4f4;
+    border-bottom: 1px solid #ddd;
+}
+
+/* Button styling */
+.delete-button,
+.confirm-button,
+.cancel-button {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.delete-button {
+    background-color: #d9534f;
+    color: white;
+}
+
+.confirm-button {
+    background-color: #5bc0de;
+    color: white;
+}
+
+.cancel-button {
+    background-color: #ccc;
+    color: black;
+}
+
+/* Modal styling */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.modal {
+    background: white;
+    border-radius: 8px;
+    padding: 20px;
+    width: 90%;
+    max-width: 400px;
+    text-align: center;
+}
+
+.modal p {
+    margin-bottom: 20px;
+}
