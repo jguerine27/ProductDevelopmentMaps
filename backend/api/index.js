@@ -19,7 +19,7 @@ app.use(bodyParser.json());
 
 const ORCID_CLIENT_ID = process.env.ORCID_CLIENT_ID;
 const ORCID_CLIENT_SECRET = process.env.ORCID_CLIENT_SECRET;
-const ORCID_REDIRECT_URI = 'https://maps-frontend-git-orcid-api-muhammad-bilals-projects-bd7acfbb.vercel.app/home'; // Change to your actual redirect URI
+const ORCID_REDIRECT_URI = 'https://maps-frontend-p8x4gqi9j-muhammad-bilals-projects-bd7acfbb.vercel.app/home'; // Change to your actual redirect URI
 
 app.get('/orcid/login', (req, res) => {
   const authorizationUrl = `https://orcid.org/oauth/authorize?client_id=${ORCID_CLIENT_ID}&response_type=code&scope=/authenticate&redirect_uri=${ORCID_REDIRECT_URI}`;
