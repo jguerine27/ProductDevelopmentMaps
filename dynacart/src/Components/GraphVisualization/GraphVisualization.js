@@ -806,7 +806,9 @@ const nodeText = node.append('text')
                 <fieldset>
                     <legend>Filter by Color</legend>
                     <div style={{ display: 'flex', flexWrap: 'wrap' }}>
-                        {colors.map((c, index) => (
+                        {      
+                        colors
+                        .map((c, index) => (
                             <span key={c} style={{ margin: '0 10px 10px 0', display: 'flex', alignItems: 'center' }}>
                                 <input 
                                     type="checkbox" 

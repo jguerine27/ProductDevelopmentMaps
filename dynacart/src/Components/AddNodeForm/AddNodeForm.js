@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
+import { ChromePicker } from 'react-color'; // Import the ChromePicker from react-color
 import './AddNodeForm.css';
+
 const AddNodeForm = () => {
     const [nodeLabels, setNodeLabels] = useState([]);
     const [selectedLabel, setSelectedLabel] = useState('');
     const [nodeName, setNodeName] = useState('');
-    const [color, setColor] = useState('');
+    const [color, setColor] = useState('#000000'); // Initialize with a default color
     const [type, setType] = useState('');
     const [citations, setCitations] = useState([]);
     const [citationInput, setCitationInput] = useState('');
@@ -45,6 +47,10 @@ const AddNodeForm = () => {
         }
     };
 
+    const handleRemoveCitation = (index) => {
+        setCitations(citations.filter((_, i) => i !== index));
+    };
+
     const handleAddTag = () => {
         if (tagInput) {
             setTags([...tags, tagInput]);
@@ -52,11 +58,20 @@ const AddNodeForm = () => {
         }
     };
 
+    const handleRemoveTag = (index) => {
+        setTags(tags.filter((_, i) => i !== index));
+    };
     const handleSubmit = async (e) => {
         e.preventDefault();
-
+    
+        // Validation
+        if (!selectedLabel || !nodeName || !color || !type || !selectedMap) {
+            setMessage('Please fill in all required fields.');
+            return;
+        }
+    
         try {
-            const response = await fetch('http://localhost:4000/api/create-node', {
+            const response = await fetch('http://localhost:4000/api/submit-node-for-review', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -71,14 +86,15 @@ const AddNodeForm = () => {
                     color
                 }),
             });
-
+    
             const data = await response.json();
-            setMessage(data.message || 'Node created successfully');
+            setMessage(data.message || 'Node submitted for review');
         } catch (error) {
-            console.error('Error creating node:', error);
+            console.error('Error submitting node for review:', error);
             setMessage('An error occurred');
         }
     };
+    
 
     return (
         <div>
@@ -102,11 +118,11 @@ const AddNodeForm = () => {
                     />
                 </div>
                 <div>
-                    <label>Node Approach/Color in HEX:</label>
-                    <input
-                        type="text"
-                        value={color}
-                        onChange={(e) => setColor(e.target.value)}></input>
+                    <label>Node Approach/Color:</label>
+                    <ChromePicker
+                        color={color}
+                        onChangeComplete={(color) => setColor(color.hex)}
+                    />
                 </div>
                 <div>
                     <label>Select Type:</label>
@@ -126,7 +142,10 @@ const AddNodeForm = () => {
                     <button type="button" onClick={handleAddCitation}>Add</button>
                     <ul>
                         {citations.map((citation, index) => (
-                            <li key={index}>{citation}</li>
+                            <li key={index}>
+                                {citation}
+                                <button type="button" onClick={() => handleRemoveCitation(index)}>Remove</button>
+                            </li>
                         ))}
                     </ul>
                 </div>
@@ -140,7 +159,10 @@ const AddNodeForm = () => {
                     <button type="button" onClick={handleAddTag}>Add</button>
                     <ul>
                         {tags.map((tag, index) => (
-                            <li key={index}>{tag}</li>
+                            <li key={index}>
+                                {tag}
+                                <button type="button" onClick={() => handleRemoveTag(index)}>Remove</button>
+                            </li>
                         ))}
                     </ul>
                 </div>
