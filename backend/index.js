@@ -77,11 +77,11 @@ app.get('/orcid/callback', async (req, res) => {
 
 const port = process.env.PORT || 4000;
 
-app.use(cors({
-    origin: 'https://maps-frontend-tau.vercel.app', // Your frontend URL
-    methods: 'GET,POST,PUT,DELETE',
-    allowedHeaders: 'Content-Type, Authorization'
-}));
+// app.use(cors({
+//     origin: 'https://maps-frontend-tau.vercel.app', // Your frontend URL
+//     methods: 'GET,POST,PUT,DELETE',
+//     allowedHeaders: 'Content-Type, Authorization'
+// }));
 
 app.use(express.json());
 
