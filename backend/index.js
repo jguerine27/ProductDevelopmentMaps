@@ -10,10 +10,8 @@ const bodyParser = require('body-parser');
 // Replace with the path to your service account key file
 const serviceAccount = require('./dynacart-ba40e-firebase-adminsdk-kutg0-4344c5ba7f.json');
 
-app.use(cors({
-    origin: 'https://maps-frontend-git-orcid-api-muhammad-bilals-projects-bd7acfbb.vercel.app',
-    credentials: true // If you're sending cookies or HTTP authentication with the request
-}));
+app.use(cors());
+
 
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
