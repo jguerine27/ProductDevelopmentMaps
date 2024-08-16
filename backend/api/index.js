@@ -197,7 +197,7 @@ app.get('/api/get-years', async (req, res) => {
     const session = driver.session();
     try {
         const result = await session.run(
-            'MATCH ()-[r:Reference]->() RETURN DISTINCT r.year AS year'
+            'MATCH ()-[r:Reference]->() RETURN DISTINCT r.year AS year ORDER BY r.year ASC'
         );
         const years = result.records.map(record => record.get('year'));
         res.json(years);
@@ -214,7 +214,7 @@ app.get('/api/get-authors', async (req, res) => {
     const session = driver.session();
     try {
         const result = await session.run(
-            'MATCH ()-[r:Reference]->() RETURN DISTINCT r.author AS author, r.name AS name'
+            'MATCH ()-[r:Reference]->() RETURN DISTINCT r.author AS author, r.name AS name ORDER BY r.name'
         );
         const authors = result.records.map(record => record.get('author'));
         res.json(authors);
@@ -239,6 +239,7 @@ app.get('/api/get-tags', async (req, res) => {
             .flat();
         
         const uniqueTags = Array.from(new Set(tags));
+        uniqueTags.sort();
         
         res.json(uniqueTags);
     } catch (error) {
@@ -255,7 +256,7 @@ app.get('/api/get-colors', async (req, res) => {
     const session = driver.session();
     try {
         const result = await session.run(
-            'MATCH (n) WHERE n.color IS NOT NULL RETURN DISTINCT n.color AS color'
+            'MATCH (n) WHERE n.color IS NOT NULL RETURN DISTINCT n.color AS color ORDER BY n.color'
         );
         const colors = result.records.map(record => record.get('color'));
         res.json(colors);
@@ -271,7 +272,7 @@ app.get('/api/get-approaches', async (req, res) => {
     const session = driver.session();
     try {
         const result = await session.run(
-            'MATCH (n) WHERE n.approach IS NOT NULL RETURN DISTINCT n.approach AS approach'
+            'MATCH (n) WHERE n.approach IS NOT NULL RETURN DISTINCT n.approach AS approach ORDER BY n.approach'
         );
         const approaches = result.records.map(record => record.get('approach'));
         res.json(approaches);
@@ -733,6 +734,7 @@ app.get('/api/filter/all', async (req, res) => {
         }
 
         // Year range filter
+        
         if (startYear && startYear.length > 0 && endYear && endYear.length > 0) {
             queryParts.push(`r.year >= $startYear AND r.year <= $endYear`);
             params.startYear = startYear;
