@@ -10,6 +10,10 @@ const bodyParser = require('body-parser');
 // Replace with the path to your service account key file
 const serviceAccount = require('./dynacart-ba40e-firebase-adminsdk-kutg0-4344c5ba7f.json');
 
+app.use(cors({
+    origin: 'https://maps-frontend-git-orcid-api-muhammad-bilals-projects-bd7acfbb.vercel.app'
+}));
+
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
   databaseURL: 'https://console.firebase.google.com/u/0/project/dynacart-ba40e/database/dynacart-ba40e-default-rtdb/data/~2F'
