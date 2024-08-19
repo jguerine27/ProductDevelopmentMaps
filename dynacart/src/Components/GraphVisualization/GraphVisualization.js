@@ -5,8 +5,7 @@ import './GraphVisualization.css'
 import { saveAs } from 'file-saver'; // For file download
 import Papa from 'papaparse'; // For CSV export
 import { toPng } from 'html-to-image'; // For PNG export
-
-
+import jsPDF from 'jspdf'; // For PDF export
 
 //import { set } from '../../../../backend';
 let detailedView = false;
@@ -126,8 +125,51 @@ const GraphVisualization = () => {
                 svgElement.style.backgroundColor = originalBackground;
             });
     };
+    const handleExportPDF = () => {
+        const svgElement = document.querySelector('svg');
+        const originalBackground = svgElement.style.backgroundColor; // Store original background color
+    
+        // Set the background color to white
+        svgElement.style.backgroundColor = 'white';
+    
+        const svgString = new XMLSerializer().serializeToString(svgElement);
+        const DOMURL = window.URL || window.webkitURL || window;
+        const svgBlob = new Blob([svgString], { type: 'image/svg+xml;charset=utf-8' });
+        const url = DOMURL.createObjectURL(svgBlob);
+    
+        const img = new Image();
+        img.onload = function () {
+            // Create a canvas with the dimensions of the SVG's viewBox
+            const canvas = document.createElement('canvas');
+            const svgRect = svgElement.getBoundingClientRect();
+            canvas.width = svgRect.width;
+            canvas.height = svgRect.height;
+            const context = canvas.getContext('2d');
+            context.fillStyle = 'white'; // Ensure the background is white
+            context.fillRect(0, 0, canvas.width, canvas.height);
+            context.drawImage(img, 0, 0);
+    
+            // Create a PDF with the same dimensions as the canvas
+            const pdf = new jsPDF({
+                orientation: 'portrait',
+                unit: 'px',
+                format: [canvas.width, canvas.height]
+            });
+    
+            const imgData = canvas.toDataURL('image/png');
+            pdf.addImage(imgData, 'PNG', 0, 0, canvas.width - 250 , canvas.height);
+            pdf.save('graph_image.pdf');
+    
+            // Revert to the original background color
+            svgElement.style.backgroundColor = originalBackground;
+            DOMURL.revokeObjectURL(url);
+        };
+    
+        img.src = url;
+    };
+    
 
-
+    
     const drawGraph = ({ nodes, relationships }) => {
 
         const width = window.innerWidth - 50;
@@ -902,6 +944,7 @@ const nodeText = node.append('text')
                 <div className="export-options">
                     <button onClick={handleExportCSV}>Export as CSV</button>
                     <button onClick={handleExportPNG}>Export as PNG</button>
+                    <button onClick={handleExportPDF}>Export as PDF</button>
                 </div>
             )}
             <svg ref={svgRef}></svg>
