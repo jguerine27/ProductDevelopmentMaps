@@ -1,12 +1,16 @@
 import React, { useState, useEffect } from 'react';
-import { ChromePicker } from 'react-color'; // Import the ChromePicker from react-color
+import { ChromePicker } from 'react-color';
 import './AddNodeForm.css';
 
 const AddNodeForm = () => {
     const [nodeLabels, setNodeLabels] = useState([]);
     const [selectedLabel, setSelectedLabel] = useState('');
     const [nodeName, setNodeName] = useState('');
-    const [color, setColor] = useState('#000000'); // Initialize with a default color
+    const [approaches, setApproaches] = useState([]);
+    const [approachColorDict, setApproachColorDict] = useState({});
+    const [selectedApproach, setSelectedApproach] = useState('');
+    const [newApproach, setNewApproach] = useState('');
+    const [newColor, setNewColor] = useState('#000000');
     const [type, setType] = useState('');
     const [citations, setCitations] = useState([]);
     const [citationInput, setCitationInput] = useState('');
@@ -14,21 +18,35 @@ const AddNodeForm = () => {
     const [tagInput, setTagInput] = useState('');
     const [mapOptions, setMapOptions] = useState([]);
     const [selectedMap, setSelectedMap] = useState('');
+    const [newMapName, setNewMapName] = useState('');
     const [message, setMessage] = useState('');
 
     useEffect(() => {
-        const fetchLabelsAndMaps = async () => {
+        const fetchData = async () => {
             try {
-                const [labelsResponse, mapsResponse] = await Promise.all([
+                const [labelsResponse, mapsResponse, approachesResponse, colorsResponse] = await Promise.all([
                     fetch('http://localhost:4000/api/node-labels'),
-                    fetch('http://localhost:4000/api/node-maps')
+                    fetch('http://localhost:4000/api/node-maps'),
+                    fetch('http://localhost:4000/api/get-approaches'),
+                    fetch('http://localhost:4000/api/get-colors')
                 ]);
 
-                if (labelsResponse.ok && mapsResponse.ok) {
+                if (labelsResponse.ok && mapsResponse.ok && approachesResponse.ok && colorsResponse.ok) {
                     const labels = await labelsResponse.json();
                     const maps = await mapsResponse.json();
+                    const approaches = await approachesResponse.json();
+                    const colors = await colorsResponse.json();
+
+                    // Create approach to color dictionary
+                    const approachColorDict = approaches.reduce((dict, approach, index) => {
+                        dict[approach] = colors[index];
+                        return dict;
+                    }, {});
+
                     setNodeLabels(labels);
                     setMapOptions(maps);
+                    setApproaches(approaches);
+                    setApproachColorDict(approachColorDict);
                 } else {
                     throw new Error('Failed to fetch data');
                 }
@@ -37,7 +55,7 @@ const AddNodeForm = () => {
             }
         };
 
-        fetchLabelsAndMaps();
+        fetchData();
     }, []);
 
     const handleAddCitation = () => {
@@ -61,15 +79,27 @@ const AddNodeForm = () => {
     const handleRemoveTag = (index) => {
         setTags(tags.filter((_, i) => i !== index));
     };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
-    
+
         // Validation
-        if (!selectedLabel || !nodeName || !color || !type || !selectedMap) {
+        if (!selectedLabel || !nodeName || !selectedApproach || !type || !selectedMap) {
             setMessage('Please fill in all required fields.');
             return;
         }
-    
+
+        // Determine color to submit
+        let colorToSubmit;
+        if (selectedApproach === 'New Approach') {
+            colorToSubmit = newColor;
+        } else {
+            colorToSubmit = approachColorDict[selectedApproach];
+        }
+
+        // Include newMapName in request body if "New Map" is selected
+        const mapToSubmit = selectedMap === 'New Map' ? newMapName : selectedMap;
+
         try {
             const response = await fetch('http://localhost:4000/api/submit-node-for-review', {
                 method: 'POST',
@@ -82,11 +112,12 @@ const AddNodeForm = () => {
                     type,
                     citations,
                     tags,
-                    map: selectedMap,
-                    color
+                    map: mapToSubmit,
+                    color: colorToSubmit,
+                    approach: selectedApproach === 'New Approach' ? newApproach : selectedApproach
                 }),
             });
-    
+
             const data = await response.json();
             setMessage(data.message || 'Node submitted for review');
         } catch (error) {
@@ -94,7 +125,6 @@ const AddNodeForm = () => {
             setMessage('An error occurred');
         }
     };
-    
 
     return (
         <div>
@@ -118,11 +148,42 @@ const AddNodeForm = () => {
                     />
                 </div>
                 <div>
-                    <label>Node Approach/Color:</label>
-                    <ChromePicker
-                        color={color}
-                        onChangeComplete={(color) => setColor(color.hex)}
-                    />
+                    <label>Node Approach:</label>
+                    <select value={selectedApproach} onChange={(e) => {
+                        const value = e.target.value;
+                        if (value === 'New Approach') {
+                            setNewApproach('');
+                            setNewColor('#000000'); // Reset color picker
+                        } else {
+                            setSelectedApproach(value);
+                            setNewApproach(''); // Clear new approach name
+                        }
+                        setSelectedApproach(value);
+                    }}>
+                        <option value="">Select an approach</option>
+                        {approaches.map((approach, index) => (
+                            <option key={index} value={approach}>
+                                {approach}
+                            </option>
+                        ))}
+                        <option value="New Approach">New Approach</option>
+                    </select>
+                    {selectedApproach === 'New Approach' && (
+                        <div>
+                            <label>Pick a New Color:</label>
+                            <ChromePicker
+                                color={newColor}
+                                onChangeComplete={(color) => setNewColor(color.hex)}
+                            />
+                            <label>New Approach Name:</label>
+                            <input
+                                type="text"
+                                value={newApproach}
+                                onChange={(e) => setNewApproach(e.target.value)}
+                                placeholder="Enter new approach name"
+                            />
+                        </div>
+                    )}
                 </div>
                 <div>
                     <label>Select Type:</label>
@@ -168,12 +229,29 @@ const AddNodeForm = () => {
                 </div>
                 <div>
                     <label>Select Map:</label>
-                    <select value={selectedMap} onChange={(e) => setSelectedMap(e.target.value)}>
+                    <select value={selectedMap} onChange={(e) => {
+                        const value = e.target.value;
+                        setSelectedMap(value);
+                        if (value === 'New Map') {
+                            setNewMapName('');
+                        }
+                    }}>
                         <option value="">Select a map</option>
                         {mapOptions.map((map, index) => (
                             <option key={index} value={map}>{map}</option>
                         ))}
+                        <option value="New Map">New Map</option>
                     </select>
+                    {selectedMap === 'New Map' && (
+                        <div>
+                            <label>New Map Name:</label>
+                            <input
+                                type="text"
+                                value={newMapName}
+                                onChange={(e) => setNewMapName(e.target.value)}
+                            />
+                        </div>
+                    )}
                 </div>
                 <button type="submit">Add Node</button>
             </form>
