@@ -164,6 +164,17 @@ const AddNodeForm = () => {
                         {approaches.map((approach, index) => (
                             <option key={index} value={approach}>
                                 {approach}
+                                <span 
+                                    style={{
+                                        display: 'inline-block',
+                                        width: '20px',
+                                        height: '20px',
+                                        backgroundColor: approachColorDict[approach] || '#FFFFFF',
+                                        marginLeft: '10px',
+                                        border: '1px solid #ccc',
+                                        borderRadius: '4px'
+                                    }}
+                                />
                             </option>
                         ))}
                         <option value="New Approach">New Approach</option>
