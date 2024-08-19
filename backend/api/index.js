@@ -189,7 +189,7 @@ app.get('/api/get-colors', async (req, res) => {
     const session = driver.session();
     try {
         const result = await session.run(
-            'MATCH (n) WHERE n.color IS NOT NULL RETURN DISTINCT n.color AS color ORDER BY n.color'
+            'MATCH (n) WHERE n.color IS NOT NULL RETURN DISTINCT n.color AS color'
         );
         const colors = result.records.map(record => record.get('color'));
         res.json(colors);
@@ -205,7 +205,7 @@ app.get('/api/get-approaches', async (req, res) => {
     const session = driver.session();
     try {
         const result = await session.run(
-            'MATCH (n) WHERE n.approach IS NOT NULL RETURN DISTINCT n.approach AS approach ORDER BY n.approach'
+            'MATCH (n) WHERE n.approach IS NOT NULL RETURN DISTINCT n.approach AS approach'
         );
         const approaches = result.records.map(record => record.get('approach'));
         res.json(approaches);
