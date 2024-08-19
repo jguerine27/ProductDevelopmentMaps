@@ -109,22 +109,25 @@ const GraphVisualization = () => {
     
 
     const handleExportPNG = () => {
-        const svgElement = document.querySelector('svg'); // Select your SVG element
+        const svgElement = document.querySelector('svg');
+        const originalBackground = svgElement.style.backgroundColor; // Store original background color
     
-        html2canvas(svgElement, {
-            backgroundColor: '#FFFFFF' // Set background color to white
-        }).then(canvas => {
-            canvas.toBlob(blob => {
+        // Set the background color to white
+        svgElement.style.backgroundColor = 'white';
+    
+        toPng(svgElement)
+            .then((dataUrl) => {
                 const link = document.createElement('a');
                 link.download = 'graph_image.png';
-                link.href = URL.createObjectURL(blob);
+                link.href = dataUrl;
                 link.click();
+            })
+            .catch((error) => console.error('Error exporting as PNG:', error))
+            .finally(() => {
+                // Revert to the original background color
+                svgElement.style.backgroundColor = originalBackground;
             });
-        }).catch(error => {
-            console.error('Error exporting as PNG:', error);
-        });
     };
-    
 
     const handleExportPDF = () => {
         const doc = new jsPDF();
