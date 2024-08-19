@@ -8,6 +8,7 @@ const Navbar = ({ setActiveForm }) => {
                 <li>
                     <button onClick={() => setActiveForm('home')}>Home</button>
                 </li>
+               
                 <li>
                     <button onClick={() => setActiveForm('node')}>Add a Node</button>
                 </li>

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '../../firebase';
 import { NavLink, useNavigate } from 'react-router-dom';
@@ -31,6 +31,32 @@ const Login = () => {
                 }, 5000); // Clear error after 5 seconds
             });
     };
+
+    const onOrcidLogin = () => {
+        const backendUrl = process.env.REACT_APP_BACKEND;
+        window.location.href = `${backendUrl}/orcid/login`; // Redirect to your server's ORCID login endpoint
+    };
+
+    useEffect(() => {
+        const handleOrcidCallback = () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const code = urlParams.get('code');
+            const error = urlParams.get('error');
+
+            if (code) {
+                localStorage.setItem('orcidAuth', 'true'); // Save ORCID login state
+                navigate('/home');
+            } else if (error) {
+                setError('ORCID authentication failed');
+                localStorage.setItem('orcidAuth', 'false');
+                setTimeout(() => {
+                    setError('');
+                }, 5000);
+            }
+        };
+
+        handleOrcidCallback();
+    }, [navigate]);
 
     return (
         <div className="container">
@@ -65,6 +91,9 @@ const Login = () => {
                     {loading ? 'Loading...' : 'Login'}
                 </button>
             </form>
+            <button className="button" onClick={onOrcidLogin}>
+                Sign in with ORCID
+            </button>
             {error && <div className="error-message">{error}</div>}
             {success && (
                 <div className="success-message">

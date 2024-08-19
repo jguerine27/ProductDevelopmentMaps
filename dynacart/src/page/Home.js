@@ -14,7 +14,14 @@ import UpdateNode from '../Components/UpdateNode/UpdateNode';
 const Home = () => {
     const navigate = useNavigate();
  
-    const handleLogout = () => {               
+        const handleLogout = () => {
+            // Clear ORCID authentication state
+            localStorage.removeItem('orcidAuth');
+            
+            // Clear any other session or authentication states if needed
+            
+            
+                      
         signOut(auth).then(() => {
         // Sign-out successful.
             navigate("/");

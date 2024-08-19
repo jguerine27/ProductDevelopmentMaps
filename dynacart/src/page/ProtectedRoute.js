@@ -3,7 +3,7 @@ import { Navigate } from 'react-router-dom';
 import { useAuthState } from 'react-firebase-hooks/auth';
 import { auth } from '../firebase';
 
-const ProtectedRoute = ({ children }) => {
+const ProtectedRoute = ({ children, ORCIDUser }) => {
   const [user, loading, error] = useAuthState(auth);
 
   if (loading) {
@@ -14,7 +14,8 @@ const ProtectedRoute = ({ children }) => {
     return <div>Error: {error.message}</div>;
   }
 
-  if (!user) {
+  // Allow access if the user is authenticated via Firebase or ORCID
+  if (!user && !ORCIDUser) {
     return <Navigate to="/" />;
   }
 

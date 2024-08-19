@@ -5,6 +5,7 @@ import { auth } from '../firebase';
 
 const RedirectIfAuthenticated = ({ children }) => {
   const [user, loading, error] = useAuthState(auth);
+  const orcidAuth = localStorage.getItem('orcidAuth') === 'true'; // Check ORCID auth state
 
   if (loading) {
     return <div>Loading...</div>;
@@ -14,7 +15,8 @@ const RedirectIfAuthenticated = ({ children }) => {
     return <div>Error: {error.message}</div>;
   }
 
-  if (user) {
+  // Allow access to /home if either Firebase user is authenticated or ORCID auth is true
+  if (user || orcidAuth) {
     return <Navigate to="/home" />;
   }
 
