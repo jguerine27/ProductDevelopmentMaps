@@ -6,8 +6,6 @@ import { saveAs } from 'file-saver'; // For file download
 import Papa from 'papaparse'; // For CSV export
 import { toPng } from 'html-to-image'; // For PNG export
 import jsPDF from 'jspdf'; // For PDF export
-import html2canvas from 'html2canvas';
-
 
 
 //import { set } from '../../../../backend';
