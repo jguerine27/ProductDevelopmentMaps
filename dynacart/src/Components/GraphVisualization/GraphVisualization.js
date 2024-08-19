@@ -5,7 +5,7 @@ import './GraphVisualization.css'
 import { saveAs } from 'file-saver'; // For file download
 import Papa from 'papaparse'; // For CSV export
 import { toPng } from 'html-to-image'; // For PNG export
-import jsPDF from 'jspdf'; // For PDF export
+
 
 
 //import { set } from '../../../../backend';
@@ -127,12 +127,6 @@ const GraphVisualization = () => {
             });
     };
 
-    const handleExportPDF = () => {
-        const doc = new jsPDF();
-        doc.text('Graph Visualization', 10, 10);
-        doc.addImage(document.querySelector('svg'), 'PNG', 15, 40, 180, 160);
-        doc.save('graph_data.pdf');
-    };
 
     const drawGraph = ({ nodes, relationships }) => {
 
@@ -908,7 +902,6 @@ const nodeText = node.append('text')
                 <div className="export-options">
                     <button onClick={handleExportCSV}>Export as CSV</button>
                     <button onClick={handleExportPNG}>Export as PNG</button>
-                    <button onClick={handleExportPDF}>Export as PDF</button>
                 </div>
             )}
             <svg ref={svgRef}></svg>
