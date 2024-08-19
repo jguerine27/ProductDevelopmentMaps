@@ -131,7 +131,7 @@ const AddReferenceForm = () => {
                             <option key={label} value={label}>{label}</option>
                         ))}
                     </select>
-                    <label>Node Name 1:</label>
+                    <label>Node Name 1 (Source):</label>
                     <select
                         value={selectedNodeName1}
                         onChange={(e) => setSelectedNodeName1(e.target.value)}
@@ -150,7 +150,7 @@ const AddReferenceForm = () => {
                             <option key={label} value={label}>{label}</option>
                         ))}
                     </select>
-                    <label>Node Name 2:</label>
+                    <label>Node Name 2 (Target):</label>
                     <select
                         value={selectedNodeName2}
                         onChange={(e) => setSelectedNodeName2(e.target.value)}
@@ -161,14 +161,16 @@ const AddReferenceForm = () => {
                         ))}
                     </select>
                 </div>
+                
                 <div>
-                    <label>Reference Name:</label>
+                    <label>Reference Author:</label>
                     <input
                         type="text"
-                        value={referenceName}
-                        readOnly
+                        value={author}
+                        onChange={(e) => setAuthor(e.target.value)}
                     />
                 </div>
+
                 <div>
                     <label>Reference Year:</label>
                     <input
@@ -177,12 +179,15 @@ const AddReferenceForm = () => {
                         onChange={(e) => setYear(e.target.value)}
                     />
                 </div>
+                
                 <div>
-                    <label>Reference Author:</label>
+                    <label>Reference Name:</label>
                     <input
                         type="text"
-                        value={author}
-                        onChange={(e) => setAuthor(e.target.value)}
+                        value={referenceName}
+                        readOnly
+                        placeholder = "Author Year"
+                        style = {{backgroundColor: "lightgrey"}}
                     />
                 </div>
                 <div>

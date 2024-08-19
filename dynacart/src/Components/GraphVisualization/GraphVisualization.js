@@ -2,6 +2,11 @@ import React, { useEffect, useState, useRef } from 'react';
 import * as d3 from 'd3';
 import axios from 'axios';
 import './GraphVisualization.css'
+import { saveAs } from 'file-saver'; // For file download
+import Papa from 'papaparse'; // For CSV export
+import { toPng } from 'html-to-image'; // For PNG export
+import jsPDF from 'jspdf'; // For PDF export
+
 //import { set } from '../../../../backend';
 let detailedView = false;
 
@@ -11,6 +16,8 @@ const GraphVisualization = () => {
     const [selectedMap, setSelectedMap] = useState(null); // State for selected map
     const svgRef = useRef(null); // Ref to SVG element
     const tooltipRef = useRef(null); // Ref to tooltip element
+    const [showExportOptions, setShowExportOptions] = useState(false);
+
 
     //Filter capabilities
     const [keyword, setKeyword] = useState('');
@@ -74,7 +81,95 @@ const GraphVisualization = () => {
     }, [data, selectedMap]);
 
     
+    const handleExportCSV = () => {
+        // Assuming 'data.nodes' contains the current data displayed on the website
+        const filteredData = data.nodes.map(node => {
+            return {
+                Name: node.name,
+                Label: node.label,
+                Approach: node.approach,
+                Map: node.map,
+                Type: node.type,
+                color: node.color,
+                citation: (node.citation || []).concat(node.citations || []).join('; '), // Merge 'citation' and 'citations'
+                tags: (node.tags || []).join(', ') // Join tags array into a string
+            };
+        });
+    
+        // Convert filtered data to CSV
+        const csvData = Papa.unparse(filteredData);
+    
+        // Trigger CSV download
+        const blob = new Blob([csvData], { type: 'text/csv;charset=utf-8;' });
+        saveAs(blob, 'graph_data.csv');
+    };
+    
 
+    const handleExportPNG = () => {
+        const svgElement = document.querySelector('svg');
+        const originalBackground = svgElement.style.backgroundColor; // Store original background color
+    
+        // Set the background color to white
+        svgElement.style.backgroundColor = 'white';
+    
+        toPng(svgElement)
+            .then((dataUrl) => {
+                const link = document.createElement('a');
+                link.download = 'graph_image.png';
+                link.href = dataUrl;
+                link.click();
+            })
+            .catch((error) => console.error('Error exporting as PNG:', error))
+            .finally(() => {
+                // Revert to the original background color
+                svgElement.style.backgroundColor = originalBackground;
+            });
+    };
+    const handleExportPDF = () => {
+        const svgElement = document.querySelector('svg');
+        const originalBackground = svgElement.style.backgroundColor; // Store original background color
+    
+        // Set the background color to white
+        svgElement.style.backgroundColor = 'white';
+    
+        const svgString = new XMLSerializer().serializeToString(svgElement);
+        const DOMURL = window.URL || window.webkitURL || window;
+        const svgBlob = new Blob([svgString], { type: 'image/svg+xml;charset=utf-8' });
+        const url = DOMURL.createObjectURL(svgBlob);
+    
+        const img = new Image();
+        img.onload = function () {
+            // Create a canvas with the dimensions of the SVG's viewBox
+            const canvas = document.createElement('canvas');
+            const svgRect = svgElement.getBoundingClientRect();
+            canvas.width = svgRect.width;
+            canvas.height = svgRect.height;
+            const context = canvas.getContext('2d');
+            context.fillStyle = 'white'; // Ensure the background is white
+            context.fillRect(0, 0, canvas.width, canvas.height);
+            context.drawImage(img, 0, 0);
+    
+            // Create a PDF with the same dimensions as the canvas
+            const pdf = new jsPDF({
+                orientation: 'portrait',
+                unit: 'px',
+                format: [canvas.width, canvas.height]
+            });
+    
+            const imgData = canvas.toDataURL('image/png');
+            pdf.addImage(imgData, 'PNG', 0, 0, canvas.width - 250 , canvas.height);
+            pdf.save('graph_image.pdf');
+    
+            // Revert to the original background color
+            svgElement.style.backgroundColor = originalBackground;
+            DOMURL.revokeObjectURL(url);
+        };
+    
+        img.src = url;
+    };
+    
+
+    
     const drawGraph = ({ nodes, relationships }) => {
 
         const width = window.innerWidth - 50;
@@ -844,6 +939,14 @@ const nodeText = node.append('text')
     
             <button onClick={handleApplyAllFilters}>Apply All</button>
             <button onClick={handleResetFilters}>Reset Filters</button>
+            <button onClick={() => setShowExportOptions(!showExportOptions)}>Export</button>
+            {showExportOptions && (
+                <div className="export-options">
+                    <button onClick={handleExportCSV}>Export as CSV</button>
+                    <button onClick={handleExportPNG}>Export as PNG</button>
+                    <button onClick={handleExportPDF}>Export as PDF</button>
+                </div>
+            )}
             <svg ref={svgRef}></svg>
             <div ref={tooltipRef}></div>
             <button onClick={toggleView}>Toggle View</button>

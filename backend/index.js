@@ -561,15 +561,15 @@ app.post('/api/reject-reference-addition/:referenceId', async (req, res) => {
 
 
 app.post('/api/submit-node-for-review', async (req, res) => {
-    const { label, name, type, citations, tags, map, color } = req.body;
+    const { label, name, type, citations, tags, map, color,approach } = req.body;
 
     const session = driver.session();
 
     try {
         // Create the new node with the "Reviewable Node" label
         const result = await session.run(
-            `CREATE (b:ReviewableNode {name: $name, label: $label, type: $type, citations: $citations, tags: $tags, map: $map, color: $color}) RETURN b`,
-            { name, label, type, citations, tags, map, color }
+            `CREATE (b:ReviewableNode {name: $name, label: $label, type: $type, citations: $citations, tags: $tags, map: $map, color: $color, approach: $approach}) RETURN b`,
+            { name, label, type, citations, tags, map, color, approach }
         );
 
         if (result.records.length > 0) {
