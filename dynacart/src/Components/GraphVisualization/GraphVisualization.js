@@ -157,7 +157,7 @@ const GraphVisualization = () => {
             });
     
             const imgData = canvas.toDataURL('image/png');
-            pdf.addImage(imgData, 'PNG', 0, 0, canvas.width - 250 , canvas.height);
+            pdf.addImage(imgData, 'PNG', 0, 0, canvas.width - 600 , canvas.height);
             pdf.save('graph_image.pdf');
     
             // Revert to the original background color
