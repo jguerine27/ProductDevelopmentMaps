@@ -1,32 +1,78 @@
-/* Navbar.css */
-
-nav {
-    background-color: #333; /* Dark background color */
-    padding: 10px 0; /* Padding around the navbar */
+/* Google Fonts Import Link */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Poppins', sans-serif;
 }
 
-ul {
-    list-style-type: none; /* Remove default list styles */
-    margin: 0;
-    padding: 0;
-    text-align: center; /* Center align the list items */
+.nav-links {
+  display: flex;
+  align-items: center;
+  background: #fff0f0;
+  padding: 20px 15px;
+  border-radius: 12px;
+  box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
 }
 
-li {
-    display: inline; /* Display list items inline */
-    margin: 0 10px; /* Margin between list items */
+.nav-links li {
+  list-style: none;
+  margin: 0 12px;
 }
 
-button {
-    background-color: #555; /* Darker button background color */
-    color: #fff; /* Text color */
-    padding: 10px 20px; /* Padding inside buttons */
-    border: none; /* Remove border */
-    border-radius: 5px; /* Rounded corners */
-    cursor: pointer; /* Cursor style */
-    transition: background-color 0.3s; /* Smooth transition for background color */
+.nav-links li button {
+  position: relative;
+  color: #333;
+  font-size: 20px;
+  font-weight: 500;
+  padding: 6px 0;
+  background: none;
+  border: black;
+  cursor: pointer;
+  text-decoration: none;
 }
 
-button:hover {
-    background-color: #777; /* Darken background color on hover */
+.nav-links li button:before {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  height: 3px;
+  width: 0%;
+  background: #34efdf;
+  border-radius: 12px;
+  transition: all 0.4s ease;
+}
+
+.nav-links li button:hover:before {
+  width: 100%;
+}
+
+.nav-links li.center button:before {
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.nav-links li.upward button:before {
+  width: 100%;
+  bottom: -5px;
+  opacity: 0;
+}
+
+.nav-links li.upward button:hover:before {
+  bottom: 0px;
+  opacity: 1;
+}
+
+.nav-links li.forward button:before {
+  width: 100%;
+  transform: scaleX(0);
+  transform-origin: right;
+  transition: transform 0.4s ease;
+}
+
+.nav-links li.forward button:hover:before {
+  transform: scaleX(1);
+  transform-origin: left;
 }

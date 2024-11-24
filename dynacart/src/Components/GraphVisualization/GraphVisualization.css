@@ -1,70 +1,197 @@
-body{
-    padding-left: 20px;
-    padding-right:20px;
-}
-.graph-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+/* General Container Styling */
+div {
+    font-family: Arial, sans-serif;
+    margin: 20px;
 }
 
-svg {
-    margin: auto;
+/* Title */
+h2 {
+    text-align: center;
+    color: #333;
+    margin-bottom: 20px;
 }
 
-.tooltip {
-    position: absolute;
-    text-align: left;
-    width: auto;
+/* Notification Popup */
+#popup-notification {
+    background-color: #ffcccc;
+    color: #900;
     padding: 10px;
-    font: 12px sans-serif;
-    background: lightsteelblue;
-    border: 1px solid gray;
+    margin-bottom: 20px;
     border-radius: 5px;
+    text-align: center;
+}
+
+/* Filter Section Layout */
+.filter-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+/* Wrapper for filter sections */
+.filter-horizontal {
+    display: flex;           /* Use flexbox to align items */
+    flex-direction: column;  /* Stack the items vertically (on top of each other) */
+    gap: 15px;               /* Add space between each form */
+    padding: 20px;           /* Add padding around the filter section */
+    width: 100%;             /* Make it take up the full width of its container */
+    max-width: 600px;        /* Limit the width to 600px, adjust as needed */
+    margin: 0 auto;          /* Center the filter container horizontally */
+    box-sizing: border-box;  /* Include padding in width calculations */
+  }
+.filter-section {
+    flex: 1;
+    min-width: 200px;
+    padding: 15px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    background-color: #f9f9f9;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    text-align: center;
+}
+
+.filter-section legend {
+    font-weight: bold;
+    margin-bottom: 10px;
+    color: #333;
+    font-size: 20px;
+}
+
+/* Vertically Stack Filter Elements */
+.filter-elements {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+    font-size: 15px;
+}
+
+.filter-elements input[type="checkbox"] {
+    margin-right: 5px;
+}
+
+/* Color Swatch Styling */
+.filter-elements span {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.filter-elements span div {
+    width: 20px;
+    height: 20px;
+    border: 1px solid #000;
+}
+
+/* Buttons */
+button {
+    background-color: #4caf50;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    margin: 10px 5px 0;
+    cursor: pointer;
+    border-radius: 5px;
+    font-size: 1rem;
+    transition: background-color 0.3s ease;
+}
+
+button:hover {
+    background-color: #45a049;
+}
+
+button:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+}
+
+/* Export Options */
+.export-options {
+    margin-top: 10px;
+}
+
+.export-options button {
+    background-color: #2196f3;
+    margin-right: 10px;
+}
+
+.export-options button:hover {
+    background-color: #1976d2;
+}
+
+/* SVG and Tooltip */
+svg {
+    display: block;
+    margin: 20px auto;
+    max-width: 100%;
+    height: auto;
+}
+
+div[ref="tooltipRef"] {
+    position: absolute;
+    background-color: #fff;
+    border: 1px solid #ddd;
+    padding: 5px;
+    font-size: 0.9rem;
+    display: none;
     pointer-events: none;
+    border-radius: 3px;
+    box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.2);
 }
 
-.graph-svg {
-    width: 100%;
-    height: 100vh;
-}
-
+/* Responsive Adjustments */
 @media (max-width: 768px) {
-    .graph-svg {
-        height: 70vh;
+    .filter-container {
+        flex-direction: column;
+        align-items: center;
+        gap: 20px;
+    }
+
+    .filter-section {
+        width: 100%;
+    }
+
+    button {
+        font-size: 0.9rem;
+        padding: 8px 10px;
     }
 }
 
-.tooltip {
-    position: absolute;
-    background: #f9f9f9;
-    padding: 10px;
-    border: 1px solid #d3d3d3;
-    border-radius: 5px;
-    pointer-events: none;
-    opacity: 0;
-    transition: opacity 0.2s ease-in-out;
+/* General Styling for Inputs */
+input[type="text"], 
+input[type="checkbox"], 
+select {
+  font-family: Arial, sans-serif;
+  font-size: 14px; /* Adjust font size for text */
+  padding: 8px;
+  margin: 5px 0;
+  border: 1px solid #ccc; /* Light gray border */
+  border-radius: 4px;
+  width: 100%; /* Default width for text inputs */
+  box-sizing: border-box; /* Prevents padding from affecting width */
 }
 
-.popup {
-    position: fixed;
-    top: 10px;
-    left: 50%;
-    transform: translateX(-50%);
-    background-color: #f44336;
-    color: white;
-    padding: 15px;
-    border-radius: 5px;
-    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
-    z-index: 1000;
-    opacity: 0;
-    transition: opacity 0.5s ease-in-out;
+/* Placeholder Styling */
+input[type="text"]::placeholder {
+  font-size: 14px;
+  color: #888; /* Light gray placeholder text */
+  font-style: italic;
 }
 
-.popup.show {
-    opacity: 1;
+/* Checkbox Styling */
+input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  cursor: pointer;
 }
 
-.hidden {
-    display: none;
+/* Select Dropdown Styling */
+select {
+  font-size: 14px;
+  padding: 8px;
+  width: 100%;
+  background-color: #fff; /* White background */
+  border: 1px solid #ccc;
+  border-radius: 4px;
 }

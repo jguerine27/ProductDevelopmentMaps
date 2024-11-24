@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { ChromePicker } from 'react-color';
-import './AddNodeForm.css';
 
 const AddNodeForm = () => {
     const [nodeLabels, setNodeLabels] = useState([]);

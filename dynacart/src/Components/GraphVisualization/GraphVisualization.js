@@ -754,9 +754,111 @@ const nodeText = node.append('text')
     return (
         <div>
             
-            <div id="popup-notification" class="hidden">No result found</div>
+            {/* <div id="popup-notification" class="hidden">No result found</div> */}
             <h2>Graph Visualization</h2>
-            <div>
+
+<div className = "filter-container">
+
+            <form className="filter-section" onSubmit={(e) => { e.preventDefault(); handleFilterByAuthor(); }}>
+                <fieldset>
+                    <legend>Filter by Author/Reference</legend>
+                    <div className="filter-elements" style={{ display: 'flex', flexWrap: 'wrap' }}>
+                        {references.map(ref => (
+                            <span key={ref} style={{ margin: '0 10px 10px 0' }}>
+                                <input 
+                                    type="checkbox" 
+                                    value={ref} 
+                                    checked={author.includes(ref)}
+                                    onChange={(e) => {
+                                        const selected = e.target.checked;
+                                        setAuthor(prev => 
+                                            selected 
+                                                ? [...prev, ref] 
+                                                : prev.filter(item => item !== ref)
+                                        );
+                                    }}
+                                />
+                                {ref}
+                            </span>
+                        ))}
+                    </div>
+                </fieldset>
+                
+            </form>
+    
+            <form className="filter-section" onSubmit={(e) => { e.preventDefault(); handleFilterByTag(); }}>
+                <fieldset>
+                    <legend>Filter by Tag</legend>
+                    <div className="filter-elements" style={{ display: 'flex', flexWrap: 'wrap' }}>
+                        {tags.map(t => (
+                            <span key={t} style={{ margin: '0 10px 10px 0' }}>
+                                <input 
+                                    type="checkbox" 
+                                    value={t} 
+                                    checked={tag.includes(t)}
+                                    onChange={(e) => {
+                                        const selected = e.target.checked;
+                                        setTag(prev => 
+                                            selected 
+                                                ? [...prev, t] 
+                                                : prev.filter(item => item !== t)
+                                        );
+                                    }}
+                                />
+                                {t}
+                            </span>
+                        ))}
+                        <br></br><br></br>                        <br></br><br></br>                        <br></br>
+
+
+                    </div>
+                </fieldset>
+                
+            </form>
+    
+            <form className="filter-section" onSubmit={(e) => { e.preventDefault(); handleFilterByColor(); }}>
+                <fieldset>
+                    <legend>Filter by Color</legend>
+                    <div className="filter-elements" style={{ display: 'flex', flexWrap: 'wrap' }}>
+                        {      
+                        colors
+                        .map((c, index) => (
+                            <span key={c} style={{ margin: '0 10px 10px 0' }}>
+                                <input 
+                                    type="checkbox" 
+                                    value={c} 
+                                    checked={color.includes(c)}
+                                    onChange={(e) => {
+                                        const selected = e.target.checked;
+                                        setColor(prev => 
+                                            selected 
+                                                ? [...prev, c] 
+                                                : prev.filter(item => item !== c)
+                                        );
+                                    }}
+                                />
+                                <div 
+                                    style={{ 
+                                        width: '20px', 
+                                        height: '20px', 
+                                        backgroundColor: c, 
+                                        marginLeft: '5px',
+                                        border: '1px solid #000'
+                                    }} 
+                                />
+                                <span style={{ marginLeft: '5px' }}>
+                                    {approaches[index]}
+                                </span>
+                            </span>
+                        ))}
+                    </div>
+                </fieldset>
+                
+            </form>
+            </div>
+            <div className = "filter-container">
+            <div className="filter-horizontal">
+            <div className="filter-section" style = {{marginLeft:"-20px",marginBottom:"-5px"}} >
                 <label htmlFor="mapSelect">Select Map:</label>
                 <select id="mapSelect" onChange={handleMapChange}>
                     <option value="">All Maps</option>
@@ -765,47 +867,18 @@ const nodeText = node.append('text')
                     ))}
                 </select>
             </div>
-            <form onSubmit={(e) => { e.preventDefault(); handleFilterByKeyword(); }}>
-                <input 
+            <form className= 'filter-section' style = {{marginRight:"18px",marginLeft:"-20px"}} onSubmit={(e) => { e.preventDefault(); handleFilterByKeyword(); }}>
+                <input className="filter-elements"
                     type="text" 
                     value={keyword} 
                     onChange={(e) => setKeyword(e.target.value)} 
                     placeholder="Filter by keyword" 
                 />
-                <button type="submit">Apply</button>
+                
             </form>
-            <form onSubmit={(e) => { e.preventDefault(); handleFilterByYear(); }}>
-                <fieldset>
-                    <legend>Filter by Year</legend>
-                    <div style={{ display: 'flex', flexWrap: 'wrap' }}>
-                        {years.map(y => (
-                            <span key={y} style={{ margin: '0 10px 10px 0' }}>
-                                <input 
-                                    type="checkbox" 
-                                    value={y} 
-                                    checked={year.includes(y)}
-                                    onChange={(e) => {
-                                        const selected = e.target.checked;
-                                        setYear(prev => 
-                                            selected 
-                                                ? [...prev, y] 
-                                                : prev.filter(item => item !== y)
-                                        );
-                                    }}
-                                    disabled={isYearRangeInputActive}
-                                />
-                                {y}
-                            </span>
-                        ))}
-                    </div>
-                </fieldset>
-                <button type="submit">Apply</button>
-            </form>
-            <form onSubmit={(e) => { 
-    e.preventDefault(); 
-    handleFilterByYearRange(); 
-}}>
-    <input 
+            </div>
+            <form  className= 'filter-section' style = {{marginRight:"-18px",marginLeft:"-45px"}}onSubmit={(e) => { e.preventDefault(); handleFilterByYear(); }}>
+            <input 
         type="text" 
         value={startYear} 
         onChange={(e) => {
@@ -840,103 +913,40 @@ const nodeText = node.append('text')
         placeholder={`Filter by end year (max: ${Math.max(...years)})`} 
         disabled={isYearInputActive}
     />
-    <button type="submit">Apply</button>
+    
+                <fieldset>
+                    <legend>Filter by Year</legend>
+                    <div className="filter-elements" style={{ display: 'flex', flexWrap: 'wrap' }}>
+                        {years.map(y => (
+                            <span key={y} style={{ margin: '0 10px 10px 0' }}>
+                                <input 
+                                    type="checkbox" 
+                                    value={y} 
+                                    checked={year.includes(y)}
+                                    onChange={(e) => {
+                                        const selected = e.target.checked;
+                                        setYear(prev => 
+                                            selected 
+                                                ? [...prev, y] 
+                                                : prev.filter(item => item !== y)
+                                        );
+                                    }}
+                                    disabled={isYearRangeInputActive}
+                                />
+                                {y}
+                            </span>
+                        ))}
+                    </div>
+                </fieldset>
+                
+            </form>
+            <form onSubmit={(e) => { 
+    e.preventDefault(); 
+    handleFilterByYearRange(); 
+}}>
+    
 </form>
-
-            <form onSubmit={(e) => { e.preventDefault(); handleFilterByAuthor(); }}>
-                <fieldset>
-                    <legend>Filter by Author/Reference</legend>
-                    <div style={{ display: 'flex', flexWrap: 'wrap' }}>
-                        {references.map(ref => (
-                            <span key={ref} style={{ margin: '0 10px 10px 0' }}>
-                                <input 
-                                    type="checkbox" 
-                                    value={ref} 
-                                    checked={author.includes(ref)}
-                                    onChange={(e) => {
-                                        const selected = e.target.checked;
-                                        setAuthor(prev => 
-                                            selected 
-                                                ? [...prev, ref] 
-                                                : prev.filter(item => item !== ref)
-                                        );
-                                    }}
-                                />
-                                {ref}
-                            </span>
-                        ))}
-                    </div>
-                </fieldset>
-                <button type="submit">Apply</button>
-            </form>
-    
-            <form onSubmit={(e) => { e.preventDefault(); handleFilterByTag(); }}>
-                <fieldset>
-                    <legend>Filter by Tag</legend>
-                    <div style={{ display: 'flex', flexWrap: 'wrap' }}>
-                        {tags.map(t => (
-                            <span key={t} style={{ margin: '0 10px 10px 0' }}>
-                                <input 
-                                    type="checkbox" 
-                                    value={t} 
-                                    checked={tag.includes(t)}
-                                    onChange={(e) => {
-                                        const selected = e.target.checked;
-                                        setTag(prev => 
-                                            selected 
-                                                ? [...prev, t] 
-                                                : prev.filter(item => item !== t)
-                                        );
-                                    }}
-                                />
-                                {t}
-                            </span>
-                        ))}
-                    </div>
-                </fieldset>
-                <button type="submit">Apply</button>
-            </form>
-    
-            <form onSubmit={(e) => { e.preventDefault(); handleFilterByColor(); }}>
-                <fieldset>
-                    <legend>Filter by Color</legend>
-                    <div style={{ display: 'flex', flexWrap: 'wrap' }}>
-                        {      
-                        colors
-                        .map((c, index) => (
-                            <span key={c} style={{ margin: '0 10px 10px 0', display: 'flex', alignItems: 'center' }}>
-                                <input 
-                                    type="checkbox" 
-                                    value={c} 
-                                    checked={color.includes(c)}
-                                    onChange={(e) => {
-                                        const selected = e.target.checked;
-                                        setColor(prev => 
-                                            selected 
-                                                ? [...prev, c] 
-                                                : prev.filter(item => item !== c)
-                                        );
-                                    }}
-                                />
-                                <div 
-                                    style={{ 
-                                        width: '20px', 
-                                        height: '20px', 
-                                        backgroundColor: c, 
-                                        marginLeft: '5px',
-                                        border: '1px solid #000'
-                                    }} 
-                                />
-                                <span style={{ marginLeft: '5px' }}>
-                                    {approaches[index]}
-                                </span>
-                            </span>
-                        ))}
-                    </div>
-                </fieldset>
-                <button type="submit">Apply</button>
-            </form>
-    
+</div>
             <button onClick={handleApplyAllFilters}>Apply All</button>
             <button onClick={handleResetFilters}>Reset Filters</button>
             <button onClick={() => setShowExportOptions(!showExportOptions)}>Export</button>
@@ -947,6 +957,7 @@ const nodeText = node.append('text')
                     <button onClick={handleExportPDF}>Export as PDF</button>
                 </div>
             )}
+
             <svg ref={svgRef}></svg>
             <div ref={tooltipRef}></div>
             <button onClick={toggleView}>Toggle View</button>
