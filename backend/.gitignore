@@ -5,6 +5,7 @@
 /.pnp
 .pnp.js
 
+dbpass.txt
 # testing
 /coverage
 
