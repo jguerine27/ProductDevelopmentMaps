@@ -1,70 +1,1108 @@
-body{
-    padding-left: 20px;
-    padding-right:20px;
+/*
+ * Styles for the map view.
+ *
+ * Everything is scoped under a `pdm-` class. Navbar.css sets bare `button`,
+ * `ul` and `li` rules globally, so the selectors here have to be specific
+ * enough to win against them rather than relying on source order.
+ *
+ * Only the HTML chrome is styled here. The marks inside the SVG carry
+ * presentation attributes set in GraphCanvas.js, so an exported PNG or PDF
+ * keeps its appearance once serialised away from this stylesheet.
+ */
+
+/* Fills whatever the shell leaves after the navbar — see Home.css. Sizing this
+   from the viewport instead left a band of dead page below the map. */
+.pdm-layout {
+    display: flex;
+    align-items: stretch;
+    gap: 0;
+    height: 100%;
+    min-height: 520px;
+    font-family: "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    color: #26292d;
+    background: #ffffff;
 }
-.graph-container {
+
+/*
+ * AddNodeForm.css declares a bare `button { margin-top: 10px }`. CRA bundles
+ * every imported stylesheet globally, so that rule lands on the zoom controls
+ * and everything else here — it was what put a 10px gap above the + button.
+ * Reset it once rather than in each rule below.
+ */
+.pdm-layout button {
+    margin: 0;
+}
+
+/* ── Sidebar ─────────────────────────────────────────────────────────────── */
+
+.pdm-sidebar {
+    flex: 0 0 250px;
+    width: 250px;
+    padding: 18px 16px 24px;
+    border-right: 1px solid #e6e8eb;
+    overflow-y: auto;
+    box-sizing: border-box;
+}
+
+.pdm-sidebar-error {
+    margin: 0 0 12px;
+    padding: 8px 10px;
+    border-radius: 6px;
+    background: #fdecea;
+    color: #9b1c16;
+    font-size: 12px;
+}
+
+.pdm-section {
+    margin-top: 22px;
+}
+
+.pdm-section h3 {
+    margin: 0 0 8px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #80868b;
+}
+
+.pdm-input {
+    width: 100%;
+    padding: 9px 11px;
+    font: inherit;
+    font-size: 13px;
+    color: #26292d;
+    background: #ffffff;
+    border: 1px solid #dfe2e6;
+    border-radius: 8px;
+    box-sizing: border-box;
+    outline: none;
+}
+
+.pdm-input:focus {
+    border-color: #8ab4f8;
+    box-shadow: 0 0 0 3px rgba(138, 180, 248, 0.25);
+}
+
+.pdm-input:disabled {
+    background: #f5f6f7;
+    color: #9aa0a6;
+}
+
+.pdm-search {
+    position: relative;
+}
+
+.pdm-search .pdm-input {
+    padding-right: 36px;
+    border-radius: 22px;
+}
+
+.pdm-search-icon {
+    position: absolute;
+    top: 50%;
+    right: 12px;
+    width: 16px;
+    height: 16px;
+    transform: translateY(-50%);
+    color: #9aa0a6;
+    pointer-events: none;
+}
+
+.pdm-check {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 4px 0;
+    font-size: 13px;
+    cursor: pointer;
+}
+
+.pdm-check input {
+    width: 15px;
+    height: 15px;
+    margin: 0;
+    accent-color: #1a73e8;
+    cursor: pointer;
+}
+
+.pdm-year-exact {
     display: flex;
     flex-direction: column;
-    align-items: center;
+    gap: 4px;
+    font-size: 11px;
+    color: #80868b;
 }
 
-svg {
-    margin: auto;
+/* Marks the two controls as alternatives — choosing one clears the other. */
+.pdm-year-or {
+    margin: 9px 0 7px;
+    font-size: 11px;
+    color: #9aa0a6;
+    text-align: center;
 }
 
-.tooltip {
+.pdm-year-range {
+    display: flex;
+    gap: 8px;
+}
+
+.pdm-year-range label {
+    display: flex;
+    flex: 1 1 0;
+    flex-direction: column;
+    gap: 4px;
+    font-size: 11px;
+    color: #80868b;
+    min-width: 0;
+}
+
+/* ── Searchable multi-select ─────────────────────────────────────────────── */
+
+.pdm-multiselect {
+    position: relative;
+}
+
+.pdm-sidebar .pdm-options {
     position: absolute;
+    z-index: 20;
+    top: calc(100% + 4px);
+    left: 0;
+    right: 0;
+    max-height: 220px;
+    margin: 0;
+    padding: 4px;
+    overflow-y: auto;
+    list-style: none;
     text-align: left;
-    width: auto;
-    padding: 10px;
-    font: 12px sans-serif;
-    background: lightsteelblue;
-    border: 1px solid gray;
-    border-radius: 5px;
-    pointer-events: none;
+    background: #ffffff;
+    border: 1px solid #dfe2e6;
+    border-radius: 8px;
+    box-shadow: 0 6px 18px rgba(15, 20, 25, 0.12);
 }
 
-.graph-svg {
+.pdm-sidebar .pdm-options li {
+    display: block;
+    margin: 0;
+}
+
+.pdm-sidebar button.pdm-option,
+.pdm-sidebar li.pdm-option {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
     width: 100%;
-    height: 100vh;
+    padding: 7px 8px;
+    font: inherit;
+    font-size: 12.5px;
+    text-align: left;
+    color: #26292d;
+    background: transparent;
+    border: 0;
+    border-radius: 6px;
+    cursor: pointer;
 }
 
-@media (max-width: 768px) {
-    .graph-svg {
-        height: 70vh;
-    }
+.pdm-sidebar button.pdm-option:hover {
+    background: #f1f3f4;
 }
 
-.tooltip {
+.pdm-sidebar li.pdm-option.is-muted {
+    color: #9aa0a6;
+    cursor: default;
+}
+
+.pdm-option-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    min-width: 0;
+}
+
+/* The approach family's colour, matching the bar on its blocks. A ring rather
+   than a bare disc so the pale families (#ccf7f6, #fffc05) stay visible on white. */
+.pdm-swatch {
+    flex: 0 0 auto;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    box-shadow: inset 0 0 0 1px rgba(15, 20, 25, 0.22);
+}
+
+.pdm-option-hint {
+    flex: 0 0 auto;
+    font-size: 11px;
+    color: #9aa0a6;
+}
+
+.pdm-empty-note {
+    margin: 6px 0 0;
+    font-size: 12px;
+    color: #9aa0a6;
+}
+
+.pdm-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 8px;
+}
+
+.pdm-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    max-width: 100%;
+    padding: 3px 4px 3px 9px;
+    font-size: 11.5px;
+    color: #1c4587;
+    background: #e8f0fe;
+    border-radius: 12px;
+}
+
+.pdm-sidebar .pdm-chip button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 16px;
+    height: 16px;
+    padding: 0;
+    font-size: 13px;
+    line-height: 1;
+    color: #1c4587;
+    background: transparent;
+    border: 0;
+    border-radius: 50%;
+    cursor: pointer;
+}
+
+.pdm-sidebar .pdm-chip button:hover {
+    background: rgba(28, 69, 135, 0.14);
+}
+
+.pdm-actions {
+    position: sticky;
+    bottom: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-top: 26px;
+    padding: 12px 0 4px;
+    background: linear-gradient(to bottom, rgba(255, 255, 255, 0), #ffffff 22%);
+}
+
+.pdm-sidebar button.pdm-apply {
+    width: 100%;
+    padding: 10px 12px;
+    font: inherit;
+    font-size: 13px;
+    font-weight: 500;
+    color: #ffffff;
+    background: #1a73e8;
+    border: 1px solid #1a73e8;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.pdm-sidebar button.pdm-apply:hover:not(:disabled) {
+    background: #1765cc;
+    border-color: #1765cc;
+}
+
+.pdm-sidebar button.pdm-apply:disabled {
+    color: #9aa0a6;
+    background: #f1f3f4;
+    border-color: #e6e8eb;
+    cursor: default;
+}
+
+.pdm-sidebar button.pdm-reset {
+    width: 100%;
+    padding: 9px 12px;
+    font: inherit;
+    font-size: 13px;
+    color: #26292d;
+    background: #ffffff;
+    border: 1px solid #dfe2e6;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.pdm-sidebar button.pdm-reset:hover:not(:disabled) {
+    background: #f1f3f4;
+}
+
+.pdm-sidebar button.pdm-reset:disabled {
+    color: #b6bcc2;
+    background: #ffffff;
+    cursor: default;
+}
+
+.pdm-sidebar button.pdm-mode-switch {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: 100%;
+    padding: 9px 12px;
+    font: inherit;
+    font-size: 13px;
+    color: #1c4587;
+    background: #e8f0fe;
+    border: 1px solid #d2e3fc;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.pdm-sidebar button.pdm-mode-switch:hover {
+    background: #d9e7fd;
+}
+
+.pdm-mode-count {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 18px;
+    height: 18px;
+    padding: 0 5px;
+    font-size: 11px;
+    font-weight: 600;
+    color: #ffffff;
+    background: #1a73e8;
+    border-radius: 9px;
+}
+
+/* ── Challenge mode ──────────────────────────────────────────────────────── */
+
+/* Wider than the filter sidebar: every challenge carries a full sentence of
+   description, and that sentence is what tells a user whether it is theirs. */
+.pdm-sidebar--challenges {
+    flex-basis: 360px;
+    width: 360px;
+}
+
+.pdm-mode-header h2 {
+    margin: 10px 0 4px;
+    font-size: 15px;
+    font-weight: 600;
+}
+
+.pdm-mode-blurb {
+    margin: 0 0 14px;
+    font-size: 12px;
+    line-height: 1.45;
+    color: #5f6368;
+}
+
+.pdm-sidebar button.pdm-back {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 8px 4px 4px;
+    font: inherit;
+    font-size: 12px;
+    color: #1a73e8;
+    background: transparent;
+    border: 0;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.pdm-sidebar button.pdm-back:hover {
+    background: #f1f3f4;
+}
+
+.pdm-filter-note {
+    margin: 0 0 12px;
+    padding: 9px 10px;
+    font-size: 12px;
+    line-height: 1.45;
+    color: #7a5b00;
+    background: #fef7e0;
+    border: 1px solid #fde293;
+    border-radius: 8px;
+}
+
+.pdm-sidebar button.pdm-inline-link,
+.pdm-results button.pdm-inline-link {
+    padding: 0;
+    margin-left: 6px;
+    font: inherit;
+    font-size: 12px;
+    color: #1a73e8;
+    background: transparent;
+    border: 0;
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+.pdm-selected-challenges {
+    margin-top: 12px;
+}
+
+.pdm-sidebar .pdm-challenge-list {
+    margin: 14px 0 0;
+    padding: 0;
+    list-style: none;
+    text-align: left;
+}
+
+.pdm-sidebar .pdm-challenge-list li {
+    display: block;
+    margin: 0;
+    border-top: 1px solid #eef0f2;
+}
+
+.pdm-challenge {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 11px 4px;
+    cursor: pointer;
+}
+
+.pdm-challenge:hover {
+    background: #f8f9fa;
+}
+
+.pdm-challenge input {
+    flex: 0 0 auto;
+    width: 15px;
+    height: 15px;
+    margin: 2px 0 0;
+    accent-color: #1a73e8;
+    cursor: pointer;
+}
+
+.pdm-challenge-text {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    min-width: 0;
+}
+
+.pdm-challenge-name {
+    font-size: 13px;
+    line-height: 1.35;
+}
+
+/* Wrapped, never truncated — a half sentence cannot be judged. */
+.pdm-challenge-description {
+    font-size: 11.5px;
+    line-height: 1.45;
+    color: #7c8085;
+}
+
+.pdm-challenge-empty {
+    padding: 14px 4px;
+    font-size: 12.5px;
+    color: #80868b;
+}
+
+/* ── Challenge results panel ─────────────────────────────────────────────── */
+
+.pdm-results {
+    flex: 0 0 300px;
+    width: 300px;
+    padding: 16px 14px 24px;
+    border-left: 1px solid #e6e8eb;
+    overflow-y: auto;
+    box-sizing: border-box;
+}
+
+.pdm-results-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 8px;
+}
+
+.pdm-results-title {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.pdm-results-title strong {
+    font-size: 15px;
+}
+
+.pdm-results-title span {
+    font-size: 12px;
+    color: #5f6368;
+}
+
+.pdm-results-empty {
+    margin-top: 18px;
+    padding: 12px;
+    font-size: 12.5px;
+    line-height: 1.5;
+    color: #5f6368;
+    background: #f8f9fa;
+    border-radius: 8px;
+}
+
+.pdm-results-empty p {
+    margin: 0 0 10px;
+}
+
+.pdm-results button {
+    font: inherit;
+}
+
+.pdm-results-empty button {
+    padding: 7px 12px;
+    font-size: 12.5px;
+    color: #ffffff;
+    background: #1a73e8;
+    border: 0;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.pdm-results-group {
+    margin-top: 20px;
+}
+
+/* The challenge is the organising idea now, so its heading carries the weight
+   the level headings used to — full case, not a small uppercase label. */
+.pdm-results-group h3 {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 8px;
+    margin: 0 0 6px;
+    padding-bottom: 5px;
+    font-size: 12.5px;
+    font-weight: 600;
+    line-height: 1.35;
+    color: #26292d;
+    border-bottom: 1px solid #eef0f2;
+}
+
+.pdm-results-challenge {
+    min-width: 0;
+}
+
+.pdm-results-count {
+    flex: 0 0 auto;
+    font-size: 11px;
+    font-weight: 400;
+    color: #80868b;
+}
+
+.pdm-results-group ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    text-align: left;
+}
+
+.pdm-results-group li {
+    display: block;
+    margin: 0;
+}
+
+.pdm-results button.pdm-result {
+    display: flex;
+    align-items: stretch;
+    gap: 9px;
+    width: 100%;
+    padding: 8px 6px;
+    text-align: left;
+    color: inherit;
+    background: transparent;
+    border: 0;
+    border-radius: 7px;
+    cursor: pointer;
+}
+
+.pdm-results button.pdm-result:hover,
+.pdm-results button.pdm-result:focus-visible {
+    background: #f1f3f4;
+}
+
+.pdm-result-bar {
+    flex: 0 0 4px;
+    align-self: stretch;
+    border-radius: 2px;
+}
+
+.pdm-result-body {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    min-width: 0;
+}
+
+.pdm-result-name {
+    font-size: 12.5px;
+    line-height: 1.35;
+}
+
+/* Secondary, because the level is context for the block rather than the reason
+   it is listed. The "N of M" pill lives on the map node, which is now the only
+   place the multi-challenge signal shows. */
+.pdm-result-level {
+    font-size: 11px;
+    line-height: 1.4;
+    color: #7c8085;
+}
+
+/* ── Map area ────────────────────────────────────────────────────────────── */
+
+.pdm-main {
+    position: relative;
+    flex: 1 1 auto;
+    min-width: 0;
+    overflow: hidden;
+}
+
+.pdm-canvas {
     position: absolute;
-    background: #f9f9f9;
-    padding: 10px;
-    border: 1px solid #d3d3d3;
-    border-radius: 5px;
-    pointer-events: none;
-    opacity: 0;
-    transition: opacity 0.2s ease-in-out;
+    inset: 0;
 }
 
-.popup {
+.pdm-svg {
+    display: block;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    cursor: grab;
+    touch-action: none;
+}
+
+.pdm-svg:active {
+    cursor: grabbing;
+}
+
+.pdm-export-slot {
+    position: absolute;
+    top: 12px;
+    right: 16px;
+    z-index: 6;
+}
+
+.pdm-export {
+    position: relative;
+}
+
+.pdm-main button.pdm-export-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 7px 14px;
+    font: inherit;
+    font-size: 13px;
+    color: #26292d;
+    background: #ffffff;
+    border: 1px solid #dfe2e6;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.pdm-main button.pdm-export-toggle:hover {
+    background: #f1f3f4;
+}
+
+.pdm-export-options {
+    position: absolute;
+    top: calc(100% + 6px);
+    right: 0;
+    min-width: 160px;
+    padding: 5px;
+    background: #ffffff;
+    border: 1px solid #dfe2e6;
+    border-radius: 8px;
+    box-shadow: 0 8px 22px rgba(15, 20, 25, 0.14);
+}
+
+.pdm-main .pdm-export-options button {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    width: 100%;
+    padding: 7px 9px;
+    font: inherit;
+    font-size: 13px;
+    text-align: left;
+    color: #26292d;
+    background: transparent;
+    border: 0;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.pdm-main .pdm-export-options button:hover {
+    background: #f1f3f4;
+}
+
+.pdm-main .pdm-export-options button span {
+    font-size: 11px;
+    color: #9aa0a6;
+}
+
+.pdm-export-note {
+    margin: 4px 6px 2px;
+    font-size: 11px;
+    color: #9aa0a6;
+}
+
+/* ── Zoom controls ───────────────────────────────────────────────────────── */
+
+/* Bottom right, clear of the map rather than sitting on top of it. */
+.pdm-zoom-controls {
+    position: absolute;
+    right: 20px;
+    bottom: 20px;
+    z-index: 6;
+    display: flex;
+    gap: 6px;
+    padding: 6px;
+    background: #ffffff;
+    border: 1px solid #dfe2e6;
+    border-radius: 10px;
+    box-shadow: 0 4px 14px rgba(15, 20, 25, 0.1);
+}
+
+.pdm-canvas .pdm-zoom-controls button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 32px;
+    height: 32px;
+    padding: 0 10px;
+    font: inherit;
+    font-size: 16px;
+    line-height: 1;
+    color: #3c4043;
+    background: transparent;
+    border: 0;
+    border-radius: 7px;
+    cursor: pointer;
+}
+
+.pdm-canvas .pdm-zoom-controls button.pdm-fit {
+    font-size: 12px;
+    letter-spacing: 0.02em;
+}
+
+.pdm-canvas .pdm-zoom-controls button:hover {
+    background: #f1f3f4;
+}
+
+/* ── Legend ──────────────────────────────────────────────────────────────── */
+
+/* Bottom left, clear of the zoom controls at bottom right and Export top right.
+   Anchored by its bottom edge so the panel grows upward when opened. */
+.pdm-legend {
+    position: absolute;
+    left: 16px;
+    bottom: 20px;
+    z-index: 6;
+}
+
+.pdm-main button.pdm-legend-toggle {
+    padding: 7px 14px;
+    font: inherit;
+    font-size: 13px;
+    color: #26292d;
+    background: #ffffff;
+    border: 1px solid #dfe2e6;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.pdm-main button.pdm-legend-toggle:hover {
+    background: #f1f3f4;
+}
+
+.pdm-legend-panel {
+    display: flex;
+    flex-direction: column;
+    width: 268px;
+    /* Capped and scrolling so an 11-family legend never covers the map. */
+    max-height: min(62vh, 460px);
+    background: #ffffff;
+    border: 1px solid #dfe2e6;
+    border-radius: 10px;
+    box-shadow: 0 8px 24px rgba(15, 20, 25, 0.16);
+}
+
+.pdm-legend-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 12px 8px;
+    border-bottom: 1px solid #eef0f2;
+}
+
+.pdm-legend-head h3 {
+    margin: 0;
+    font-size: 12.5px;
+    font-weight: 600;
+}
+
+.pdm-main button.pdm-legend-close {
+    width: 22px;
+    height: 22px;
+    padding: 0;
+    font-size: 16px;
+    line-height: 1;
+    color: #5f6368;
+    background: transparent;
+    border: 0;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.pdm-main button.pdm-legend-close:hover {
+    background: #f1f3f4;
+}
+
+.pdm-legend-body {
+    padding: 4px 12px 14px;
+    overflow-y: auto;
+}
+
+.pdm-legend-section {
+    margin-top: 14px;
+}
+
+.pdm-legend-section h4 {
+    margin: 0 0 6px;
+    font-size: 10.5px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #80868b;
+}
+
+.pdm-legend-note {
+    margin: 0 0 7px;
+    font-size: 11px;
+    line-height: 1.45;
+    color: #7c8085;
+}
+
+.pdm-legend .pdm-legend-section ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    text-align: left;
+}
+
+.pdm-legend .pdm-legend-section li {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    margin: 0;
+    padding: 3px 0;
+    font-size: 12px;
+    line-height: 1.35;
+}
+
+.pdm-legend-line {
+    flex: 0 0 auto;
+    overflow: visible;
+}
+
+.pdm-legend-band {
+    flex: 0 0 auto;
+    width: 22px;
+    height: 12px;
+    border: 1px solid;
+    border-radius: 2px;
+}
+
+.pdm-legend-swatch {
+    flex: 0 0 auto;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    box-shadow: inset 0 0 0 1px rgba(15, 20, 25, 0.22);
+}
+
+
+/* ── Reference popover ───────────────────────────────────────────────────── */
+
+.pdm-popover {
     position: fixed;
-    top: 10px;
-    left: 50%;
-    transform: translateX(-50%);
-    background-color: #f44336;
-    color: white;
-    padding: 15px;
+    z-index: 50;
+    display: flex;
+    flex-direction: column;
+    width: 320px;
+    max-height: 380px;
+    background: #ffffff;
+    border: 1px solid #dfe2e6;
+    border-radius: 10px;
+    box-shadow: 0 10px 30px rgba(15, 20, 25, 0.18);
+}
+
+.pdm-popover-head {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    padding: 11px 12px 8px;
+    border-bottom: 1px solid #eef0f2;
+}
+
+.pdm-popover-title {
+    flex: 1 1 auto;
+    font-size: 12.5px;
+    font-weight: 600;
+    line-height: 1.35;
+}
+
+.pdm-popover button.pdm-popover-close {
+    flex: 0 0 auto;
+    width: 22px;
+    height: 22px;
+    padding: 0;
+    font-size: 16px;
+    line-height: 1;
+    color: #5f6368;
+    background: transparent;
+    border: 0;
     border-radius: 5px;
-    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
-    z-index: 1000;
-    opacity: 0;
-    transition: opacity 0.5s ease-in-out;
+    cursor: pointer;
 }
 
-.popup.show {
-    opacity: 1;
+.pdm-popover button.pdm-popover-close:hover {
+    background: #f1f3f4;
 }
 
-.hidden {
-    display: none;
+.pdm-popover-facts {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 3px 10px;
+    margin: 0;
+    padding: 10px 12px;
+    font-size: 12px;
+    border-bottom: 1px solid #eef0f2;
+}
+
+.pdm-popover-facts dt {
+    color: #80868b;
+}
+
+.pdm-popover-facts dd {
+    margin: 0;
+}
+
+.pdm-popover .pdm-popover-refs {
+    margin: 0;
+    padding: 8px 12px 12px;
+    overflow-y: auto;
+    list-style: none;
+    text-align: left;
+}
+
+.pdm-popover .pdm-popover-refs li {
+    display: block;
+    margin: 0 0 5px;
+    font-size: 12px;
+    line-height: 1.4;
+}
+
+.pdm-popover .pdm-popover-refs li.is-grey {
+    color: #80868b;
+    font-style: italic;
+}
+
+.pdm-ref-flag {
+    margin-left: 1px;
+    font-weight: 600;
+}
+
+/* What the markers mean, once at the foot of the list. */
+.pdm-popover-note {
+    margin: 0 12px 8px;
+    font-size: 10.5px;
+    line-height: 1.45;
+    color: #80868b;
+}
+
+.pdm-popover-note.is-grey {
+    font-style: italic;
+}
+
+.pdm-popover-empty {
+    margin: 0;
+    padding: 12px;
+    font-size: 12px;
+    color: #80868b;
+}
+
+/* ── Status, error and empty states ──────────────────────────────────────── */
+
+.pdm-status {
+    position: absolute;
+    top: 14px;
+    left: 50%;
+    z-index: 8;
+    padding: 5px 12px;
+    font-size: 12px;
+    color: #3c4043;
+    background: #ffffff;
+    border: 1px solid #dfe2e6;
+    border-radius: 14px;
+    transform: translateX(-50%);
+    box-shadow: 0 3px 10px rgba(15, 20, 25, 0.09);
+}
+
+.pdm-overlay {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    z-index: 9;
+    width: 320px;
+    padding: 20px;
+    text-align: center;
+    background: #ffffff;
+    border: 1px solid #dfe2e6;
+    border-radius: 12px;
+    transform: translate(-50%, -50%);
+    box-shadow: 0 10px 30px rgba(15, 20, 25, 0.16);
+}
+
+.pdm-overlay h4 {
+    margin: 0 0 8px;
+    font-size: 14px;
+}
+
+.pdm-overlay p {
+    margin: 0 0 14px;
+    font-size: 12.5px;
+    color: #5f6368;
+}
+
+.pdm-main .pdm-overlay button {
+    padding: 8px 16px;
+    font: inherit;
+    font-size: 13px;
+    color: #ffffff;
+    background: #1a73e8;
+    border: 0;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.pdm-main .pdm-overlay button:hover {
+    background: #1765cc;
+}
+
+@media (max-width: 900px) {
+    /* `height: auto` here would collapse the layout inside the flex shell, so
+       it keeps filling and the shell scrolls instead. */
+    .pdm-sidebar {
+        flex-basis: 210px;
+        width: 210px;
+    }
+
+    .pdm-main {
+        min-height: 520px;
+    }
 }

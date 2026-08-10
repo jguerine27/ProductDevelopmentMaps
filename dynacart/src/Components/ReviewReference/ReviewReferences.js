@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import apiClient from '../../api/client';
 
 const ReviewReferences = () => {
     const [reviewableReferences, setReviewableReferences] = useState([]);
@@ -7,8 +8,8 @@ const ReviewReferences = () => {
     useEffect(() => {
         const fetchReviewableReferences = async () => {
             try {
-                const response = await fetch('http://localhost:4000/api/reviewable-references');
-                const data = await response.json();
+                const response = await apiClient.get('/api/reviewable-references');
+                const data = response.data;
                 setReviewableReferences(data);
             } catch (error) {
                 console.error('Error fetching reviewable references:', error);
@@ -20,16 +21,10 @@ const ReviewReferences = () => {
 
     const handleConfirmAddition = async (reference,referenceId) => {
         try {
-            const response = await fetch(`http://localhost:4000/api/confirm-reference-addition/${referenceId}`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    ...reference, // Include all properties
-                }),
+            const response = await apiClient.post(`/api/confirm-reference-addition/${referenceId}`, {
+                ...reference, // Include all properties
             });
-            if (response.ok) {
+            if (response.status === 200) {
                 setMessage('Reference added to the database.');
                 setReviewableReferences(reviewableReferences.filter(reference => reference.id !== referenceId));
             } else {
@@ -42,10 +37,8 @@ const ReviewReferences = () => {
 
     const handleRejectAddition = async (referenceId) => {
         try {
-            const response = await fetch(`http://localhost:4000/api/reject-reference-addition/${referenceId}`, {
-                method: 'POST',
-            });
-            if (response.ok) {
+            const response = await apiClient.post(`/api/reject-reference-addition/${referenceId}`);
+            if (response.status === 200) {
                 setMessage('Reference rejected.');
                 setReviewableReferences(reviewableReferences.filter(reference => reference.id !== referenceId));
             } else {

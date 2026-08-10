@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import './DeleteOption.css'; // Import the CSS file for styling
+import apiClient from '../../api/client';
 
 const DeleteOption = () => {
     const [nodes, setNodes] = useState([]);
@@ -10,8 +11,8 @@ const DeleteOption = () => {
     useEffect(() => {
         const fetchNodesAndRelationships = async () => {
             try {
-                const response = await fetch('http://localhost:4000/api/nodes-relationships');
-                const data = await response.json();
+                const response = await apiClient.get('/api/nodes-relationships');
+                const data = response.data;
                 setNodes(data.nodes);
                 setRelationships(data.relationships);
             } catch (error) {
@@ -24,10 +25,8 @@ const DeleteOption = () => {
 
     const handleDeleteNode = async (nodeName) => {
         try {
-            const response = await fetch(`http://localhost:4000/api/delete-node/${nodeName}`, {
-                method: 'DELETE',
-            });
-            if (response.ok) {
+            const response = await apiClient.delete(`/api/delete-node/${nodeName}`);
+            if (response.status === 200) {
                 setNodes(nodes.filter(node => node.name !== nodeName));
                 setMessage('Node deleted successfully.');
             } else {
@@ -40,10 +39,8 @@ const DeleteOption = () => {
 
     const handleDeleteRelationship = async (relationshipName) => {
         try {
-            const response = await fetch(`http://localhost:4000/api/delete-relationship/${relationshipName}`, {
-                method: 'DELETE',
-            });
-            if (response.ok) {
+            const response = await apiClient.delete(`/api/delete-relationship/${relationshipName}`);
+            if (response.status === 200) {
                 setRelationships(relationships.filter(relationship => relationship.name !== relationshipName));
                 setMessage('Relationship deleted successfully.');
             } else {
