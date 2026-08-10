@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { ChromePicker } from 'react-color';
 import './AddNodeForm.css';
+import apiClient from '../../api/client';
 
 const AddNodeForm = () => {
     const [nodeLabels, setNodeLabels] = useState([]);
@@ -25,17 +26,17 @@ const AddNodeForm = () => {
         const fetchData = async () => {
             try {
                 const [labelsResponse, mapsResponse, approachesResponse, colorsResponse] = await Promise.all([
-                    fetch('http://localhost:4000/api/node-labels'),
-                    fetch('http://localhost:4000/api/node-maps'),
-                    fetch('http://localhost:4000/api/get-approaches'),
-                    fetch('http://localhost:4000/api/get-colors')
+                    apiClient.get('/api/node-labels'),
+                    apiClient.get('/api/node-maps'),
+                    apiClient.get('/api/get-approaches'),
+                    apiClient.get('/api/get-colors')
                 ]);
 
-                if (labelsResponse.ok && mapsResponse.ok && approachesResponse.ok && colorsResponse.ok) {
-                    const labels = await labelsResponse.json();
-                    const maps = await mapsResponse.json();
-                    const approaches = await approachesResponse.json();
-                    const colors = await colorsResponse.json();
+                if (labelsResponse.status === 200 && mapsResponse.status === 200 && approachesResponse.status === 200 && colorsResponse.status === 200) {
+                    const labels = labelsResponse.data;
+                    const maps = mapsResponse.data;
+                    const approaches = approachesResponse.data;
+                    const colors = colorsResponse.data;
 
                     // Create approach to color dictionary
                     const approachColorDict = approaches.reduce((dict, approach, index) => {
@@ -101,24 +102,18 @@ const AddNodeForm = () => {
         const mapToSubmit = selectedMap === 'New Map' ? newMapName : selectedMap;
 
         try {
-            const response = await fetch('http://localhost:4000/api/submit-node-for-review', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    label: selectedLabel,
-                    name: nodeName,
-                    type,
-                    citations,
-                    tags,
-                    map: mapToSubmit,
-                    color: colorToSubmit,
-                    approach: selectedApproach === 'New Approach' ? newApproach : selectedApproach
-                }),
+            const response = await apiClient.post('/api/submit-node-for-review', {
+                label: selectedLabel,
+                name: nodeName,
+                type,
+                citations,
+                tags,
+                map: mapToSubmit,
+                color: colorToSubmit,
+                approach: selectedApproach === 'New Approach' ? newApproach : selectedApproach
             });
 
-            const data = await response.json();
+            const data = response.data;
             setMessage(data.message || 'Node submitted for review');
         } catch (error) {
             console.error('Error submitting node for review:', error);

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import apiClient from '../../api/client';
 
 const ReviewableNodes = () => {
     const [reviewableNodes, setReviewableNodes] = useState([]);
@@ -7,8 +8,8 @@ const ReviewableNodes = () => {
     useEffect(() => {
         const fetchReviewableNodes = async () => {
             try {
-                const response = await fetch('http://localhost:4000/api/reviewable-nodes');
-                const data = await response.json();
+                const response = await apiClient.get('/api/reviewable-nodes');
+                const data = response.data;
                 setReviewableNodes(data);
             } catch (error) {
                 console.error('Error fetching reviewable nodes:', error);
@@ -21,18 +22,12 @@ const ReviewableNodes = () => {
     const handleConfirmAddition = async (nodeId, nodeProperties, nodeLabel) => {
         try {
             
-            const response = await fetch(`http://localhost:4000/api/confirm-node-addition/${nodeId}`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    label: nodeLabel,
-                    properties: nodeProperties,
-                }),
+            const response = await apiClient.post(`/api/confirm-node-addition/${nodeId}`, {
+                label: nodeLabel,
+                properties: nodeProperties,
             });
-    
-            if (response.ok) {
+
+            if (response.status === 200) {
                 console.log(nodeProperties)
                 setMessage('Node added to the database.');
                 setReviewableNodes(reviewableNodes.filter(node => node.id !== nodeId));
@@ -48,10 +43,8 @@ const ReviewableNodes = () => {
 
     const handleRejectAddition = async (nodeId) => {
         try {
-            const response = await fetch(`http://localhost:4000/api/reject-node-addition/${nodeId}`, {
-                method: 'POST',
-            });
-            if (response.ok) {
+            const response = await apiClient.post(`/api/reject-node-addition/${nodeId}`);
+            if (response.status === 200) {
                 setMessage('Node rejected.');
                 setReviewableNodes(reviewableNodes.filter(node => node.id !== nodeId));
             } else {

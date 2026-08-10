@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import apiClient from '../../api/client';
 
 const AddReferenceForm = () => {
     const [nodeLabels, setNodeLabels] = useState([]);
@@ -17,9 +18,9 @@ const AddReferenceForm = () => {
     useEffect(() => {
         const fetchLabels = async () => {
             try {
-                const response = await fetch('http://localhost:4000/api/node-labels');
-                if (response.ok) {
-                    const labels = await response.json();
+                const response = await apiClient.get('/api/node-labels');
+                if (response.status === 200) {
+                    const labels = response.data;
                     setNodeLabels(labels);
                 } else {
                     throw new Error('Failed to fetch node labels');
@@ -34,9 +35,9 @@ const AddReferenceForm = () => {
 
     const fetchNodeNames = async (label, setter) => {
         try {
-            const response = await fetch(`http://localhost:4000/api/node-names/${label}`);
-            if (response.ok) {
-                const names = await response.json();
+            const response = await apiClient.get(`/api/node-names/${label}`);
+            if (response.status === 200) {
+                const names = response.data;
                 setter(names);
             } else {
                 throw new Error('Failed to fetch node names');
@@ -94,24 +95,18 @@ const AddReferenceForm = () => {
         }
 
         try {
-            const response = await fetch('http://localhost:4000/api/submit-reference-for-review', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    nodeLabel1: selectedLabel1,
-                    nodeName1: selectedNodeName1,
-                    nodeLabel2: selectedLabel2,
-                    nodeName2: selectedNodeName2,
-                    referenceName: referenceName,
-                    year: year,
-                    author: author,
-                    type
-                }),
+            const response = await apiClient.post('/api/submit-reference-for-review', {
+                nodeLabel1: selectedLabel1,
+                nodeName1: selectedNodeName1,
+                nodeLabel2: selectedLabel2,
+                nodeName2: selectedNodeName2,
+                referenceName: referenceName,
+                year: year,
+                author: author,
+                type
             });
 
-            const data = await response.json();
+            const data = response.data;
             setMessage(data.message || 'Reference submitted for review.');
         } catch (error) {
             console.error('Error submitting reference for review:', error);

@@ -13,13 +13,13 @@
     "firebase": "^10.12.3",
     "html-to-image": "^1.11.11",
     "jspdf": "^2.5.1",
-    "neo4j-driver": "^5.22.0",
     "os": "^0.1.2",
     "papaparse": "^5.4.1",
     "pdf-lib": "^1.17.1",
     "react": "^18.3.1",
     "react-color": "^2.19.3",
     "react-dom": "^18.3.1",
+    "react-router-dom": "^6.24.1",
     "react-firebase-hooks": "^5.1.1",
     "react-scripts": "5.0.1",
     "web-vitals": "^2.1.4"
@@ -28,12 +28,19 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "verify:layout": "node verify-layout/run.mjs"
   },
   "eslintConfig": {
     "extends": [
       "react-app",
       "react-app/jest"
+    ]
+  },
+  "jest": {
+    "transformIgnorePatterns": [
+      "^.+\\.module\\.(css|sass|scss)$",
+      "[/\\\\]node_modules[/\\\\](?!(d3|d3-[a-z0-9-]+|internmap|delaunator|robust-predicates)[/\\\\])[^/\\\\]+[/\\\\].+\\.(js|mjs|jsx|ts|tsx)$"
     ]
   },
   "browserslist": {

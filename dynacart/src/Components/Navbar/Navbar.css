@@ -1,32 +1,246 @@
 /* Navbar.css */
 
-nav {
-    background-color: #333; /* Dark background color */
-    padding: 10px 0; /* Padding around the navbar */
-}
-
+/*
+ * LEGACY GLOBALS — deliberately left in place.
+ *
+ * These bare `ul`, `li` and `button` selectors are bundled app-wide by CRA and
+ * the CRUD screens (AddNodeForm, ReviewableNodes, ReviewReferences) have been
+ * relying on them since before the navbar was restyled. Removing them would
+ * silently change the appearance of screens that are explicitly out of scope,
+ * so they stay until those screens are rebuilt.
+ *
+ * The bar below therefore avoids `ul`/`li` entirely and scopes every rule under
+ * `.pdm-nav`, which is specific enough to beat the bare `button` rule.
+ */
 ul {
-    list-style-type: none; /* Remove default list styles */
+    list-style-type: none;
     margin: 0;
     padding: 0;
-    text-align: center; /* Center align the list items */
+    text-align: center;
 }
 
 li {
-    display: inline; /* Display list items inline */
-    margin: 0 10px; /* Margin between list items */
+    display: inline;
+    margin: 0 10px;
 }
 
 button {
-    background-color: #555; /* Darker button background color */
-    color: #fff; /* Text color */
-    padding: 10px 20px; /* Padding inside buttons */
-    border: none; /* Remove border */
-    border-radius: 5px; /* Rounded corners */
-    cursor: pointer; /* Cursor style */
-    transition: background-color 0.3s; /* Smooth transition for background color */
+    background-color: #555;
+    color: #fff;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
 }
 
 button:hover {
-    background-color: #777; /* Darken background color on hover */
+    background-color: #777;
+}
+
+/* ── The bar ─────────────────────────────────────────────────────────────── */
+
+.pdm-nav {
+    background: #ffffff;
+    border-bottom: 1px solid #e6e8eb;
+    font-family: "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
+.pdm-nav-inner {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 0 24px;
+    min-height: 58px;
+}
+
+.pdm-nav button {
+    font: inherit;
+    transition: none;
+}
+
+.pdm-nav button:focus-visible {
+    outline: 2px solid #1a73e8;
+    outline-offset: 2px;
+}
+
+/* Text for now — the repo has no product wordmark asset, only the CRA React
+   logo. Swap this for an <img> when one exists. */
+.pdm-nav button.pdm-nav-brand {
+    padding: 6px 4px;
+    font-size: 17px;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    color: #26292d;
+    background: transparent;
+    border: 0;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.pdm-nav button.pdm-nav-brand:hover {
+    background: #f1f3f4;
+}
+
+/* Everything right of the wordmark: the sections take the free space and centre
+   themselves in it, leaving the account controls hard against the right edge. */
+.pdm-nav-menu {
+    display: flex;
+    flex: 1 1 auto;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+}
+
+.pdm-nav-links {
+    display: flex;
+    flex: 1 1 auto;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+}
+
+
+.pdm-nav button.pdm-nav-link {
+    padding: 8px 12px;
+    font-size: 14px;
+    color: #3c4043;
+    background: transparent;
+    border: 0;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.pdm-nav button.pdm-nav-link:hover {
+    background: #f1f3f4;
+    color: #26292d;
+}
+
+/* Distinct on weight and colour, not colour alone. */
+.pdm-nav button.pdm-nav-link.is-current {
+    font-weight: 600;
+    color: #1a73e8;
+    background: #e8f0fe;
+}
+
+.pdm-nav-account {
+    display: flex;
+    flex: 0 0 auto;
+    align-items: center;
+    gap: 10px;
+}
+
+.pdm-nav button.pdm-nav-signin {
+    padding: 8px 16px;
+    font-size: 14px;
+    color: #1a73e8;
+    background: #e8f0fe;
+    border: 1px solid #d2e3fc;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.pdm-nav button.pdm-nav-signin:hover {
+    background: #d9e7fd;
+}
+
+.pdm-nav button.pdm-nav-register {
+    padding: 8px 16px;
+    font-size: 14px;
+    color: #ffffff;
+    background: #1a73e8;
+    border: 1px solid #1a73e8;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.pdm-nav button.pdm-nav-register:hover {
+    background: #1765cc;
+    border-color: #1765cc;
+}
+
+.pdm-nav button.pdm-nav-signout {
+    padding: 8px 16px;
+    font-size: 14px;
+    color: #3c4043;
+    background: #ffffff;
+    border: 1px solid #dfe2e6;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.pdm-nav button.pdm-nav-signout:hover {
+    background: #f1f3f4;
+}
+
+/* ── Narrow screens ──────────────────────────────────────────────────────── */
+
+/* CSS-drawn rather than an icon font: three bars and a label, no dependency. */
+.pdm-nav button.pdm-nav-burger {
+    display: none;
+    flex-direction: column;
+    gap: 4px;
+    margin-left: auto;
+    padding: 9px 8px;
+    background: transparent;
+    border: 1px solid #dfe2e6;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.pdm-nav button.pdm-nav-burger span {
+    width: 18px;
+    height: 2px;
+    background: #3c4043;
+    border-radius: 1px;
+}
+
+.pdm-nav button.pdm-nav-burger:hover {
+    background: #f1f3f4;
+}
+
+@media (max-width: 760px) {
+    .pdm-nav-inner {
+        flex-wrap: wrap;
+        padding: 0 16px;
+    }
+
+    .pdm-nav button.pdm-nav-burger {
+        display: flex;
+    }
+
+    /* Collapsed by default; the toggle drops it below the bar rather than
+       letting eight controls overflow a 600px window. */
+    .pdm-nav-menu {
+        display: none;
+        flex-basis: 100%;
+        flex-direction: column;
+        align-items: stretch;
+        gap: 10px;
+        padding: 4px 0 14px;
+    }
+
+    .pdm-nav-menu.is-open {
+        display: flex;
+    }
+
+    /* Stacked, so the centring above would just add dead space. */
+    .pdm-nav-links {
+        flex-direction: column;
+        align-items: stretch;
+        justify-content: flex-start;
+        gap: 2px;
+    }
+
+    .pdm-nav button.pdm-nav-link {
+        text-align: left;
+    }
+
+    .pdm-nav-account {
+        gap: 8px;
+    }
+
+    .pdm-nav-account button {
+        flex: 1 1 auto;
+    }
 }

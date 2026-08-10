@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import './Home.css';
 import Navbar from '../Components/Navbar/Navbar';
 import AddNodeForm from '../Components/AddNodeForm/AddNodeForm';
 import AddReferenceForm from '../Components/AddReferenceForm/AddReferenceForm';
@@ -27,19 +28,22 @@ const Home = () => {
     const [activeForm, setActiveForm] = useState('graph');
 
     return (
-        <div>
-            <Navbar setActiveForm={setActiveForm} />
-            {activeForm === 'home' && <h1>Welcome to DynaCart</h1>}
-            {activeForm === 'node' && <AddNodeForm />}
-            {activeForm === 'reference' && <AddReferenceForm />}
-            {activeForm === 'graph' && <GraphVisualization />}
-            {activeForm === 'reviewNode' && <ReviewableNodes />}
-            {activeForm === 'reviewReference' && <ReviewReferences />}
-            {activeForm === 'delete' && <DeleteOption />}
-            {activeForm === 'updateNode' && <UpdateNode/>}
-
-            <button onClick={handleLogout}>Logout</button>
-
+        <div className="app-shell">
+            <Navbar
+                setActiveForm={setActiveForm}
+                activeForm={activeForm}
+                onLogout={handleLogout}
+            />
+            <div className="app-shell-view">
+                {activeForm === 'home' && <h1>Welcome to DynaCart</h1>}
+                {activeForm === 'node' && <AddNodeForm />}
+                {activeForm === 'reference' && <AddReferenceForm />}
+                {activeForm === 'graph' && <GraphVisualization />}
+                {activeForm === 'reviewNode' && <ReviewableNodes />}
+                {activeForm === 'reviewReference' && <ReviewReferences />}
+                {activeForm === 'delete' && <DeleteOption />}
+                {activeForm === 'updateNode' && <UpdateNode/>}
+            </div>
         </div>
     );
 }

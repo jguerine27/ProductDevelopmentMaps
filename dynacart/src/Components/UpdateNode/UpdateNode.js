@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import apiClient from '../../api/client';
 
 const UpdateNode = () => {
     const [labels, setLabels] = useState([]);
@@ -16,8 +17,8 @@ const UpdateNode = () => {
     useEffect(() => {
         const fetchLabels = async () => {
             try {
-                const response = await fetch('http://localhost:4000/api/node-labels');
-                const data = await response.json();
+                const response = await apiClient.get('/api/node-labels');
+                const data = response.data;
                 setLabels(data);
             } catch (error) {
                 console.error('Error fetching labels:', error);
@@ -36,8 +37,8 @@ const UpdateNode = () => {
         setOriginalCitations([]);
 
         try {
-            const response = await fetch(`http://localhost:4000/api/node-names/${label}`);
-            const data = await response.json();
+            const response = await apiClient.get(`/api/node-names/${label}`);
+            const data = response.data;
             setNodes(data);
         } catch (error) {
             console.error('Error fetching nodes:', error);
@@ -49,8 +50,8 @@ const UpdateNode = () => {
         setSelectedNode(nodeName);
 
         try {
-            const response = await fetch(`http://localhost:4000/api/node-details/${nodeName}`);
-            const data = await response.json();
+            const response = await apiClient.get(`/api/node-details/${nodeName}`);
+            const data = response.data;
             setNodeDetails(data);
             setOriginalNodeName(nodeName); // Store the original name
             setOriginalTags(data.tags || []); // Store original tags
@@ -89,18 +90,14 @@ const UpdateNode = () => {
     // Handle the confirmation of the update
     const handleConfirmUpdate = async () => {
         try {
-            const response = await fetch('http://localhost:4000/api/update-node', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    oldName: originalNodeName, // Pass the old name
-                    newName: nodeDetails.name || '', // Pass the new name, default to empty string if not provided
-                    tags: ensureListFormat(nodeDetails.tags, originalTags), // Ensure tags are a list of strings
-                    citations: ensureListFormat(nodeDetails.citations, originalCitations) // Ensure citations are a list of strings
-                })
+            const response = await apiClient.post('/api/update-node', {
+                oldName: originalNodeName, // Pass the old name
+                newName: nodeDetails.name || '', // Pass the new name, default to empty string if not provided
+                tags: ensureListFormat(nodeDetails.tags, originalTags), // Ensure tags are a list of strings
+                citations: ensureListFormat(nodeDetails.citations, originalCitations) // Ensure citations are a list of strings
             });
 
-            if (response.ok) {
+            if (response.status === 200) {
                 setMessage('Node updated successfully.');
             } else {
                 setMessage('Failed to update node.');
