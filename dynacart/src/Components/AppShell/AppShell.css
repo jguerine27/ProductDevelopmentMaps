@@ -1,0 +1,27 @@
+/*
+ * The app shell: the navbar, and whatever page sits under it.
+ *
+ * These rules were page/Home.css. They moved here when the shell stopped being
+ * the map's own frame and became the frame every signed-in area shares, so the
+ * navbar no longer vanishes on the way to Collaborate or Review.
+ *
+ * The map used to size itself with `calc(100vh - 120px)`, guessing the navbar's
+ * height. The navbar is nearer 60px, so the guess left a band of dead page
+ * below the map that belonged to no element at all — devtools could not even
+ * select it. Measuring instead of guessing: the shell fills the viewport, the
+ * navbar takes what it needs, and the view below it takes the rest.
+ */
+
+.app-shell {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+}
+
+.app-shell-view {
+    flex: 1 1 auto;
+    /* Without this a flex item refuses to shrink below its content, and the
+       map's own scrolling regions push the shell past the viewport again. */
+    min-height: 0;
+    overflow: auto;
+}

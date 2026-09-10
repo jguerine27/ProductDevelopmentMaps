@@ -1,0 +1,3917 @@
+{
+  "Agile": {
+    "block": {
+      "name": "Agile",
+      "level": "Approach",
+      "maps": [
+        "M",
+        "C",
+        "S"
+      ],
+      "related_approach": "Agile",
+      "color": "#c10001",
+      "citations": "Bricogne, 2015; Bricogne et al., 2016; Beck et al., 2001; Tomiyama et al., 2019; Porter and Heppelmann, 2014",
+      "tags": [],
+      "status": "approved",
+      "matched_challenges": [],
+      "degree": 10
+    },
+    "description": {
+      "text": "Agile development defines a strategic capability, a capability to create and respond to change, a capability to balance flexibility and structure, a capability to draw creativity and innovation out of a development team, and a capability to lead organizations through turbulence and uncertainty.",
+      "section_heading": "PRINCIPLES",
+      "section_text": "- Our highest priority is to satisfy the customer through early and continuous delivery of valuable software.\n- Welcome changing requirements, even late in development. Agile processes harness change for the customer's competitive advantage.\n- Deliver working software frequently, from a couple of weeks to a couple of months, with a preference to the shorter timescale.\n- Business people and developers must work together daily throughout the project.\n- Build projects around motivated individuals. Give them the environment and support they need, and trust them to get the job done.\n- The most efficient and effective method of conveying information to and within a development team is face-to-face conversation.\n- Working software is the primary measure of progress.\n- Agile processes promote sustainable development. The sponsors, developers, and users should be able to maintain a constant pace indefinitely.\n- Continuous attention to technical excellence and good design enhances agility.\n- Simplicity — the art of maximizing the amount of work not done — is essential.\n- The best architectures, requirements, and designs emerge from self-organizing teams.\n- At regular intervals, the team reflects on how to become more effective, then tunes and adjusts its behavior accordingly.",
+      "media_url": "",
+      "media_caption": "",
+      "description_source": {
+        "author": "Highsmith",
+        "authors_full": "Highsmith J",
+        "book_title": "",
+        "conference": "",
+        "doi": "",
+        "editors": "",
+        "institution": "",
+        "issue": "",
+        "journal": "",
+        "pages": "",
+        "publisher": "Addison-Wesley",
+        "status": "approved",
+        "title": "Agile Software Development Ecosystems",
+        "type": "book",
+        "volume": "",
+        "year": "2002"
+      },
+      "section_source": {
+        "author": "Beck et al.",
+        "authors_full": "Beck K, Beedle M, Van Bennekum A, Cockburn A, Cunningham W, Fowler M, Grenning J, Highsmith J, Hunt A, Jeffries R, Kern J, Marick B, Martin RC, Mellor S, Schwaber K, Sutherland J, Thomas D",
+        "book_title": "",
+        "conference": "",
+        "doi": "",
+        "editors": "",
+        "institution": "agilemanifesto.org",
+        "issue": "",
+        "journal": "",
+        "pages": "",
+        "publisher": "",
+        "status": "approved",
+        "title": "Manifesto for Agile Software Development",
+        "type": "report",
+        "volume": "",
+        "year": "2001"
+      },
+      "status": "approved"
+    },
+    "block_citations": [
+      "Bricogne, 2015",
+      "Bricogne et al., 2016",
+      "Beck et al., 2001",
+      "Tomiyama et al., 2019",
+      "Porter and Heppelmann, 2014"
+    ],
+    "references": [
+      {
+        "author": "Beck et al.",
+        "year": "2001",
+        "text": "Beck et al., 2001",
+        "resolved": true,
+        "reference": {
+          "author": "Beck et al.",
+          "authors_full": "Beck K, Beedle M, Van Bennekum A, Cockburn A, Cunningham W, Fowler M, Grenning J, Highsmith J, Hunt A, Jeffries R, Kern J, Marick B, Martin RC, Mellor S, Schwaber K, Sutherland J, Thomas D",
+          "book_title": "",
+          "conference": "",
+          "doi": "",
+          "editors": "",
+          "institution": "agilemanifesto.org",
+          "issue": "",
+          "journal": "",
+          "pages": "",
+          "publisher": "",
+          "status": "approved",
+          "title": "Manifesto for Agile Software Development",
+          "type": "report",
+          "volume": "",
+          "year": "2001"
+        },
+        "origins": [
+          "block_citation"
+        ]
+      },
+      {
+        "author": "Bricogne",
+        "year": "2015",
+        "text": "Bricogne, 2015",
+        "resolved": false,
+        "reference": null,
+        "origins": [
+          "block_citation"
+        ]
+      },
+      {
+        "author": "Bricogne et al.",
+        "year": "2016",
+        "text": "Bricogne et al., 2016",
+        "resolved": true,
+        "reference": {
+          "author": "Bricogne et al.",
+          "authors_full": "",
+          "book_title": "",
+          "conference": "",
+          "doi": "",
+          "editors": "",
+          "institution": "",
+          "issue": "",
+          "journal": "",
+          "pages": "",
+          "publisher": "",
+          "status": "approved",
+          "title": "",
+          "type": "",
+          "volume": "",
+          "year": "2016"
+        },
+        "origins": [
+          "block_citation"
+        ]
+      },
+      {
+        "author": "Goevert and Lindemann",
+        "year": "2018",
+        "text": "",
+        "resolved": true,
+        "reference": {
+          "author": "Goevert and Lindemann",
+          "authors_full": "",
+          "book_title": "",
+          "conference": "",
+          "doi": "",
+          "editors": "",
+          "institution": "",
+          "issue": "",
+          "journal": "",
+          "pages": "",
+          "publisher": "",
+          "status": "approved",
+          "title": "",
+          "type": "",
+          "volume": "",
+          "year": "2018"
+        },
+        "origins": [
+          "link"
+        ]
+      },
+      {
+        "author": "Luedeke et al.",
+        "year": "2018",
+        "text": "",
+        "resolved": true,
+        "reference": {
+          "author": "Luedeke et al.",
+          "authors_full": "",
+          "book_title": "",
+          "conference": "",
+          "doi": "",
+          "editors": "",
+          "institution": "",
+          "issue": "",
+          "journal": "",
+          "pages": "",
+          "publisher": "",
+          "status": "approved",
+          "title": "",
+          "type": "",
+          "volume": "",
+          "year": "2018"
+        },
+        "origins": [
+          "link"
+        ]
+      },
+      {
+        "author": "Mabrouk et al.",
+        "year": "2018",
+        "text": "",
+        "resolved": true,
+        "reference": {
+          "author": "Mabrouk et al.",
+          "authors_full": "",
+          "book_title": "",
+          "conference": "",
+          "doi": "",
+          "editors": "",
+          "institution": "",
+          "issue": "",
+          "journal": "",
+          "pages": "",
+          "publisher": "",
+          "status": "approved",
+          "title": "",
+          "type": "",
+          "volume": "",
+          "year": "2018"
+        },
+        "origins": [
+          "link"
+        ]
+      },
+      {
+        "author": "Porter and Heppelmann",
+        "year": "2014",
+        "text": "Porter and Heppelmann, 2014",
+        "resolved": false,
+        "reference": null,
+        "origins": [
+          "block_citation"
+        ]
+      },
+      {
+        "author": "Tomiyama et al.",
+        "year": "2019",
+        "text": "Tomiyama et al., 2019",
+        "resolved": true,
+        "reference": {
+          "author": "Tomiyama et al.",
+          "authors_full": "",
+          "book_title": "",
+          "conference": "",
+          "doi": "",
+          "editors": "",
+          "institution": "",
+          "issue": "",
+          "journal": "",
+          "pages": "",
+          "publisher": "",
+          "status": "approved",
+          "title": "",
+          "type": "",
+          "volume": "",
+          "year": "2019"
+        },
+        "origins": [
+          "block_citation"
+        ]
+      },
+      {
+        "author": "Wagner",
+        "year": "2014",
+        "text": "",
+        "resolved": true,
+        "reference": {
+          "author": "Wagner",
+          "authors_full": "",
+          "book_title": "",
+          "conference": "",
+          "doi": "",
+          "editors": "",
+          "institution": "",
+          "issue": "",
+          "journal": "",
+          "pages": "",
+          "publisher": "",
+          "status": "approved",
+          "title": "",
+          "type": "",
+          "volume": "",
+          "year": "2014"
+        },
+        "origins": [
+          "link"
+        ]
+      }
+    ],
+    "tags": [],
+    "ratings": {
+      "count": 0,
+      "averages": {
+        "efficacy": null,
+        "product_quality": null,
+        "design_process": null,
+        "resource_dependency": null
+      },
+      "mine": null
+    },
+    "comments": [],
+    "connections": {
+      "outgoing": [
+        {
+          "source": "Agile",
+          "target": "Agile product development",
+          "ltype": "ec",
+          "effective_ltype": "ec",
+          "maps": [
+            "C"
+          ],
+          "reference_count": 1,
+          "references": [
+            {
+              "author": "Luedeke et al.",
+              "year": "2018",
+              "asterisk": false,
+              "grey": false
+            }
+          ],
+          "links": [
+            {
+              "source": "Agile",
+              "target": "Agile product development",
+              "ltype": "ec",
+              "maps": [
+                "C"
+              ],
+              "visible_reference_count": 1,
+              "stored_reference_count": 1
+            }
+          ],
+          "block": {
+            "color": "#c10001",
+            "level": "Process",
+            "maps": [
+              "C"
+            ],
+            "name": "Agile product development",
+            "related_approach": "Agile"
+          }
+        },
+        {
+          "source": "Agile",
+          "target": "Agile stage-gate process",
+          "ltype": "h",
+          "effective_ltype": "h",
+          "maps": [
+            "M"
+          ],
+          "reference_count": 0,
+          "references": [],
+          "links": [
+            {
+              "source": "Agile",
+              "target": "Agile stage-gate process",
+              "ltype": "h",
+              "maps": [
+                "M"
+              ],
+              "visible_reference_count": 0,
+              "stored_reference_count": 0
+            }
+          ],
+          "block": {
+            "color": "#b7b4b7",
+            "level": "Process",
+            "maps": [
+              "M"
+            ],
+            "name": "Agile stage-gate process",
+            "related_approach": "Agile-Plan-driven/Systematic"
+          }
+        },
+        {
+          "source": "Agile",
+          "target": "Agile systems engineering",
+          "ltype": "h",
+          "effective_ltype": "h",
+          "maps": [
+            "M"
+          ],
+          "reference_count": 0,
+          "references": [],
+          "links": [
+            {
+              "source": "Agile",
+              "target": "Agile systems engineering",
+              "ltype": "h",
+              "maps": [
+                "M"
+              ],
+              "visible_reference_count": 0,
+              "stored_reference_count": 0
+            }
+          ],
+          "block": {
+            "color": "#702c9f",
+            "level": "Approach",
+            "maps": [
+              "M"
+            ],
+            "name": "Agile systems engineering",
+            "related_approach": "Agile-Systems Engineering"
+          }
+        },
+        {
+          "source": "Agile",
+          "target": "Design thinking",
+          "ltype": "ec",
+          "effective_ltype": "ec",
+          "maps": [
+            "M"
+          ],
+          "reference_count": 1,
+          "references": [
+            {
+              "author": "Goevert and Lindemann",
+              "year": "2018",
+              "asterisk": false,
+              "grey": false
+            }
+          ],
+          "links": [
+            {
+              "source": "Agile",
+              "target": "Design thinking",
+              "ltype": "ec",
+              "maps": [
+                "M"
+              ],
+              "visible_reference_count": 1,
+              "stored_reference_count": 1
+            }
+          ],
+          "block": {
+            "color": "#c10001",
+            "level": "Process",
+            "maps": [
+              "M",
+              "C"
+            ],
+            "name": "Design thinking",
+            "related_approach": "Agile"
+          }
+        },
+        {
+          "source": "Agile",
+          "target": "Disciplined Agile delivery",
+          "ltype": "ec",
+          "effective_ltype": "ec",
+          "maps": [
+            "M"
+          ],
+          "reference_count": 1,
+          "references": [
+            {
+              "author": "Goevert and Lindemann",
+              "year": "2018",
+              "asterisk": false,
+              "grey": false
+            }
+          ],
+          "links": [
+            {
+              "source": "Agile",
+              "target": "Disciplined Agile delivery",
+              "ltype": "ec",
+              "maps": [
+                "M"
+              ],
+              "visible_reference_count": 1,
+              "stored_reference_count": 1
+            }
+          ],
+          "block": {
+            "color": "#c10001",
+            "level": "Process",
+            "maps": [
+              "M"
+            ],
+            "name": "Disciplined Agile delivery",
+            "related_approach": "Agile"
+          }
+        },
+        {
+          "source": "Agile",
+          "target": "Extreme programming",
+          "ltype": "ec",
+          "effective_ltype": "ec",
+          "maps": [
+            "M"
+          ],
+          "reference_count": 1,
+          "references": [
+            {
+              "author": "Goevert and Lindemann",
+              "year": "2018",
+              "asterisk": false,
+              "grey": false
+            }
+          ],
+          "links": [
+            {
+              "source": "Agile",
+              "target": "Extreme programming",
+              "ltype": "ec",
+              "maps": [
+                "M"
+              ],
+              "visible_reference_count": 1,
+              "stored_reference_count": 1
+            }
+          ],
+          "block": {
+            "color": "#c10001",
+            "level": "Process",
+            "maps": [
+              "M",
+              "C"
+            ],
+            "name": "Extreme programming",
+            "related_approach": "Agile"
+          }
+        },
+        {
+          "source": "Agile",
+          "target": "Lean startup",
+          "ltype": "h",
+          "effective_ltype": "h",
+          "maps": [
+            "M"
+          ],
+          "reference_count": 0,
+          "references": [],
+          "links": [
+            {
+              "source": "Agile",
+              "target": "Lean startup",
+              "ltype": "h",
+              "maps": [
+                "M"
+              ],
+              "visible_reference_count": 0,
+              "stored_reference_count": 0
+            }
+          ],
+          "block": {
+            "color": "#c65812",
+            "level": "Approach",
+            "maps": [
+              "M"
+            ],
+            "name": "Lean startup",
+            "related_approach": "Lean Startup"
+          }
+        },
+        {
+          "source": "Agile",
+          "target": "Lean startup process",
+          "ltype": "ec",
+          "effective_ltype": "ec",
+          "maps": [
+            "M"
+          ],
+          "reference_count": 1,
+          "references": [
+            {
+              "author": "Goevert and Lindemann",
+              "year": "2018",
+              "asterisk": false,
+              "grey": false
+            }
+          ],
+          "links": [
+            {
+              "source": "Agile",
+              "target": "Lean startup process",
+              "ltype": "ec",
+              "maps": [
+                "M"
+              ],
+              "visible_reference_count": 1,
+              "stored_reference_count": 1
+            }
+          ],
+          "block": {
+            "color": "#c65812",
+            "level": "Process",
+            "maps": [
+              "M"
+            ],
+            "name": "Lean startup process",
+            "related_approach": "Lean Startup"
+          }
+        },
+        {
+          "source": "Agile",
+          "target": "Scrum",
+          "ltype": "ec",
+          "effective_ltype": "ec",
+          "maps": [
+            "C",
+            "M"
+          ],
+          "reference_count": 2,
+          "references": [
+            {
+              "author": "Goevert and Lindemann",
+              "year": "2018",
+              "asterisk": false,
+              "grey": false
+            },
+            {
+              "author": "Mabrouk et al.",
+              "year": "2018",
+              "asterisk": false,
+              "grey": false
+            }
+          ],
+          "links": [
+            {
+              "source": "Agile",
+              "target": "Scrum",
+              "ltype": "ec",
+              "maps": [
+                "M"
+              ],
+              "visible_reference_count": 2,
+              "stored_reference_count": 2
+            },
+            {
+              "source": "Agile",
+              "target": "Scrum",
+              "ltype": "oc",
+              "maps": [
+                "C"
+              ],
+              "visible_reference_count": 0,
+              "stored_reference_count": 0
+            }
+          ],
+          "block": {
+            "color": "#c10001",
+            "level": "Process",
+            "maps": [
+              "M",
+              "C"
+            ],
+            "name": "Scrum",
+            "related_approach": "Agile"
+          }
+        },
+        {
+          "source": "Agile",
+          "target": "Scrum CPS",
+          "ltype": "oc",
+          "effective_ltype": "oc",
+          "maps": [
+            "C"
+          ],
+          "reference_count": 1,
+          "references": [
+            {
+              "author": "Wagner",
+              "year": "2014",
+              "asterisk": false,
+              "grey": false
+            }
+          ],
+          "links": [
+            {
+              "source": "Agile",
+              "target": "Scrum CPS",
+              "ltype": "oc",
+              "maps": [
+                "C"
+              ],
+              "visible_reference_count": 1,
+              "stored_reference_count": 1
+            }
+          ],
+          "block": {
+            "color": "#c10001",
+            "level": "Process",
+            "maps": [
+              "C"
+            ],
+            "name": "Scrum CPS",
+            "related_approach": "Agile"
+          }
+        }
+      ],
+      "incoming": []
+    },
+    "challenges": [
+      {
+        "description": "The development structure has difficulties minimizing siloed work and improving collaboration",
+        "name": "Silos and collaboration gaps",
+        "status": "approved"
+      }
+    ],
+    "meta": {
+      "filters_applied": {},
+      "evidence_filter_active": false,
+      "status": "approved",
+      "connection_filters": [
+        "maps",
+        "status",
+        "authors",
+        "year",
+        "startYear",
+        "endYear"
+      ],
+      "community_reviewed": false
+    }
+  },
+  "V-model": {
+    "block": {
+      "name": "V-model",
+      "level": "Process",
+      "maps": [
+        "M",
+        "C",
+        "S"
+      ],
+      "related_approach": "Systems Engineering",
+      "color": "#00acef",
+      "citations": "Malmquist et al., 2014; Riel et al., 2018",
+      "tags": [],
+      "status": "approved",
+      "matched_challenges": [],
+      "degree": 22
+    },
+    "description": {
+      "text": "A development process shaped like a \"V\": the left branch decomposes the product from requirements through system design down to domain-specific design in mechanics, electronics and software; the bottom is implementation; the right branch integrates the disciplines back together, with each step verifying or validating its counterpart on the left.",
+      "section_heading": "VISUAL REPRESENTATION",
+      "section_text": "",
+      "media_url": "descriptions/v-model.png",
+      "media_caption": "Adapted from Vasić VS and Lazarević MP, 2008",
+      "description_source": {
+        "author": "Vasić & Lazarević",
+        "authors_full": "",
+        "book_title": "",
+        "conference": "",
+        "doi": "",
+        "editors": "",
+        "institution": "",
+        "issue": "",
+        "journal": "",
+        "pages": "",
+        "publisher": "",
+        "status": "approved",
+        "title": "",
+        "type": "",
+        "volume": "",
+        "year": "2008"
+      },
+      "section_source": {
+        "author": "Vasić & Lazarević",
+        "authors_full": "",
+        "book_title": "",
+        "conference": "",
+        "doi": "",
+        "editors": "",
+        "institution": "",
+        "issue": "",
+        "journal": "",
+        "pages": "",
+        "publisher": "",
+        "status": "approved",
+        "title": "",
+        "type": "",
+        "volume": "",
+        "year": "2008"
+      },
+      "status": "approved"
+    },
+    "block_citations": [
+      "Malmquist et al., 2014",
+      "Riel et al., 2018"
+    ],
+    "references": [
+      {
+        "author": "Alvarez Cabrera et al.",
+        "year": "2011",
+        "text": "",
+        "resolved": true,
+        "reference": {
+          "author": "Alvarez Cabrera et al.",
+          "authors_full": "",
+          "book_title": "",
+          "conference": "",
+          "doi": "",
+          "editors": "",
+          "institution": "",
+          "issue": "",
+          "journal": "",
+          "pages": "",
+          "publisher": "",
+          "status": "approved",
+          "title": "",
+          "type": "",
+          "volume": "",
+          "year": "2011"
+        },
+        "origins": [
+          "link"
+        ]
+      },
+      {
+        "author": "Bachmann and Messnarz",
+        "year": "2012",
+        "text": "",
+        "resolved": true,
+        "reference": {
+          "author": "Bachmann and Messnarz",
+          "authors_full": "",
+          "book_title": "",
+          "conference": "",
+          "doi": "",
+          "editors": "",
+          "institution": "",
+          "issue": "",
+          "journal": "",
+          "pages": "",
+          "publisher": "",
+          "status": "approved",
+          "title": "",
+          "type": "",
+          "volume": "",
+          "year": "2012"
+        },
+        "origins": [
+          "link"
+        ]
+      },
+      {
+        "author": "Couturier et al.",
+        "year": "2014",
+        "text": "",
+        "resolved": true,
+        "reference": {
+          "author": "Couturier et al.",
+          "authors_full": "",
+          "book_title": "",
+          "conference": "",
+          "doi": "",
+          "editors": "",
+          "institution": "",
+          "issue": "",
+          "journal": "",
+          "pages": "",
+          "publisher": "",
+          "status": "approved",
+          "title": "",
+          "type": "",
+          "volume": "",
+          "year": "2014"
+        },
+        "origins": [
+          "link"
+        ]
+      },
+      {
+        "author": "Dieterle",
+        "year": "2005",
+        "text": "",
+        "resolved": true,
+        "reference": {
+          "author": "Dieterle",
+          "authors_full": "",
+          "book_title": "",
+          "conference": "",
+          "doi": "",
+          "editors": "",
+          "institution": "",
+          "issue": "",
+          "journal": "",
+          "pages": "",
+          "publisher": "",
+          "status": "approved",
+          "title": "",
+          "type": "",
+          "volume": "",
+          "year": "2005"
+        },
+        "origins": [
+          "link"
+        ]
+      },
+      {
+        "author": "Forsberg and Mooz",
+        "year": "1991",
+        "text": "",
+        "resolved": true,
+        "reference": {
+          "author": "Forsberg and Mooz",
+          "authors_full": "",
+          "book_title": "",
+          "conference": "",
+          "doi": "",
+          "editors": "",
+          "institution": "",
+          "issue": "",
+          "journal": "",
+          "pages": "",
+          "publisher": "",
+          "status": "approved",
+          "title": "",
+          "type": "",
+          "volume": "",
+          "year": "1991"
+        },
+        "origins": [
+          "link"
+        ]
+      },
+      {
+        "author": "Habchi and Barthod",
+        "year": "2016",
+        "text": "",
+        "resolved": true,
+        "reference": {
+          "author": "Habchi and Barthod",
+          "authors_full": "",
+          "book_title": "",
+          "conference": "",
+          "doi": "",
+          "editors": "",
+          "institution": "",
+          "issue": "",
+          "journal": "",
+          "pages": "",
+          "publisher": "",
+          "status": "approved",
+          "title": "",
+          "type": "",
+          "volume": "",
+          "year": "2016"
+        },
+        "origins": [
+          "link"
+        ]
+      },
+      {
+        "author": "Habib and Komoto",
+        "year": "2014",
+        "text": "",
+        "resolved": true,
+        "reference": {
+          "author": "Habib and Komoto",
+          "authors_full": "",
+          "book_title": "",
+          "conference": "",
+          "doi": "",
+          "editors": "",
+          "institution": "",
+          "issue": "",
+          "journal": "",
+          "pages": "",
+          "publisher": "",
+          "status": "approved",
+          "title": "",
+          "type": "",
+          "volume": "",
+          "year": "2014"
+        },
+        "origins": [
+          "link"
+        ]
+      },
+      {
+        "author": "Hehenberger et al.",
+        "year": "2010",
+        "text": "",
+        "resolved": true,
+        "reference": {
+          "author": "Hehenberger et al.",
+          "authors_full": "",
+          "book_title": "",
+          "conference": "",
+          "doi": "",
+          "editors": "",
+          "institution": "",
+          "issue": "",
+          "journal": "",
+          "pages": "",
+          "publisher": "",
+          "status": "approved",
+          "title": "",
+          "type": "",
+          "volume": "",
+          "year": "2010"
+        },
+        "origins": [
+          "link"
+        ]
+      },
+      {
+        "author": "Hehenberger et al.",
+        "year": "2015",
+        "text": "",
+        "resolved": true,
+        "reference": {
+          "author": "Hehenberger et al.",
+          "authors_full": "",
+          "book_title": "",
+          "conference": "",
+          "doi": "",
+          "editors": "",
+          "institution": "",
+          "issue": "",
+          "journal": "",
+          "pages": "",
+          "publisher": "",
+          "status": "approved",
+          "title": "",
+          "type": "",
+          "volume": "",
+          "year": "2015"
+        },
+        "origins": [
+          "link"
+        ]
+      },
+      {
+        "author": "Isasa et al.",
+        "year": "2017",
+        "text": "",
+        "resolved": true,
+        "reference": {
+          "author": "Isasa et al.",
+          "authors_full": "",
+          "book_title": "",
+          "conference": "",
+          "doi": "",
+          "editors": "",
+          "institution": "",
+          "issue": "",
+          "journal": "",
+          "pages": "",
+          "publisher": "",
+          "status": "approved",
+          "title": "",
+          "type": "",
+          "volume": "",
+          "year": "2017"
+        },
+        "origins": [
+          "link"
+        ]
+      },
+      {
+        "author": "Isermann",
+        "year": "2006",
+        "text": "",
+        "resolved": true,
+        "reference": {
+          "author": "Isermann",
+          "authors_full": "",
+          "book_title": "",
+          "conference": "",
+          "doi": "",
+          "editors": "",
+          "institution": "",
+          "issue": "",
+          "journal": "",
+          "pages": "",
+          "publisher": "",
+          "status": "approved",
+          "title": "",
+          "type": "",
+          "volume": "",
+          "year": "2006"
+        },
+        "origins": [
+          "link"
+        ]
+      },
+      {
+        "author": "Kernschmidt et al.",
+        "year": "2018",
+        "text": "",
+        "resolved": true,
+        "reference": {
+          "author": "Kernschmidt et al.",
+          "authors_full": "",
+          "book_title": "",
+          "conference": "",
+          "doi": "",
+          "editors": "",
+          "institution": "",
+          "issue": "",
+          "journal": "",
+          "pages": "",
+          "publisher": "",
+          "status": "approved",
+          "title": "",
+          "type": "",
+          "volume": "",
+          "year": "2018"
+        },
+        "origins": [
+          "link"
+        ]
+      },
+      {
+        "author": "Kleiner and Kramer",
+        "year": "2013",
+        "text": "",
+        "resolved": true,
+        "reference": {
+          "author": "Kleiner and Kramer",
+          "authors_full": "",
+          "book_title": "",
+          "conference": "",
+          "doi": "",
+          "editors": "",
+          "institution": "",
+          "issue": "",
+          "journal": "",
+          "pages": "",
+          "publisher": "",
+          "status": "approved",
+          "title": "",
+          "type": "",
+          "volume": "",
+          "year": "2013"
+        },
+        "origins": [
+          "link"
+        ]
+      },
+      {
+        "author": "Komoto and Tomiyama",
+        "year": "2010",
+        "text": "",
+        "resolved": true,
+        "reference": {
+          "author": "Komoto and Tomiyama",
+          "authors_full": "",
+          "book_title": "",
+          "conference": "",
+          "doi": "",
+          "editors": "",
+          "institution": "",
+          "issue": "",
+          "journal": "",
+          "pages": "",
+          "publisher": "",
+          "status": "approved",
+          "title": "",
+          "type": "",
+          "volume": "",
+          "year": "2010"
+        },
+        "origins": [
+          "link"
+        ]
+      },
+      {
+        "author": "Komoto and Tomiyama",
+        "year": "2012",
+        "text": "",
+        "resolved": true,
+        "reference": {
+          "author": "Komoto and Tomiyama",
+          "authors_full": "",
+          "book_title": "",
+          "conference": "",
+          "doi": "",
+          "editors": "",
+          "institution": "",
+          "issue": "",
+          "journal": "",
+          "pages": "",
+          "publisher": "",
+          "status": "approved",
+          "title": "",
+          "type": "",
+          "volume": "",
+          "year": "2012"
+        },
+        "origins": [
+          "link"
+        ]
+      },
+      {
+        "author": "Lukei et al.",
+        "year": "2016",
+        "text": "",
+        "resolved": true,
+        "reference": {
+          "author": "Lukei et al.",
+          "authors_full": "",
+          "book_title": "",
+          "conference": "",
+          "doi": "",
+          "editors": "",
+          "institution": "",
+          "issue": "",
+          "journal": "",
+          "pages": "",
+          "publisher": "",
+          "status": "approved",
+          "title": "",
+          "type": "",
+          "volume": "",
+          "year": "2016"
+        },
+        "origins": [
+          "link"
+        ]
+      },
+      {
+        "author": "Malmquist et al.",
+        "year": "2014",
+        "text": "Malmquist et al., 2014",
+        "resolved": false,
+        "reference": null,
+        "origins": [
+          "block_citation"
+        ]
+      },
+      {
+        "author": "Mcharek et al.",
+        "year": "2018",
+        "text": "",
+        "resolved": true,
+        "reference": {
+          "author": "Mcharek et al.",
+          "authors_full": "",
+          "book_title": "",
+          "conference": "",
+          "doi": "",
+          "editors": "",
+          "institution": "",
+          "issue": "",
+          "journal": "",
+          "pages": "",
+          "publisher": "",
+          "status": "approved",
+          "title": "",
+          "type": "",
+          "volume": "",
+          "year": "2018"
+        },
+        "origins": [
+          "link"
+        ]
+      },
+      {
+        "author": "Mcharek et al.",
+        "year": "2019",
+        "text": "",
+        "resolved": true,
+        "reference": {
+          "author": "Mcharek et al.",
+          "authors_full": "",
+          "book_title": "",
+          "conference": "",
+          "doi": "",
+          "editors": "",
+          "institution": "",
+          "issue": "",
+          "journal": "",
+          "pages": "",
+          "publisher": "",
+          "status": "approved",
+          "title": "",
+          "type": "",
+          "volume": "",
+          "year": "2019"
+        },
+        "origins": [
+          "link"
+        ]
+      },
+      {
+        "author": "Mhenni et al.",
+        "year": "2014",
+        "text": "",
+        "resolved": true,
+        "reference": {
+          "author": "Mhenni et al.",
+          "authors_full": "",
+          "book_title": "",
+          "conference": "",
+          "doi": "",
+          "editors": "",
+          "institution": "",
+          "issue": "",
+          "journal": "",
+          "pages": "",
+          "publisher": "",
+          "status": "approved",
+          "title": "",
+          "type": "",
+          "volume": "",
+          "year": "2014"
+        },
+        "origins": [
+          "link"
+        ]
+      },
+      {
+        "author": "Nattermann and Anderl",
+        "year": "2010",
+        "text": "",
+        "resolved": true,
+        "reference": {
+          "author": "Nattermann and Anderl",
+          "authors_full": "",
+          "book_title": "",
+          "conference": "",
+          "doi": "",
+          "editors": "",
+          "institution": "",
+          "issue": "",
+          "journal": "",
+          "pages": "",
+          "publisher": "",
+          "status": "approved",
+          "title": "",
+          "type": "",
+          "volume": "",
+          "year": "2010"
+        },
+        "origins": [
+          "link"
+        ]
+      },
+      {
+        "author": "Oestersötebier et al.",
+        "year": "2012",
+        "text": "",
+        "resolved": true,
+        "reference": {
+          "author": "Oestersötebier et al.",
+          "authors_full": "",
+          "book_title": "",
+          "conference": "",
+          "doi": "",
+          "editors": "",
+          "institution": "",
+          "issue": "",
+          "journal": "",
+          "pages": "",
+          "publisher": "",
+          "status": "approved",
+          "title": "",
+          "type": "",
+          "volume": "",
+          "year": "2012"
+        },
+        "origins": [
+          "link"
+        ]
+      },
+      {
+        "author": "Paetzold",
+        "year": "2017",
+        "text": "",
+        "resolved": true,
+        "reference": {
+          "author": "Paetzold",
+          "authors_full": "",
+          "book_title": "",
+          "conference": "",
+          "doi": "",
+          "editors": "",
+          "institution": "",
+          "issue": "",
+          "journal": "",
+          "pages": "",
+          "publisher": "",
+          "status": "approved",
+          "title": "",
+          "type": "",
+          "volume": "",
+          "year": "2017"
+        },
+        "origins": [
+          "link"
+        ]
+      },
+      {
+        "author": "Plateaux et al.",
+        "year": "2010",
+        "text": "",
+        "resolved": true,
+        "reference": {
+          "author": "Plateaux et al.",
+          "authors_full": "",
+          "book_title": "",
+          "conference": "",
+          "doi": "",
+          "editors": "",
+          "institution": "",
+          "issue": "",
+          "journal": "",
+          "pages": "",
+          "publisher": "",
+          "status": "approved",
+          "title": "",
+          "type": "",
+          "volume": "",
+          "year": "2010"
+        },
+        "origins": [
+          "link"
+        ]
+      },
+      {
+        "author": "Riel et al.",
+        "year": "2018",
+        "text": "Riel et al., 2018",
+        "resolved": true,
+        "reference": {
+          "author": "Riel et al.",
+          "authors_full": "",
+          "book_title": "",
+          "conference": "",
+          "doi": "",
+          "editors": "",
+          "institution": "",
+          "issue": "",
+          "journal": "",
+          "pages": "",
+          "publisher": "",
+          "status": "approved",
+          "title": "",
+          "type": "",
+          "volume": "",
+          "year": "2018"
+        },
+        "origins": [
+          "block_citation"
+        ]
+      },
+      {
+        "author": "Rothful et al.",
+        "year": "2006",
+        "text": "",
+        "resolved": true,
+        "reference": {
+          "author": "Rothful et al.",
+          "authors_full": "",
+          "book_title": "",
+          "conference": "",
+          "doi": "",
+          "editors": "",
+          "institution": "",
+          "issue": "",
+          "journal": "",
+          "pages": "",
+          "publisher": "",
+          "status": "approved",
+          "title": "",
+          "type": "",
+          "volume": "",
+          "year": "2006"
+        },
+        "origins": [
+          "link"
+        ]
+      },
+      {
+        "author": "Sangiovanni-Vincentelli et al.",
+        "year": "2012",
+        "text": "",
+        "resolved": true,
+        "reference": {
+          "author": "Sangiovanni-Vincentelli et al.",
+          "authors_full": "",
+          "book_title": "",
+          "conference": "",
+          "doi": "",
+          "editors": "",
+          "institution": "",
+          "issue": "",
+          "journal": "",
+          "pages": "",
+          "publisher": "",
+          "status": "approved",
+          "title": "",
+          "type": "",
+          "volume": "",
+          "year": "2012"
+        },
+        "origins": [
+          "link"
+        ]
+      },
+      {
+        "author": "Schramm et al.",
+        "year": "2010",
+        "text": "",
+        "resolved": true,
+        "reference": {
+          "author": "Schramm et al.",
+          "authors_full": "",
+          "book_title": "",
+          "conference": "",
+          "doi": "",
+          "editors": "",
+          "institution": "",
+          "issue": "",
+          "journal": "",
+          "pages": "",
+          "publisher": "",
+          "status": "approved",
+          "title": "",
+          "type": "",
+          "volume": "",
+          "year": "2010"
+        },
+        "origins": [
+          "link"
+        ]
+      },
+      {
+        "author": "Schuh, Rudolf and Breunig",
+        "year": "2016",
+        "text": "",
+        "resolved": true,
+        "reference": {
+          "author": "Schuh, Rudolf and Breunig",
+          "authors_full": "",
+          "book_title": "",
+          "conference": "",
+          "doi": "",
+          "editors": "",
+          "institution": "",
+          "issue": "",
+          "journal": "",
+          "pages": "",
+          "publisher": "",
+          "status": "approved",
+          "title": "",
+          "type": "",
+          "volume": "",
+          "year": "2016"
+        },
+        "origins": [
+          "link"
+        ]
+      },
+      {
+        "author": "Tomiyama et al.",
+        "year": "2019",
+        "text": "",
+        "resolved": true,
+        "reference": {
+          "author": "Tomiyama et al.",
+          "authors_full": "",
+          "book_title": "",
+          "conference": "",
+          "doi": "",
+          "editors": "",
+          "institution": "",
+          "issue": "",
+          "journal": "",
+          "pages": "",
+          "publisher": "",
+          "status": "approved",
+          "title": "",
+          "type": "",
+          "volume": "",
+          "year": "2019"
+        },
+        "origins": [
+          "link"
+        ]
+      },
+      {
+        "author": "VDI-2206",
+        "year": "2004",
+        "text": "",
+        "resolved": true,
+        "reference": {
+          "author": "VDI-2206",
+          "authors_full": "",
+          "book_title": "",
+          "conference": "",
+          "doi": "",
+          "editors": "",
+          "institution": "",
+          "issue": "",
+          "journal": "",
+          "pages": "",
+          "publisher": "",
+          "status": "approved",
+          "title": "",
+          "type": "",
+          "volume": "",
+          "year": "2004"
+        },
+        "origins": [
+          "link"
+        ]
+      },
+      {
+        "author": "Valasek",
+        "year": "2016",
+        "text": "",
+        "resolved": true,
+        "reference": {
+          "author": "Valasek",
+          "authors_full": "",
+          "book_title": "",
+          "conference": "",
+          "doi": "",
+          "editors": "",
+          "institution": "",
+          "issue": "",
+          "journal": "",
+          "pages": "",
+          "publisher": "",
+          "status": "approved",
+          "title": "",
+          "type": "",
+          "volume": "",
+          "year": "2016"
+        },
+        "origins": [
+          "link"
+        ]
+      },
+      {
+        "author": "Vasić & Lazarević",
+        "year": "2008",
+        "text": "",
+        "resolved": true,
+        "reference": {
+          "author": "Vasić & Lazarević",
+          "authors_full": "",
+          "book_title": "",
+          "conference": "",
+          "doi": "",
+          "editors": "",
+          "institution": "",
+          "issue": "",
+          "journal": "",
+          "pages": "",
+          "publisher": "",
+          "status": "approved",
+          "title": "",
+          "type": "",
+          "volume": "",
+          "year": "2008"
+        },
+        "origins": [
+          "link"
+        ]
+      },
+      {
+        "author": "Zheng et al",
+        "year": "2017",
+        "text": "",
+        "resolved": true,
+        "reference": {
+          "author": "Zheng et al",
+          "authors_full": "",
+          "book_title": "",
+          "conference": "",
+          "doi": "",
+          "editors": "",
+          "institution": "",
+          "issue": "",
+          "journal": "",
+          "pages": "",
+          "publisher": "",
+          "status": "approved",
+          "title": "",
+          "type": "",
+          "volume": "",
+          "year": "2017"
+        },
+        "origins": [
+          "link"
+        ]
+      }
+    ],
+    "tags": [],
+    "ratings": {
+      "count": 0,
+      "averages": {
+        "efficacy": null,
+        "product_quality": null,
+        "design_process": null,
+        "resource_dependency": null
+      },
+      "mine": null
+    },
+    "comments": [],
+    "connections": {
+      "outgoing": [
+        {
+          "source": "V-model",
+          "target": "Architectural model",
+          "ltype": "oc",
+          "effective_ltype": "oc",
+          "maps": [
+            "M"
+          ],
+          "reference_count": 1,
+          "references": [
+            {
+              "author": "Alvarez Cabrera et al.",
+              "year": "2011",
+              "asterisk": false,
+              "grey": false
+            }
+          ],
+          "links": [
+            {
+              "source": "V-model",
+              "target": "Architectural model",
+              "ltype": "oc",
+              "maps": [
+                "M"
+              ],
+              "visible_reference_count": 1,
+              "stored_reference_count": 1
+            }
+          ],
+          "block": {
+            "color": "#00acef",
+            "level": "Method",
+            "maps": [
+              "M"
+            ],
+            "name": "Architectural model",
+            "related_approach": "Systems Engineering"
+          }
+        },
+        {
+          "source": "V-model",
+          "target": "Black box & white box analyses",
+          "ltype": "ec",
+          "effective_ltype": "ec",
+          "maps": [
+            "M"
+          ],
+          "reference_count": 1,
+          "references": [
+            {
+              "author": "Mhenni et al.",
+              "year": "2014",
+              "asterisk": false,
+              "grey": false
+            }
+          ],
+          "links": [
+            {
+              "source": "V-model",
+              "target": "Black box & white box analyses",
+              "ltype": "ec",
+              "maps": [
+                "M"
+              ],
+              "visible_reference_count": 1,
+              "stored_reference_count": 1
+            }
+          ],
+          "block": {
+            "color": "#00acef",
+            "level": "Method",
+            "maps": [
+              "M",
+              "C"
+            ],
+            "name": "Black box & white box analyses",
+            "related_approach": "Systems Engineering"
+          }
+        },
+        {
+          "source": "V-model",
+          "target": "CONSENS (MBSE)",
+          "ltype": "ec",
+          "effective_ltype": "ec",
+          "maps": [
+            "M"
+          ],
+          "reference_count": 1,
+          "references": [
+            {
+              "author": "Lukei et al.",
+              "year": "2016",
+              "asterisk": false,
+              "grey": false
+            }
+          ],
+          "links": [
+            {
+              "source": "V-model",
+              "target": "CONSENS (MBSE)",
+              "ltype": "ec",
+              "maps": [
+                "M"
+              ],
+              "visible_reference_count": 1,
+              "stored_reference_count": 1
+            }
+          ],
+          "block": {
+            "color": "#00acef",
+            "level": "Method",
+            "maps": [
+              "M"
+            ],
+            "name": "CONSENS (MBSE)",
+            "related_approach": "Systems Engineering"
+          }
+        },
+        {
+          "source": "V-model",
+          "target": "Components-based design",
+          "ltype": "oc",
+          "effective_ltype": "oc",
+          "maps": [
+            "C"
+          ],
+          "reference_count": 1,
+          "references": [
+            {
+              "author": "Sangiovanni-Vincentelli et al.",
+              "year": "2012",
+              "asterisk": false,
+              "grey": false
+            }
+          ],
+          "links": [
+            {
+              "source": "V-model",
+              "target": "Components-based design",
+              "ltype": "oc",
+              "maps": [
+                "C"
+              ],
+              "visible_reference_count": 1,
+              "stored_reference_count": 1
+            }
+          ],
+          "block": {
+            "color": "#001e5f",
+            "level": "Method",
+            "maps": [
+              "M",
+              "C"
+            ],
+            "name": "Components-based design",
+            "related_approach": "agnostic from approaches"
+          }
+        },
+        {
+          "source": "V-model",
+          "target": "Design of intelligent mechatronic systems",
+          "ltype": "h",
+          "effective_ltype": "h",
+          "maps": [
+            "M"
+          ],
+          "reference_count": 1,
+          "references": [
+            {
+              "author": "Oestersötebier et al.",
+              "year": "2012",
+              "asterisk": false,
+              "grey": false
+            }
+          ],
+          "links": [
+            {
+              "source": "V-model",
+              "target": "Design of intelligent mechatronic systems",
+              "ltype": "h",
+              "maps": [
+                "M"
+              ],
+              "visible_reference_count": 1,
+              "stored_reference_count": 1
+            }
+          ],
+          "block": {
+            "color": "#001e5f",
+            "level": "Process",
+            "maps": [
+              "M"
+            ],
+            "name": "Design of intelligent mechatronic systems",
+            "related_approach": "agnostic from approaches"
+          }
+        },
+        {
+          "source": "V-model",
+          "target": "Function-behavior-state modelling",
+          "ltype": "ec",
+          "effective_ltype": "ec",
+          "maps": [
+            "M"
+          ],
+          "reference_count": 3,
+          "references": [
+            {
+              "author": "Habib and Komoto",
+              "year": "2014",
+              "asterisk": false,
+              "grey": false
+            },
+            {
+              "author": "Komoto and Tomiyama",
+              "year": "2010",
+              "asterisk": false,
+              "grey": false
+            },
+            {
+              "author": "Komoto and Tomiyama",
+              "year": "2012",
+              "asterisk": false,
+              "grey": false
+            }
+          ],
+          "links": [
+            {
+              "source": "V-model",
+              "target": "Function-behavior-state modelling",
+              "ltype": "ec",
+              "maps": [
+                "M"
+              ],
+              "visible_reference_count": 3,
+              "stored_reference_count": 3
+            }
+          ],
+          "block": {
+            "color": "#001e5f",
+            "level": "Method",
+            "maps": [
+              "M"
+            ],
+            "name": "Function-behavior-state modelling",
+            "related_approach": "agnostic from approaches"
+          }
+        },
+        {
+          "source": "V-model",
+          "target": "Functional breakdown and analysis",
+          "ltype": "ec",
+          "effective_ltype": "ec",
+          "maps": [
+            "M"
+          ],
+          "reference_count": 2,
+          "references": [
+            {
+              "author": "Habchi and Barthod",
+              "year": "2016",
+              "asterisk": false,
+              "grey": false
+            },
+            {
+              "author": "Plateaux et al.",
+              "year": "2010",
+              "asterisk": false,
+              "grey": false
+            }
+          ],
+          "links": [
+            {
+              "source": "V-model",
+              "target": "Functional breakdown and analysis",
+              "ltype": "ec",
+              "maps": [
+                "M"
+              ],
+              "visible_reference_count": 2,
+              "stored_reference_count": 2
+            }
+          ],
+          "block": {
+            "color": "#001e5f",
+            "level": "Method",
+            "maps": [
+              "M"
+            ],
+            "name": "Functional breakdown and analysis",
+            "related_approach": "agnostic from approaches"
+          }
+        },
+        {
+          "source": "V-model",
+          "target": "HIL",
+          "ltype": "ec",
+          "effective_ltype": "ec",
+          "maps": [
+            "M"
+          ],
+          "reference_count": 1,
+          "references": [
+            {
+              "author": "Isermann",
+              "year": "2006",
+              "asterisk": false,
+              "grey": false
+            }
+          ],
+          "links": [
+            {
+              "source": "V-model",
+              "target": "HIL",
+              "ltype": "ec",
+              "maps": [
+                "M"
+              ],
+              "visible_reference_count": 1,
+              "stored_reference_count": 1
+            }
+          ],
+          "block": {
+            "color": "#001e5f",
+            "level": "Tool",
+            "maps": [
+              "M"
+            ],
+            "name": "HIL",
+            "related_approach": "agnostic from approaches"
+          }
+        },
+        {
+          "source": "V-model",
+          "target": "Hierarchical design model",
+          "ltype": "ec",
+          "effective_ltype": "ec",
+          "maps": [
+            "M"
+          ],
+          "reference_count": 2,
+          "references": [
+            {
+              "author": "Hehenberger et al.",
+              "year": "2010",
+              "asterisk": true,
+              "grey": false
+            },
+            {
+              "author": "Zheng et al",
+              "year": "2017",
+              "asterisk": false,
+              "grey": false
+            }
+          ],
+          "links": [
+            {
+              "source": "V-model",
+              "target": "Hierarchical design model",
+              "ltype": "ec",
+              "maps": [
+                "M"
+              ],
+              "visible_reference_count": 1,
+              "stored_reference_count": 1
+            },
+            {
+              "source": "V-model",
+              "target": "Hierarchical design model",
+              "ltype": "oc",
+              "maps": [
+                "M"
+              ],
+              "visible_reference_count": 1,
+              "stored_reference_count": 1
+            }
+          ],
+          "block": {
+            "color": "#001e5f",
+            "level": "Method",
+            "maps": [
+              "M"
+            ],
+            "name": "Hierarchical design model",
+            "related_approach": "agnostic from approaches"
+          }
+        },
+        {
+          "source": "V-model",
+          "target": "Knowledge-based engineering",
+          "ltype": "ec",
+          "effective_ltype": "ec",
+          "maps": [
+            "M"
+          ],
+          "reference_count": 1,
+          "references": [
+            {
+              "author": "Mcharek et al.",
+              "year": "2018",
+              "asterisk": false,
+              "grey": false
+            }
+          ],
+          "links": [
+            {
+              "source": "V-model",
+              "target": "Knowledge-based engineering",
+              "ltype": "ec",
+              "maps": [
+                "M"
+              ],
+              "visible_reference_count": 1,
+              "stored_reference_count": 1
+            }
+          ],
+          "block": {
+            "color": "#001e5f",
+            "level": "Method",
+            "maps": [
+              "M"
+            ],
+            "name": "Knowledge-based engineering",
+            "related_approach": "agnostic from approaches"
+          }
+        },
+        {
+          "source": "V-model",
+          "target": "MBSE",
+          "ltype": "ec",
+          "effective_ltype": "ec",
+          "maps": [
+            "S"
+          ],
+          "reference_count": 1,
+          "references": [
+            {
+              "author": "Tomiyama et al.",
+              "year": "2019",
+              "asterisk": false,
+              "grey": false
+            }
+          ],
+          "links": [
+            {
+              "source": "V-model",
+              "target": "MBSE",
+              "ltype": "ec",
+              "maps": [
+                "S"
+              ],
+              "visible_reference_count": 1,
+              "stored_reference_count": 1
+            }
+          ],
+          "block": {
+            "color": "#00acef",
+            "level": "Method",
+            "maps": [
+              "M",
+              "C",
+              "S"
+            ],
+            "name": "MBSE",
+            "related_approach": "Systems Engineering"
+          }
+        },
+        {
+          "source": "V-model",
+          "target": "Model-based and model-driven practices",
+          "ltype": "ec",
+          "effective_ltype": "ec",
+          "maps": [
+            "C",
+            "M"
+          ],
+          "reference_count": 6,
+          "references": [
+            {
+              "author": "Couturier et al.",
+              "year": "2014",
+              "asterisk": false,
+              "grey": false
+            },
+            {
+              "author": "Dieterle",
+              "year": "2005",
+              "asterisk": false,
+              "grey": false
+            },
+            {
+              "author": "Isasa et al.",
+              "year": "2017",
+              "asterisk": false,
+              "grey": false
+            },
+            {
+              "author": "Kernschmidt et al.",
+              "year": "2018",
+              "asterisk": false,
+              "grey": false
+            },
+            {
+              "author": "Kleiner and Kramer",
+              "year": "2013",
+              "asterisk": false,
+              "grey": false
+            },
+            {
+              "author": "Paetzold",
+              "year": "2017",
+              "asterisk": false,
+              "grey": false
+            }
+          ],
+          "links": [
+            {
+              "source": "V-model",
+              "target": "Model-based and model-driven practices",
+              "ltype": "ec",
+              "maps": [
+                "C",
+                "M"
+              ],
+              "visible_reference_count": 6,
+              "stored_reference_count": 6
+            }
+          ],
+          "block": {
+            "color": "#00acef",
+            "level": "Method",
+            "maps": [
+              "M",
+              "C"
+            ],
+            "name": "Model-based and model-driven practices",
+            "related_approach": "Systems Engineering"
+          }
+        },
+        {
+          "source": "V-model",
+          "target": "Model-based parametric design",
+          "ltype": "ec",
+          "effective_ltype": "ec",
+          "maps": [
+            "M"
+          ],
+          "reference_count": 1,
+          "references": [
+            {
+              "author": "Hehenberger et al.",
+              "year": "2015",
+              "asterisk": false,
+              "grey": false
+            }
+          ],
+          "links": [
+            {
+              "source": "V-model",
+              "target": "Model-based parametric design",
+              "ltype": "ec",
+              "maps": [
+                "M"
+              ],
+              "visible_reference_count": 1,
+              "stored_reference_count": 1
+            }
+          ],
+          "block": {
+            "color": "#001e5f",
+            "level": "Method",
+            "maps": [
+              "M"
+            ],
+            "name": "Model-based parametric design",
+            "related_approach": "agnostic from approaches"
+          }
+        },
+        {
+          "source": "V-model",
+          "target": "Object-oriented modelling",
+          "ltype": "ec",
+          "effective_ltype": "ec",
+          "maps": [
+            "M"
+          ],
+          "reference_count": 2,
+          "references": [
+            {
+              "author": "Isermann",
+              "year": "2006",
+              "asterisk": false,
+              "grey": false
+            },
+            {
+              "author": "Schramm et al.",
+              "year": "2010",
+              "asterisk": false,
+              "grey": false
+            }
+          ],
+          "links": [
+            {
+              "source": "V-model",
+              "target": "Object-oriented modelling",
+              "ltype": "ec",
+              "maps": [
+                "M"
+              ],
+              "visible_reference_count": 2,
+              "stored_reference_count": 2
+            }
+          ],
+          "block": {
+            "color": "#001e5f",
+            "level": "Tool",
+            "maps": [
+              "M",
+              "C",
+              "S"
+            ],
+            "name": "Object-oriented modelling",
+            "related_approach": "agnostic from approaches"
+          }
+        },
+        {
+          "source": "V-model",
+          "target": "Rapid control prototyping",
+          "ltype": "ec",
+          "effective_ltype": "ec",
+          "maps": [
+            "M"
+          ],
+          "reference_count": 1,
+          "references": [
+            {
+              "author": "Isermann",
+              "year": "2006",
+              "asterisk": false,
+              "grey": false
+            }
+          ],
+          "links": [
+            {
+              "source": "V-model",
+              "target": "Rapid control prototyping",
+              "ltype": "ec",
+              "maps": [
+                "M"
+              ],
+              "visible_reference_count": 1,
+              "stored_reference_count": 1
+            }
+          ],
+          "block": {
+            "color": "#001e5f",
+            "level": "Tool",
+            "maps": [
+              "M"
+            ],
+            "name": "Rapid control prototyping",
+            "related_approach": "agnostic from approaches"
+          }
+        },
+        {
+          "source": "V-model",
+          "target": "SIL",
+          "ltype": "ec",
+          "effective_ltype": "ec",
+          "maps": [
+            "M"
+          ],
+          "reference_count": 1,
+          "references": [
+            {
+              "author": "Isermann",
+              "year": "2006",
+              "asterisk": false,
+              "grey": false
+            }
+          ],
+          "links": [
+            {
+              "source": "V-model",
+              "target": "SIL",
+              "ltype": "ec",
+              "maps": [
+                "M"
+              ],
+              "visible_reference_count": 1,
+              "stored_reference_count": 1
+            }
+          ],
+          "block": {
+            "color": "#001e5f",
+            "level": "Tool",
+            "maps": [
+              "M"
+            ],
+            "name": "SIL",
+            "related_approach": "agnostic from approaches"
+          }
+        },
+        {
+          "source": "V-model",
+          "target": "Software reuse engineering",
+          "ltype": "ec",
+          "effective_ltype": "ec",
+          "maps": [
+            "M"
+          ],
+          "reference_count": 1,
+          "references": [
+            {
+              "author": "Bachmann and Messnarz",
+              "year": "2012",
+              "asterisk": false,
+              "grey": false
+            }
+          ],
+          "links": [
+            {
+              "source": "V-model",
+              "target": "Software reuse engineering",
+              "ltype": "ec",
+              "maps": [
+                "M"
+              ],
+              "visible_reference_count": 1,
+              "stored_reference_count": 1
+            }
+          ],
+          "block": {
+            "color": "#001e5f",
+            "level": "Method",
+            "maps": [
+              "M"
+            ],
+            "name": "Software reuse engineering",
+            "related_approach": "agnostic from approaches"
+          }
+        },
+        {
+          "source": "V-model",
+          "target": "System modelling techniques",
+          "ltype": "ec",
+          "effective_ltype": "ec",
+          "maps": [
+            "M"
+          ],
+          "reference_count": 4,
+          "references": [
+            {
+              "author": "Rothful et al.",
+              "year": "2006",
+              "asterisk": false,
+              "grey": false
+            },
+            {
+              "author": "VDI-2206",
+              "year": "2004",
+              "asterisk": false,
+              "grey": false
+            },
+            {
+              "author": "Valasek",
+              "year": "2016",
+              "asterisk": false,
+              "grey": false
+            },
+            {
+              "author": "Vasić & Lazarević",
+              "year": "2008",
+              "asterisk": false,
+              "grey": false
+            }
+          ],
+          "links": [
+            {
+              "source": "V-model",
+              "target": "System modelling techniques",
+              "ltype": "ec",
+              "maps": [
+                "M"
+              ],
+              "visible_reference_count": 4,
+              "stored_reference_count": 4
+            }
+          ],
+          "block": {
+            "color": "#00acef",
+            "level": "Tool",
+            "maps": [
+              "M",
+              "C",
+              "S"
+            ],
+            "name": "System modelling techniques",
+            "related_approach": "Systems Engineering"
+          }
+        },
+        {
+          "source": "V-model",
+          "target": "Virtual integration",
+          "ltype": "ec",
+          "effective_ltype": "ec",
+          "maps": [
+            "C"
+          ],
+          "reference_count": 1,
+          "references": [
+            {
+              "author": "Sangiovanni-Vincentelli et al.",
+              "year": "2012",
+              "asterisk": false,
+              "grey": false
+            }
+          ],
+          "links": [
+            {
+              "source": "V-model",
+              "target": "Virtual integration",
+              "ltype": "ec",
+              "maps": [
+                "C"
+              ],
+              "visible_reference_count": 1,
+              "stored_reference_count": 1
+            }
+          ],
+          "block": {
+            "color": "#001e5f",
+            "level": "Method",
+            "maps": [
+              "C"
+            ],
+            "name": "Virtual integration",
+            "related_approach": "agnostic from approaches"
+          }
+        },
+        {
+          "source": "V-model",
+          "target": "W-model",
+          "ltype": "h",
+          "effective_ltype": "h",
+          "maps": [
+            "C",
+            "M",
+            "S"
+          ],
+          "reference_count": 1,
+          "references": [
+            {
+              "author": "Nattermann and Anderl",
+              "year": "2010",
+              "asterisk": false,
+              "grey": true
+            }
+          ],
+          "links": [
+            {
+              "source": "V-model",
+              "target": "W-model",
+              "ltype": "h",
+              "maps": [
+                "C",
+                "M",
+                "S"
+              ],
+              "visible_reference_count": 1,
+              "stored_reference_count": 1
+            }
+          ],
+          "block": {
+            "color": "#00acef",
+            "level": "Process",
+            "maps": [
+              "M",
+              "C",
+              "S"
+            ],
+            "name": "W-model",
+            "related_approach": "Systems Engineering"
+          }
+        }
+      ],
+      "incoming": [
+        {
+          "source": "Axiomatic design extensions",
+          "target": "V-model",
+          "ltype": "ec",
+          "effective_ltype": "ec",
+          "maps": [
+            "M"
+          ],
+          "reference_count": 1,
+          "references": [
+            {
+              "author": "Schuh, Rudolf and Breunig",
+              "year": "2016",
+              "asterisk": false,
+              "grey": false
+            }
+          ],
+          "links": [
+            {
+              "source": "Axiomatic design extensions",
+              "target": "V-model",
+              "ltype": "ec",
+              "maps": [
+                "M"
+              ],
+              "visible_reference_count": 1,
+              "stored_reference_count": 1
+            }
+          ],
+          "block": {
+            "color": "#ccf7f6",
+            "level": "Approach",
+            "maps": [
+              "M"
+            ],
+            "name": "Axiomatic design extensions",
+            "related_approach": "Axiomatic"
+          }
+        },
+        {
+          "source": "Systems engineering",
+          "target": "V-model",
+          "ltype": "ec",
+          "effective_ltype": "ec",
+          "maps": [
+            "C",
+            "M",
+            "S"
+          ],
+          "reference_count": 13,
+          "references": [
+            {
+              "author": "Couturier et al.",
+              "year": "2014",
+              "asterisk": false,
+              "grey": false
+            },
+            {
+              "author": "Dieterle",
+              "year": "2005",
+              "asterisk": false,
+              "grey": false
+            },
+            {
+              "author": "Forsberg and Mooz",
+              "year": "1991",
+              "asterisk": false,
+              "grey": true
+            },
+            {
+              "author": "Habib and Komoto",
+              "year": "2014",
+              "asterisk": false,
+              "grey": false
+            },
+            {
+              "author": "Kleiner and Kramer",
+              "year": "2013",
+              "asterisk": false,
+              "grey": false
+            },
+            {
+              "author": "Komoto and Tomiyama",
+              "year": "2010",
+              "asterisk": false,
+              "grey": false
+            },
+            {
+              "author": "Komoto and Tomiyama",
+              "year": "2012",
+              "asterisk": false,
+              "grey": false
+            },
+            {
+              "author": "Mcharek et al.",
+              "year": "2019",
+              "asterisk": false,
+              "grey": false
+            },
+            {
+              "author": "Mhenni et al.",
+              "year": "2014",
+              "asterisk": false,
+              "grey": false
+            },
+            {
+              "author": "Paetzold",
+              "year": "2017",
+              "asterisk": false,
+              "grey": false
+            },
+            {
+              "author": "Rothful et al.",
+              "year": "2006",
+              "asterisk": false,
+              "grey": false
+            },
+            {
+              "author": "Tomiyama et al.",
+              "year": "2019",
+              "asterisk": false,
+              "grey": false
+            },
+            {
+              "author": "Zheng et al.",
+              "year": "2017",
+              "asterisk": false,
+              "grey": false
+            }
+          ],
+          "links": [
+            {
+              "source": "Systems engineering",
+              "target": "V-model",
+              "ltype": "ec",
+              "maps": [
+                "C",
+                "M",
+                "S"
+              ],
+              "visible_reference_count": 12,
+              "stored_reference_count": 12
+            },
+            {
+              "source": "Systems engineering",
+              "target": "V-model",
+              "ltype": "oc",
+              "maps": [
+                "M"
+              ],
+              "visible_reference_count": 1,
+              "stored_reference_count": 1
+            }
+          ],
+          "block": {
+            "color": "#00acef",
+            "level": "Approach",
+            "maps": [
+              "M",
+              "C",
+              "S"
+            ],
+            "name": "Systems engineering",
+            "related_approach": "Systems Engineering"
+          }
+        }
+      ]
+    },
+    "challenges": [
+      {
+        "description": "The development structure is unable to reduce the number of physical prototypes built during development",
+        "name": "Physical prototype dependency",
+        "status": "approved"
+      },
+      {
+        "description": "The development structure has difficulties integrating production contraints in the early stages of development and production",
+        "name": "Production constraints integration",
+        "status": "approved"
+      },
+      {
+        "description": "The development structure struggles to overcome the current trial-and-error approach, which leads to lengthy and costly iterations",
+        "name": "Trial-and-error development",
+        "status": "approved"
+      }
+    ],
+    "meta": {
+      "filters_applied": {},
+      "evidence_filter_active": false,
+      "status": "approved",
+      "connection_filters": [
+        "maps",
+        "status",
+        "authors",
+        "year",
+        "startYear",
+        "endYear"
+      ],
+      "community_reviewed": false
+    }
+  },
+  "Black box & white box analyses": {
+    "block": {
+      "name": "Black box & white box analyses",
+      "level": "Method",
+      "maps": [
+        "M",
+        "C"
+      ],
+      "related_approach": "Systems Engineering",
+      "color": "#00acef",
+      "citations": "",
+      "tags": [],
+      "status": "approved",
+      "matched_challenges": [],
+      "degree": 5
+    },
+    "description": {
+      "text": "A SysML-based, top-down, two-phase modelling process for the architectural design of mechatronic systems. The black-box phase treats the system as a box whose internal structure is not yet defined, building from this external point of view a comprehensive and consistent set of requirements. The white-box phase then takes an internal point of view, progressively determining the system's structure and behaviour with respect to those requirements and selecting a final physical architecture. Each step uses one or more SysML diagrams to describe a specific point of view, giving designers a road-map for choosing the right diagram for the right purpose while keeping all views consistent.",
+      "section_heading": "RULES AND PRACTICES",
+      "section_text": "- Black-box analysis\n  - Definition of the global mission of the system\n  - Identifying the system lifecycle\n  - Modelling the system context\n  - The external interfaces\n  - The user operating modes\n  - The services provided by the system\n  - The functional scenarios\n  - Requirements specification\n  - Requirements traceability\n- White-box analysis\n  - Functional architecture\n  - Logical breakdown and allocation\n  - Requirements to logical components traceability\n  - The logical architecture\n  - Use of the parametric diagram\n  - The physical allocation\n  - Physical architecture",
+      "media_url": "",
+      "media_caption": "",
+      "description_source": {
+        "author": "Mhenni et al.",
+        "authors_full": "",
+        "book_title": "",
+        "conference": "",
+        "doi": "",
+        "editors": "",
+        "institution": "",
+        "issue": "",
+        "journal": "",
+        "pages": "",
+        "publisher": "",
+        "status": "approved",
+        "title": "",
+        "type": "",
+        "volume": "",
+        "year": "2014"
+      },
+      "section_source": {
+        "author": "Mhenni et al.",
+        "authors_full": "",
+        "book_title": "",
+        "conference": "",
+        "doi": "",
+        "editors": "",
+        "institution": "",
+        "issue": "",
+        "journal": "",
+        "pages": "",
+        "publisher": "",
+        "status": "approved",
+        "title": "",
+        "type": "",
+        "volume": "",
+        "year": "2014"
+      },
+      "status": "approved"
+    },
+    "block_citations": [],
+    "references": [
+      {
+        "author": "Mabrouk et al.",
+        "year": "2018",
+        "text": "",
+        "resolved": true,
+        "reference": {
+          "author": "Mabrouk et al.",
+          "authors_full": "",
+          "book_title": "",
+          "conference": "",
+          "doi": "",
+          "editors": "",
+          "institution": "",
+          "issue": "",
+          "journal": "",
+          "pages": "",
+          "publisher": "",
+          "status": "approved",
+          "title": "",
+          "type": "",
+          "volume": "",
+          "year": "2018"
+        },
+        "origins": [
+          "link"
+        ]
+      },
+      {
+        "author": "Mhenni et al.",
+        "year": "2014",
+        "text": "",
+        "resolved": true,
+        "reference": {
+          "author": "Mhenni et al.",
+          "authors_full": "",
+          "book_title": "",
+          "conference": "",
+          "doi": "",
+          "editors": "",
+          "institution": "",
+          "issue": "",
+          "journal": "",
+          "pages": "",
+          "publisher": "",
+          "status": "approved",
+          "title": "",
+          "type": "",
+          "volume": "",
+          "year": "2014"
+        },
+        "origins": [
+          "link"
+        ]
+      },
+      {
+        "author": "Penas et al.",
+        "year": "2017",
+        "text": "",
+        "resolved": true,
+        "reference": {
+          "author": "Penas et al.",
+          "authors_full": "",
+          "book_title": "",
+          "conference": "",
+          "doi": "",
+          "editors": "",
+          "institution": "",
+          "issue": "",
+          "journal": "",
+          "pages": "",
+          "publisher": "",
+          "status": "approved",
+          "title": "",
+          "type": "",
+          "volume": "",
+          "year": "2017"
+        },
+        "origins": [
+          "link"
+        ]
+      }
+    ],
+    "tags": [],
+    "ratings": {
+      "count": 0,
+      "averages": {
+        "efficacy": null,
+        "product_quality": null,
+        "design_process": null,
+        "resource_dependency": null
+      },
+      "mine": null
+    },
+    "comments": [],
+    "connections": {
+      "outgoing": [
+        {
+          "source": "Black box & white box analyses",
+          "target": "Scrum-MBSE black box/white box",
+          "ltype": "h",
+          "effective_ltype": "h",
+          "maps": [
+            "M"
+          ],
+          "reference_count": 0,
+          "references": [],
+          "links": [
+            {
+              "source": "Black box & white box analyses",
+              "target": "Scrum-MBSE black box/white box",
+              "ltype": "h",
+              "maps": [
+                "M"
+              ],
+              "visible_reference_count": 0,
+              "stored_reference_count": 0
+            }
+          ],
+          "block": {
+            "color": "#702c9f",
+            "level": "Process",
+            "maps": [
+              "M"
+            ],
+            "name": "Scrum-MBSE black box/white box",
+            "related_approach": "Agile-Systems Engineering"
+          }
+        },
+        {
+          "source": "Black box & white box analyses",
+          "target": "System modelling techniques",
+          "ltype": "ec",
+          "effective_ltype": "ec",
+          "maps": [
+            "C",
+            "M"
+          ],
+          "reference_count": 2,
+          "references": [
+            {
+              "author": "Mhenni et al.",
+              "year": "2014",
+              "asterisk": false,
+              "grey": false
+            },
+            {
+              "author": "Penas et al.",
+              "year": "2017",
+              "asterisk": false,
+              "grey": false
+            }
+          ],
+          "links": [
+            {
+              "source": "Black box & white box analyses",
+              "target": "System modelling techniques",
+              "ltype": "ec",
+              "maps": [
+                "C",
+                "M"
+              ],
+              "visible_reference_count": 2,
+              "stored_reference_count": 2
+            }
+          ],
+          "block": {
+            "color": "#00acef",
+            "level": "Tool",
+            "maps": [
+              "M",
+              "C",
+              "S"
+            ],
+            "name": "System modelling techniques",
+            "related_approach": "Systems Engineering"
+          }
+        }
+      ],
+      "incoming": [
+        {
+          "source": "Functional breakdown and analysis",
+          "target": "Black box & white box analyses",
+          "ltype": "oc",
+          "effective_ltype": "oc",
+          "maps": [
+            "M"
+          ],
+          "reference_count": 1,
+          "references": [
+            {
+              "author": "Mhenni et al.",
+              "year": "2014",
+              "asterisk": false,
+              "grey": false
+            }
+          ],
+          "links": [
+            {
+              "source": "Functional breakdown and analysis",
+              "target": "Black box & white box analyses",
+              "ltype": "oc",
+              "maps": [
+                "M"
+              ],
+              "visible_reference_count": 1,
+              "stored_reference_count": 1
+            }
+          ],
+          "block": {
+            "color": "#001e5f",
+            "level": "Method",
+            "maps": [
+              "M"
+            ],
+            "name": "Functional breakdown and analysis",
+            "related_approach": "agnostic from approaches"
+          }
+        },
+        {
+          "source": "Systems engineering",
+          "target": "Black box & white box analyses",
+          "ltype": "ec",
+          "effective_ltype": "ec",
+          "maps": [
+            "M"
+          ],
+          "reference_count": 1,
+          "references": [
+            {
+              "author": "Mabrouk et al.",
+              "year": "2018",
+              "asterisk": false,
+              "grey": false
+            }
+          ],
+          "links": [
+            {
+              "source": "Systems engineering",
+              "target": "Black box & white box analyses",
+              "ltype": "ec",
+              "maps": [
+                "M"
+              ],
+              "visible_reference_count": 1,
+              "stored_reference_count": 1
+            }
+          ],
+          "block": {
+            "color": "#00acef",
+            "level": "Approach",
+            "maps": [
+              "M",
+              "C",
+              "S"
+            ],
+            "name": "Systems engineering",
+            "related_approach": "Systems Engineering"
+          }
+        },
+        {
+          "source": "V-model",
+          "target": "Black box & white box analyses",
+          "ltype": "ec",
+          "effective_ltype": "ec",
+          "maps": [
+            "M"
+          ],
+          "reference_count": 1,
+          "references": [
+            {
+              "author": "Mhenni et al.",
+              "year": "2014",
+              "asterisk": false,
+              "grey": false
+            }
+          ],
+          "links": [
+            {
+              "source": "V-model",
+              "target": "Black box & white box analyses",
+              "ltype": "ec",
+              "maps": [
+                "M"
+              ],
+              "visible_reference_count": 1,
+              "stored_reference_count": 1
+            }
+          ],
+          "block": {
+            "color": "#00acef",
+            "level": "Process",
+            "maps": [
+              "M",
+              "C",
+              "S"
+            ],
+            "name": "V-model",
+            "related_approach": "Systems Engineering"
+          }
+        }
+      ]
+    },
+    "challenges": [],
+    "meta": {
+      "filters_applied": {},
+      "evidence_filter_active": false,
+      "status": "approved",
+      "connection_filters": [
+        "maps",
+        "status",
+        "authors",
+        "year",
+        "startYear",
+        "endYear"
+      ],
+      "community_reviewed": false
+    }
+  },
+  "Design structure matrix (DSM)": {
+    "block": {
+      "name": "Design structure matrix (DSM)",
+      "level": "Tool",
+      "maps": [
+        "M"
+      ],
+      "related_approach": "agnostic from approaches",
+      "color": "#001e5f",
+      "citations": "",
+      "tags": [],
+      "status": "approved",
+      "matched_challenges": [],
+      "degree": 6
+    },
+    "description": {
+      "text": "A DSM is a square matrix representing the elements in a system (the shaded cells along the diagonal) and their interactions (the off-diagonal marks). One reads across an element's row to see its inputs and down its columns to see its outputs, although the opposite convention, the transpose of the matrix, is also used.",
+      "section_heading": "MATERIALIZED AS",
+      "section_text": "- Square n×n matrix: the same elements label the rows and the columns, in the same order.\n- Shaded cells on the diagonal represent the elements themselves.\n- Off-diagonal marks represent the interactions between two elements.\n  - Read across an element's row to see its inputs.\n  - Read down its columns to see its outputs.\n  - The opposite convention — the transpose of the matrix — is also used, so a DSM should state which one it follows.",
+      "media_url": "descriptions/dsm.png",
+      "media_caption": "Adapted from Danilovic and Browning, 2007",
+      "description_source": {
+        "author": "Danilovic and Browning",
+        "authors_full": "",
+        "book_title": "",
+        "conference": "",
+        "doi": "",
+        "editors": "",
+        "institution": "",
+        "issue": "",
+        "journal": "",
+        "pages": "",
+        "publisher": "",
+        "status": "approved",
+        "title": "",
+        "type": "",
+        "volume": "",
+        "year": "2007"
+      },
+      "section_source": {
+        "author": "Danilovic and Browning",
+        "authors_full": "",
+        "book_title": "",
+        "conference": "",
+        "doi": "",
+        "editors": "",
+        "institution": "",
+        "issue": "",
+        "journal": "",
+        "pages": "",
+        "publisher": "",
+        "status": "approved",
+        "title": "",
+        "type": "",
+        "volume": "",
+        "year": "2007"
+      },
+      "status": "approved"
+    },
+    "block_citations": [],
+    "references": [
+      {
+        "author": "Bricogne et al.",
+        "year": "2016",
+        "text": "",
+        "resolved": true,
+        "reference": {
+          "author": "Bricogne et al.",
+          "authors_full": "",
+          "book_title": "",
+          "conference": "",
+          "doi": "",
+          "editors": "",
+          "institution": "",
+          "issue": "",
+          "journal": "",
+          "pages": "",
+          "publisher": "",
+          "status": "approved",
+          "title": "",
+          "type": "",
+          "volume": "",
+          "year": "2016"
+        },
+        "origins": [
+          "link"
+        ]
+      },
+      {
+        "author": "Danilovic and Browning",
+        "year": "2007",
+        "text": "",
+        "resolved": true,
+        "reference": {
+          "author": "Danilovic and Browning",
+          "authors_full": "",
+          "book_title": "",
+          "conference": "",
+          "doi": "",
+          "editors": "",
+          "institution": "",
+          "issue": "",
+          "journal": "",
+          "pages": "",
+          "publisher": "",
+          "status": "approved",
+          "title": "",
+          "type": "",
+          "volume": "",
+          "year": "2007"
+        },
+        "origins": [
+          "link"
+        ]
+      },
+      {
+        "author": "Hehenberger",
+        "year": "2014",
+        "text": "",
+        "resolved": true,
+        "reference": {
+          "author": "Hehenberger",
+          "authors_full": "",
+          "book_title": "",
+          "conference": "",
+          "doi": "",
+          "editors": "",
+          "institution": "",
+          "issue": "",
+          "journal": "",
+          "pages": "",
+          "publisher": "",
+          "status": "approved",
+          "title": "",
+          "type": "",
+          "volume": "",
+          "year": "2014"
+        },
+        "origins": [
+          "link"
+        ]
+      },
+      {
+        "author": "Lindemann et al.",
+        "year": "2009",
+        "text": "",
+        "resolved": true,
+        "reference": {
+          "author": "Lindemann et al.",
+          "authors_full": "",
+          "book_title": "",
+          "conference": "",
+          "doi": "",
+          "editors": "",
+          "institution": "",
+          "issue": "",
+          "journal": "",
+          "pages": "",
+          "publisher": "",
+          "status": "approved",
+          "title": "",
+          "type": "",
+          "volume": "",
+          "year": "2009"
+        },
+        "origins": [
+          "link"
+        ]
+      },
+      {
+        "author": "Osman et al.",
+        "year": "2013",
+        "text": "",
+        "resolved": true,
+        "reference": {
+          "author": "Osman et al.",
+          "authors_full": "",
+          "book_title": "",
+          "conference": "",
+          "doi": "",
+          "editors": "",
+          "institution": "",
+          "issue": "",
+          "journal": "",
+          "pages": "",
+          "publisher": "",
+          "status": "approved",
+          "title": "",
+          "type": "",
+          "volume": "",
+          "year": "2013"
+        },
+        "origins": [
+          "link"
+        ]
+      },
+      {
+        "author": "Pérez-Rodríguez et al.",
+        "year": "2018",
+        "text": "",
+        "resolved": true,
+        "reference": {
+          "author": "Pérez-Rodríguez et al.",
+          "authors_full": "",
+          "book_title": "",
+          "conference": "",
+          "doi": "",
+          "editors": "",
+          "institution": "",
+          "issue": "",
+          "journal": "",
+          "pages": "",
+          "publisher": "",
+          "status": "approved",
+          "title": "",
+          "type": "",
+          "volume": "",
+          "year": "2018"
+        },
+        "origins": [
+          "link"
+        ]
+      },
+      {
+        "author": "Sadlauer and Hehenberger",
+        "year": "2017",
+        "text": "",
+        "resolved": true,
+        "reference": {
+          "author": "Sadlauer and Hehenberger",
+          "authors_full": "",
+          "book_title": "",
+          "conference": "",
+          "doi": "",
+          "editors": "",
+          "institution": "",
+          "issue": "",
+          "journal": "",
+          "pages": "",
+          "publisher": "",
+          "status": "approved",
+          "title": "",
+          "type": "",
+          "volume": "",
+          "year": "2017"
+        },
+        "origins": [
+          "link"
+        ]
+      },
+      {
+        "author": "Van Beek et al.",
+        "year": "2010",
+        "text": "",
+        "resolved": true,
+        "reference": {
+          "author": "Van Beek et al.",
+          "authors_full": "",
+          "book_title": "",
+          "conference": "",
+          "doi": "",
+          "editors": "",
+          "institution": "",
+          "issue": "",
+          "journal": "",
+          "pages": "",
+          "publisher": "",
+          "status": "approved",
+          "title": "",
+          "type": "",
+          "volume": "",
+          "year": "2010"
+        },
+        "origins": [
+          "link"
+        ]
+      }
+    ],
+    "tags": [],
+    "ratings": {
+      "count": 0,
+      "averages": {
+        "efficacy": null,
+        "product_quality": null,
+        "design_process": null,
+        "resource_dependency": null
+      },
+      "mine": null
+    },
+    "comments": [],
+    "connections": {
+      "outgoing": [
+        {
+          "source": "Design structure matrix (DSM)",
+          "target": "Domain-mapping matrix (DMM)",
+          "ltype": "oc",
+          "effective_ltype": "oc",
+          "maps": [
+            "M"
+          ],
+          "reference_count": 2,
+          "references": [
+            {
+              "author": "Danilovic and Browning",
+              "year": "2007",
+              "asterisk": false,
+              "grey": true
+            },
+            {
+              "author": "Van Beek et al.",
+              "year": "2010",
+              "asterisk": false,
+              "grey": false
+            }
+          ],
+          "links": [
+            {
+              "source": "Design structure matrix (DSM)",
+              "target": "Domain-mapping matrix (DMM)",
+              "ltype": "oc",
+              "maps": [
+                "M"
+              ],
+              "visible_reference_count": 2,
+              "stored_reference_count": 2
+            }
+          ],
+          "block": {
+            "color": "#001e5f",
+            "level": "Tool",
+            "maps": [
+              "M"
+            ],
+            "name": "Domain-mapping matrix (DMM)",
+            "related_approach": "agnostic from approaches"
+          }
+        },
+        {
+          "source": "Design structure matrix (DSM)",
+          "target": "Multiple-domain matrix (MDM)",
+          "ltype": "oc",
+          "effective_ltype": "oc",
+          "maps": [
+            "M"
+          ],
+          "reference_count": 2,
+          "references": [
+            {
+              "author": "Lindemann et al.",
+              "year": "2009",
+              "asterisk": false,
+              "grey": true
+            },
+            {
+              "author": "Osman et al.",
+              "year": "2013",
+              "asterisk": false,
+              "grey": false
+            }
+          ],
+          "links": [
+            {
+              "source": "Design structure matrix (DSM)",
+              "target": "Multiple-domain matrix (MDM)",
+              "ltype": "oc",
+              "maps": [
+                "M"
+              ],
+              "visible_reference_count": 2,
+              "stored_reference_count": 2
+            }
+          ],
+          "block": {
+            "color": "#001e5f",
+            "level": "Tool",
+            "maps": [
+              "M"
+            ],
+            "name": "Multiple-domain matrix (MDM)",
+            "related_approach": "agnostic from approaches"
+          }
+        }
+      ],
+      "incoming": [
+        {
+          "source": "Function-behavior-state modelling",
+          "target": "Design structure matrix (DSM)",
+          "ltype": "ec",
+          "effective_ltype": "ec",
+          "maps": [
+            "M"
+          ],
+          "reference_count": 1,
+          "references": [
+            {
+              "author": "Van Beek et al.",
+              "year": "2010",
+              "asterisk": false,
+              "grey": false
+            }
+          ],
+          "links": [
+            {
+              "source": "Function-behavior-state modelling",
+              "target": "Design structure matrix (DSM)",
+              "ltype": "ec",
+              "maps": [
+                "M"
+              ],
+              "visible_reference_count": 1,
+              "stored_reference_count": 1
+            }
+          ],
+          "block": {
+            "color": "#001e5f",
+            "level": "Method",
+            "maps": [
+              "M"
+            ],
+            "name": "Function-behavior-state modelling",
+            "related_approach": "agnostic from approaches"
+          }
+        },
+        {
+          "source": "Hierarchical modelling technique",
+          "target": "Design structure matrix (DSM)",
+          "ltype": "ec",
+          "effective_ltype": "ec",
+          "maps": [
+            "M"
+          ],
+          "reference_count": 1,
+          "references": [
+            {
+              "author": "Hehenberger",
+              "year": "2014",
+              "asterisk": false,
+              "grey": false
+            }
+          ],
+          "links": [
+            {
+              "source": "Hierarchical modelling technique",
+              "target": "Design structure matrix (DSM)",
+              "ltype": "ec",
+              "maps": [
+                "M"
+              ],
+              "visible_reference_count": 1,
+              "stored_reference_count": 1
+            }
+          ],
+          "block": {
+            "color": "#00acef",
+            "level": "Method",
+            "maps": [
+              "M"
+            ],
+            "name": "Hierarchical modelling technique",
+            "related_approach": "Systems Engineering"
+          }
+        },
+        {
+          "source": "Integrated product process and manufacturing system development (IPPMD)",
+          "target": "Design structure matrix (DSM)",
+          "ltype": "ec",
+          "effective_ltype": "ec",
+          "maps": [
+            "M"
+          ],
+          "reference_count": 1,
+          "references": [
+            {
+              "author": "Pérez-Rodríguez et al.",
+              "year": "2018",
+              "asterisk": false,
+              "grey": false
+            }
+          ],
+          "links": [
+            {
+              "source": "Integrated product process and manufacturing system development (IPPMD)",
+              "target": "Design structure matrix (DSM)",
+              "ltype": "ec",
+              "maps": [
+                "M"
+              ],
+              "visible_reference_count": 1,
+              "stored_reference_count": 1
+            }
+          ],
+          "block": {
+            "color": "#001e5f",
+            "level": "Process",
+            "maps": [
+              "M",
+              "S"
+            ],
+            "name": "Integrated product process and manufacturing system development (IPPMD)",
+            "related_approach": "agnostic from approaches"
+          }
+        },
+        {
+          "source": "Model-based and model-driven practices",
+          "target": "Design structure matrix (DSM)",
+          "ltype": "ec",
+          "effective_ltype": "ec",
+          "maps": [
+            "M"
+          ],
+          "reference_count": 2,
+          "references": [
+            {
+              "author": "Bricogne et al.",
+              "year": "2016",
+              "asterisk": false,
+              "grey": false
+            },
+            {
+              "author": "Sadlauer and Hehenberger",
+              "year": "2017",
+              "asterisk": false,
+              "grey": false
+            }
+          ],
+          "links": [
+            {
+              "source": "Model-based and model-driven practices",
+              "target": "Design structure matrix (DSM)",
+              "ltype": "ec",
+              "maps": [
+                "M"
+              ],
+              "visible_reference_count": 2,
+              "stored_reference_count": 2
+            }
+          ],
+          "block": {
+            "color": "#00acef",
+            "level": "Method",
+            "maps": [
+              "M",
+              "C"
+            ],
+            "name": "Model-based and model-driven practices",
+            "related_approach": "Systems Engineering"
+          }
+        }
+      ]
+    },
+    "challenges": [
+      {
+        "description": "The product has difficulties being compatible with a wide range of machines, requiring mechanical, electrical, hydraulic and electronic interfacing",
+        "name": "Multi-domain interface complexity",
+        "status": "approved"
+      }
+    ],
+    "meta": {
+      "filters_applied": {},
+      "evidence_filter_active": false,
+      "status": "approved",
+      "connection_filters": [
+        "maps",
+        "status",
+        "authors",
+        "year",
+        "startYear",
+        "endYear"
+      ],
+      "community_reviewed": false
+    }
+  },
+  "Activity diagram": {
+    "block": {
+      "name": "Activity diagram",
+      "level": "Tool",
+      "maps": [
+        "M"
+      ],
+      "related_approach": "agnostic from approaches",
+      "color": "#001e5f",
+      "citations": "",
+      "tags": [],
+      "status": "approved",
+      "matched_challenges": [],
+      "degree": 2
+    },
+    "description": null,
+    "block_citations": [],
+    "references": [
+      {
+        "author": "Chen et al.",
+        "year": "2009",
+        "text": "",
+        "resolved": true,
+        "reference": {
+          "author": "Chen et al.",
+          "authors_full": "",
+          "book_title": "",
+          "conference": "",
+          "doi": "",
+          "editors": "",
+          "institution": "",
+          "issue": "",
+          "journal": "",
+          "pages": "",
+          "publisher": "",
+          "status": "approved",
+          "title": "",
+          "type": "",
+          "volume": "",
+          "year": "2009"
+        },
+        "origins": [
+          "link"
+        ]
+      },
+      {
+        "author": "Turki et al.",
+        "year": "2005",
+        "text": "",
+        "resolved": true,
+        "reference": {
+          "author": "Turki et al.",
+          "authors_full": "",
+          "book_title": "",
+          "conference": "",
+          "doi": "",
+          "editors": "",
+          "institution": "",
+          "issue": "",
+          "journal": "",
+          "pages": "",
+          "publisher": "",
+          "status": "approved",
+          "title": "",
+          "type": "",
+          "volume": "",
+          "year": "2005"
+        },
+        "origins": [
+          "link"
+        ]
+      }
+    ],
+    "tags": [],
+    "ratings": {
+      "count": 0,
+      "averages": {
+        "efficacy": null,
+        "product_quality": null,
+        "design_process": null,
+        "resource_dependency": null
+      },
+      "mine": null
+    },
+    "comments": [],
+    "connections": {
+      "outgoing": [
+        {
+          "source": "Activity diagram",
+          "target": "Agile hybrid",
+          "ltype": "ec",
+          "effective_ltype": "oc",
+          "maps": [
+            "M"
+          ],
+          "reference_count": 1,
+          "references": [
+            {
+              "author": "Chen et al.",
+              "year": "2009",
+              "asterisk": true,
+              "grey": false
+            }
+          ],
+          "links": [
+            {
+              "source": "Activity diagram",
+              "target": "Agile hybrid",
+              "ltype": "ec",
+              "maps": [
+                "M"
+              ],
+              "visible_reference_count": 1,
+              "stored_reference_count": 1
+            }
+          ],
+          "block": {
+            "color": "#b7b4b7",
+            "level": "Process",
+            "maps": [
+              "M"
+            ],
+            "name": "Agile hybrid",
+            "related_approach": "Agile-Plan-driven/Systematic"
+          }
+        }
+      ],
+      "incoming": [
+        {
+          "source": "Bond graph",
+          "target": "Activity diagram",
+          "ltype": "ec",
+          "effective_ltype": "ec",
+          "maps": [
+            "M"
+          ],
+          "reference_count": 1,
+          "references": [
+            {
+              "author": "Turki et al.",
+              "year": "2005",
+              "asterisk": false,
+              "grey": false
+            }
+          ],
+          "links": [
+            {
+              "source": "Bond graph",
+              "target": "Activity diagram",
+              "ltype": "ec",
+              "maps": [
+                "M"
+              ],
+              "visible_reference_count": 1,
+              "stored_reference_count": 1
+            }
+          ],
+          "block": {
+            "color": "#001e5f",
+            "level": "Tool",
+            "maps": [
+              "M",
+              "C",
+              "S"
+            ],
+            "name": "Bond graph",
+            "related_approach": "agnostic from approaches"
+          }
+        }
+      ]
+    },
+    "challenges": [],
+    "meta": {
+      "filters_applied": {},
+      "evidence_filter_active": false,
+      "status": "approved",
+      "connection_filters": [
+        "maps",
+        "status",
+        "authors",
+        "year",
+        "startYear",
+        "endYear"
+      ],
+      "community_reviewed": false
+    }
+  }
+}

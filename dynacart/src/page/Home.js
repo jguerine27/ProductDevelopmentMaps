@@ -1,51 +1,42 @@
 import React, { useState } from 'react';
-import './Home.css';
-import Navbar from '../Components/Navbar/Navbar';
-import AddNodeForm from '../Components/AddNodeForm/AddNodeForm';
-import AddReferenceForm from '../Components/AddReferenceForm/AddReferenceForm';
+import { useLocation } from 'react-router-dom';
+import AppShell from '../Components/AppShell/AppShell';
 import GraphVisualization from '../Components/GraphVisualization/GraphVisualization';
-import {  signOut } from "firebase/auth";
-import {auth} from '../firebase';
-import { useNavigate } from 'react-router-dom';
-import ReviewableNodes from '../Components/ReviewNodes/ReviewableNodes';
-import ReviewReferences from '../Components/ReviewReference/ReviewReferences';
-import DeleteOption from '../Components/DeleteOption/DeleteOption';
-import UpdateNode from '../Components/UpdateNode/UpdateNode';
- 
-const Home = () => {
-    const navigate = useNavigate();
- 
-    const handleLogout = () => {               
-        signOut(auth).then(() => {
-        // Sign-out successful.
-            navigate("/");
-            console.log("Signed out successfully")
-        }).catch((error) => {
-        // An error happened.
-        });
-    }
 
-    const [activeForm, setActiveForm] = useState('graph');
+/**
+ * The map, and the page under the shared shell.
+ *
+ * PUBLIC. Reading the cartographies needs no account, so nothing here waits on
+ * the session and nothing is hidden while it loads — the graph starts fetching
+ * immediately and the navbar fills its account slot when /api/auth/me answers.
+ *
+ * ── THE SHELL IS NO LONGER THIS PAGE'S ───────────────────────────────────────
+ * The navbar and the account wiring used to live here, which is precisely why
+ * they disappeared the moment anyone left /map. They are AppShell's now, and
+ * Collaborate and Review wear the same frame. What is still Home's is the pair
+ * of sections the bar switches between, because they are two views of THIS page
+ * rather than two routes.
+ *
+ * A section asked for from another page arrives in location state, since there
+ * is no URL to carry it — the shell navigates here and names the section it
+ * wanted. Read once, as the initial value: after that the bar sets it directly.
+ *
+ * The six legacy CRUD screens (AddNodeForm, AddReferenceForm, ReviewableNodes,
+ * ReviewReferences, DeleteOption, UpdateNode) used to be mounted here. They call
+ * routes that no longer exist and are being replaced rather than repaired, so
+ * they are no longer imported — importing them would bundle broken code and pull
+ * their global CSS into every page. The files are left untouched on disk.
+ */
+const Home = () => {
+    const location = useLocation();
+    const [activeForm, setActiveForm] = useState(() => location.state?.form || 'graph');
 
     return (
-        <div className="app-shell">
-            <Navbar
-                setActiveForm={setActiveForm}
-                activeForm={activeForm}
-                onLogout={handleLogout}
-            />
-            <div className="app-shell-view">
-                {activeForm === 'home' && <h1>Welcome to DynaCart</h1>}
-                {activeForm === 'node' && <AddNodeForm />}
-                {activeForm === 'reference' && <AddReferenceForm />}
-                {activeForm === 'graph' && <GraphVisualization />}
-                {activeForm === 'reviewNode' && <ReviewableNodes />}
-                {activeForm === 'reviewReference' && <ReviewReferences />}
-                {activeForm === 'delete' && <DeleteOption />}
-                {activeForm === 'updateNode' && <UpdateNode/>}
-            </div>
-        </div>
+        <AppShell activeForm={activeForm} setActiveForm={setActiveForm}>
+            {activeForm === 'home' && <h1>Welcome to DynaCart</h1>}
+            {activeForm === 'graph' && <GraphVisualization />}
+        </AppShell>
     );
-}
- 
+};
+
 export default Home;

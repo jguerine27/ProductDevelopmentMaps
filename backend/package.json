@@ -12,7 +12,14 @@
     "test": "node --test",
     "verify": "node verify.js",
     "setup-db": "node setup-database.js",
-    "populate-db": "node populate-database.js"
+    "populate-db": "node populate-database.js",
+    "verify:auth": "node verify-auth.js",
+    "verify:proposals": "node verify-proposals.js",
+    "verify:visibility": "node verify-visibility.js",
+    "verify:dependencies": "node verify-dependencies.js",
+    "seed-descriptions": "node seed-descriptions.js",
+    "verify:community": "node verify-community.js",
+    "verify:descriptions": "node verify-descriptions.js"
   },
   "keywords": [],
   "author": "",
@@ -21,6 +28,7 @@
     "cors": "^2.8.5",
     "dotenv": "^16.5.0",
     "express": "^4.19.2",
+    "firebase-admin": "^14.2.0",
     "neo4j-driver": "^5.28.1",
     "xlsx": "^0.18.5"
   }
