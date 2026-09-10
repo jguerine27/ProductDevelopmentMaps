@@ -12,6 +12,13 @@ dbpass.txt
 # production
 /build
 
+# Credentials. A Firebase service-account JSON contains a private key that grants
+# admin access to the whole Firebase project — treat it exactly like .env.
+# Both patterns, so a differently-named download is still caught.
+firebase-service-account.json
+*service-account*.json
+serviceAccountKey.json
+
 # misc
 .DS_Store
 .env.local

@@ -40,7 +40,7 @@
   "jest": {
     "transformIgnorePatterns": [
       "^.+\\.module\\.(css|sass|scss)$",
-      "[/\\\\]node_modules[/\\\\](?!(d3|d3-[a-z0-9-]+|internmap|delaunator|robust-predicates)[/\\\\])[^/\\\\]+[/\\\\].+\\.(js|mjs|jsx|ts|tsx)$"
+      "[/\\\\]node_modules[/\\\\](?!(axios|d3|d3-[a-z0-9-]+|internmap|delaunator|robust-predicates)[/\\\\])[^/\\\\]+[/\\\\].+\\.(js|mjs|jsx|ts|tsx)$"
     ]
   },
   "browserslist": {

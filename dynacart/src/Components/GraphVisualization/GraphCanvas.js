@@ -51,9 +51,21 @@ const CLICK_SLACK = 4;
  */
 const CHALLENGE_DIM_OPACITY = 0.2;
 
-const ZOOM_EXTENT = [0.3, 4];
+/**
+ * Zoom limits. The floor is a default, not a hard bound: a viewport too short
+ * for the whole map — a 1080p screen is, where a 4K one is not — needs to zoom
+ * out past it, so fitZoom() below lowers it to whatever that view requires.
+ */
+const ZOOM_MIN = 0.3;
+const ZOOM_MAX = 4;
 const ZOOM_STEP = 1.35;
-const FIT_PADDING = 60;
+/** Blank screen pixels kept between the outermost band and the viewport edge. */
+const FIT_MARGIN = 24;
+/**
+ * Graph-space room for the band label, which is drawn in the gap OUTSIDE its
+ * band. Fitting to outerRadius alone clipped the outermost one.
+ */
+const LABEL_ALLOWANCE = LAYOUT.BAND_GAP;
 
 const layoutCentre = { cx: 0, cy: 0 };
 
@@ -80,6 +92,20 @@ function measureLabel(text) {
     // else about the map changes.
     if (!measureContext) return String(text).length * LABEL_FONT_SIZE * FALLBACK_GLYPH_RATIO;
     return measureContext.measureText(text).width;
+}
+
+/**
+ * The scale at which the whole map fits the viewport.
+ *
+ * Deliberately unclamped below: the caller lowers the zoom extent to this value
+ * rather than the other way round, because a floor that stops the map fitting
+ * is what left it cropped on a short screen.
+ */
+export function fitZoom(width, height, radius) {
+    const extent = 2 * (radius + LABEL_ALLOWANCE);
+    const usableWidth = Math.max(width - FIT_MARGIN * 2, 1);
+    const usableHeight = Math.max(height - FIT_MARGIN * 2, 1);
+    return Math.min(usableWidth / extent, usableHeight / extent, ZOOM_MAX);
 }
 
 /** Colour bar hugging the right edge, rounded to match only that side's corners. */
@@ -186,27 +212,45 @@ const GraphCanvas = ({
         paintStateRef.current = { challengeMatches, highlightedBlock };
     });
 
-    const fitToView = useCallback(() => {
-        const svg = svgRef.current;
+    /**
+     * The transform that frames the whole map in the container as it is NOW,
+     * and — as a side effect — the zoom extent that allows it.
+     *
+     * Both halves have to be recomputed together: the extent depends on the
+     * container's size and on the map's radius, and either can change under a
+     * view that is already on screen (a window resize, a filter). Returns null
+     * when there is nothing measurable yet.
+     */
+    const frameTransform = useCallback(() => {
         const container = containerRef.current;
         const zoom = zoomRef.current;
-        if (!svg || !container || !zoom) return;
+        if (!container || !zoom) return null;
 
         const { width, height } = container.getBoundingClientRect();
-        if (!width || !height) return;
+        if (!width || !height) return null;
 
-        const radius = outerRadius(bandsRef.current);
-        const scale = Math.min(
-            width / (radius * 2 + FIT_PADDING),
-            height / (radius * 2 + FIT_PADDING)
-        );
-        const clamped = Math.max(ZOOM_EXTENT[0], Math.min(ZOOM_EXTENT[1], scale));
-
-        d3.select(svg)
-            .transition()
-            .duration(400)
-            .call(zoom.transform, d3.zoomIdentity.translate(width / 2, height / 2).scale(clamped));
+        const scale = fitZoom(width, height, outerRadius(bandsRef.current));
+        zoom.scaleExtent([Math.min(ZOOM_MIN, scale), ZOOM_MAX]);
+        // Stated rather than left to d3's default, which reads the SVG's own
+        // width/height attributes — this one has none, it is sized by CSS. The
+        // extent is what the zoom buttons zoom about, so a wrong one sends the
+        // map toward a corner instead of holding the middle.
+        zoom.extent([[0, 0], [width, height]]);
+        return d3.zoomIdentity.translate(width / 2, height / 2).scale(scale);
     }, []);
+
+    const fitToView = useCallback(() => {
+        const svg = svgRef.current;
+        const zoom = zoomRef.current;
+        const transform = frameTransform();
+        if (!svg || !zoom || !transform) return;
+
+        // Fitting hands the framing back to the component, so a later resize or
+        // filter change reframes instead of preserving a view the user is no
+        // longer looking at.
+        userMovedViewRef.current = false;
+        d3.select(svg).transition().duration(400).call(zoom.transform, transform);
+    }, [frameTransform]);
 
     const zoomBy = useCallback((factor) => {
         const svg = svgRef.current;
@@ -599,7 +643,9 @@ const GraphCanvas = ({
 
         // ── Zoom ─────────────────────────────────────────────────────────────
         const zoom = d3.zoom()
-            .scaleExtent(ZOOM_EXTENT)
+            // A provisional floor; frameTransform() below replaces it with one
+            // the current viewport can actually fit the map at.
+            .scaleExtent([ZOOM_MIN, ZOOM_MAX])
             // Same slack as the node drag: panning must not clear the selection,
             // but a click on empty canvas with a pixel of shake still should.
             .clickDistance(CLICK_SLACK)
@@ -621,22 +667,13 @@ const GraphCanvas = ({
         svg.call(zoom);
 
         // The map is centred on (0, 0) in graph coordinates, so a transform is
-        // what puts it in the viewport at all. A filter change reuses whatever
-        // the user was looking at rather than yanking the view back to a fit.
-        const rect = containerRef.current?.getBoundingClientRect();
-        if (rect?.width) {
-            const radius = outerRadius(bands);
-            const scale = Math.max(
-                ZOOM_EXTENT[0],
-                Math.min(
-                    ZOOM_EXTENT[1],
-                    Math.min(rect.width / (radius * 2 + FIT_PADDING), rect.height / (radius * 2 + FIT_PADDING))
-                )
-            );
-            const initial = (userMovedViewRef.current && transformRef.current)
-                || d3.zoomIdentity.translate(rect.width / 2, rect.height / 2).scale(scale);
-            svg.call(zoom.transform, initial);
-        }
+        // what puts it in the viewport at all. Called unconditionally, because
+        // the new band radii change the zoom-out limit even when the user's own
+        // view is the one kept: a filter change reuses whatever they were
+        // looking at rather than yanking the view back to a fit.
+        const framed = frameTransform();
+        const initial = (userMovedViewRef.current && transformRef.current) || framed;
+        if (initial) svg.call(zoom.transform, initial);
 
         return () => {
             simulation.stop();
@@ -659,6 +696,42 @@ const GraphCanvas = ({
     useEffect(() => {
         repaintRef.current();
     }, [challengeMatches, highlightedBlock]);
+
+    // ── Reframing ────────────────────────────────────────────────────────────
+    /**
+     * The framing is measured from the container, so anything that resizes it
+     * invalidates it: a window resize, moving the browser to a screen of a
+     * different size, opening the results panel beside the map.
+     *
+     * A view the user framed themselves is left alone — but its zoom extent is
+     * still refreshed, so they can always zoom back out far enough to see the
+     * whole map on the new size.
+     */
+    useEffect(() => {
+        const container = containerRef.current;
+        if (!container || typeof ResizeObserver === 'undefined') return undefined;
+
+        let frame = 0;
+        const observer = new ResizeObserver(() => {
+            // Coalesced: a dragged window edge fires this continuously, and a
+            // transform per pixel of drag is wasted work.
+            cancelAnimationFrame(frame);
+            frame = requestAnimationFrame(() => {
+                const svg = svgRef.current;
+                const zoom = zoomRef.current;
+                const transform = frameTransform();
+                if (!svg || !zoom || !transform || userMovedViewRef.current) return;
+                // No transition: mid-drag it would lag a frame behind the edge.
+                d3.select(svg).call(zoom.transform, transform);
+            });
+        });
+
+        observer.observe(container);
+        return () => {
+            cancelAnimationFrame(frame);
+            observer.disconnect();
+        };
+    }, [frameTransform]);
 
     // ── Popover placement ────────────────────────────────────────────────────
     useLayoutEffect(() => {

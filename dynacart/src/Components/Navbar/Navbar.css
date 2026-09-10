@@ -173,6 +173,48 @@ button:hover {
     background: #f1f3f4;
 }
 
+/* ── Signed in ───────────────────────────────────────────────────────────── */
+
+.pdm-nav-account-signed-in {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+/* The name is a status, not a control, so it stays quiet: no button chrome, no
+   accent colour. Truncated rather than allowed to push Log out off the bar —
+   display names are user-supplied and have no useful upper bound in practice. */
+.pdm-nav-account-name {
+    max-width: 180px;
+    overflow: hidden;
+    font-size: 14px;
+    color: #3c4043;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* Holds the account slot's width while GET /api/auth/me is in flight, so the bar
+   does not reflow when the answer arrives. Empty and aria-hidden: there is
+   nothing here worth announcing. */
+.pdm-nav-account-pending {
+    display: inline-block;
+    width: 148px;
+    height: 34px;
+    background: #f1f3f4;
+    border-radius: 8px;
+}
+
+@media (max-width: 760px) {
+    .pdm-nav-account-signed-in {
+        flex: 1 1 auto;
+        justify-content: space-between;
+    }
+
+    .pdm-nav-account-pending {
+        width: 100%;
+    }
+}
+
 /* ── Narrow screens ──────────────────────────────────────────────────────── */
 
 /* CSS-drawn rather than an icon font: three bars and a label, no dependency. */
