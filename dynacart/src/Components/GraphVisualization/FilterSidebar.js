@@ -282,147 +282,153 @@ const FilterSidebar = ({
     const allMaps = (filters.maps || []).length === 0;
 
     return (
-        <aside className="pdm-sidebar">
-            {metadataError && (
-                <p className="pdm-sidebar-error">Filter options unavailable: {metadataError}</p>
-            )}
+        // Two regions, not one scrolling column: the controls scroll, the three
+        // buttons below them are a fixed footer. The controls are taller than a
+        // 1080p sidebar can show, and the actions are what a user reaches for
+        // after using them — having to scroll back down to Apply is a trap.
+        <aside className="pdm-sidebar pdm-sidebar--filters">
+            <div className="pdm-sidebar-body">
+                {metadataError && (
+                    <p className="pdm-sidebar-error">Filter options unavailable: {metadataError}</p>
+                )}
 
-            <div className="pdm-search">
-                <input
-                    type="search"
-                    className="pdm-input"
-                    placeholder="Search nodes"
-                    aria-label="Search block names"
-                    value={filters.keyword}
-                    onChange={(event) => setFilter('keyword', event.target.value)}
-                />
-                <MagnifierIcon />
-            </div>
-
-            <section className="pdm-section">
-                <h3>Map</h3>
-                <label className="pdm-check">
+                <div className="pdm-search">
                     <input
-                        type="checkbox"
-                        checked={allMaps}
-                        /* Master toggle: the combined view sends no `maps` param
-                           at all, which is also the default on load. */
-                        onChange={() => setFilter('maps', [])}
+                        type="search"
+                        className="pdm-input"
+                        placeholder="Search nodes"
+                        aria-label="Search block names"
+                        value={filters.keyword}
+                        onChange={(event) => setFilter('keyword', event.target.value)}
                     />
-                    <span>All Maps</span>
-                </label>
-                {(metadata.maps || []).map((map) => (
-                    <label className="pdm-check" key={map.code}>
+                    <MagnifierIcon />
+                </div>
+
+                <section className="pdm-section">
+                    <h3>Map</h3>
+                    <label className="pdm-check">
                         <input
                             type="checkbox"
-                            checked={(filters.maps || []).includes(map.code)}
-                            onChange={() => {
-                                const current = filters.maps || [];
-                                setFilter(
-                                    'maps',
-                                    current.includes(map.code)
-                                        ? current.filter((code) => code !== map.code)
-                                        : [...current, map.code]
-                                );
-                            }}
+                            checked={allMaps}
+                            /* Master toggle: the combined view sends no `maps` param
+                               at all, which is also the default on load. */
+                            onChange={() => setFilter('maps', [])}
                         />
-                        <span>{map.label}</span>
+                        <span>All Maps</span>
                     </label>
-                ))}
-            </section>
+                    {(metadata.maps || []).map((map) => (
+                        <label className="pdm-check" key={map.code}>
+                            <input
+                                type="checkbox"
+                                checked={(filters.maps || []).includes(map.code)}
+                                onChange={() => {
+                                    const current = filters.maps || [];
+                                    setFilter(
+                                        'maps',
+                                        current.includes(map.code)
+                                            ? current.filter((code) => code !== map.code)
+                                            : [...current, map.code]
+                                    );
+                                }}
+                            />
+                            <span>{map.label}</span>
+                        </label>
+                    ))}
+                </section>
 
-            <section className="pdm-section">
-                <h3>Related Approach</h3>
-                <SearchableMultiSelect
-                    label="Select approaches"
-                    placeholder="Select Approaches"
-                    options={approachOptions}
-                    selected={draft.approaches || []}
-                    onToggle={(value) => toggleDraftValue('approaches', value)}
-                    emptyMessage="No approaches available"
-                />
-            </section>
+                <section className="pdm-section">
+                    <h3>Related Approach</h3>
+                    <SearchableMultiSelect
+                        label="Select approaches"
+                        placeholder="Select Approaches"
+                        options={approachOptions}
+                        selected={draft.approaches || []}
+                        onToggle={(value) => toggleDraftValue('approaches', value)}
+                        emptyMessage="No approaches available"
+                    />
+                </section>
 
-            <section className="pdm-section">
-                <h3>Reference year</h3>
+                <section className="pdm-section">
+                    <h3>Reference year</h3>
 
-                {/* Exact match, so this list keeps the disambiguating suffixes
-                    the bounds below cannot represent: picking 1996a returns that
-                    reference alone, where the range 1996–1996 returns both
-                    1996a and 1996b. */}
-                <label className="pdm-year-exact">
-                    <span>Year</span>
-                    <select
-                        className="pdm-input"
-                        value={draft.year?.[0] || ''}
-                        onChange={(event) => setExactYear(event.target.value)}
-                    >
-                        <option value="">Any</option>
-                        {(metadata.years || []).map((year) => (
-                            <option key={year} value={year}>{year}</option>
-                        ))}
-                    </select>
-                </label>
-
-                <p className="pdm-year-or">or a range</p>
-
-                <div className="pdm-year-range">
-                    <label>
-                        <span>From</span>
+                    {/* Exact match, so this list keeps the disambiguating suffixes
+                        the bounds below cannot represent: picking 1996a returns that
+                        reference alone, where the range 1996–1996 returns both
+                        1996a and 1996b. */}
+                    <label className="pdm-year-exact">
+                        <span>Year</span>
                         <select
                             className="pdm-input"
-                            value={draft.startYear}
-                            onChange={(event) => setYearBound('startYear', event.target.value)}
+                            value={draft.year?.[0] || ''}
+                            onChange={(event) => setExactYear(event.target.value)}
                         >
                             <option value="">Any</option>
-                            {yearBounds
-                                .filter((year) => !draft.endYear || year <= draft.endYear)
-                                .map((year) => (
-                                    <option key={year} value={year}>{year}</option>
-                                ))}
+                            {(metadata.years || []).map((year) => (
+                                <option key={year} value={year}>{year}</option>
+                            ))}
                         </select>
                     </label>
-                    <label>
-                        <span>To</span>
-                        <select
-                            className="pdm-input"
-                            value={draft.endYear}
-                            onChange={(event) => setYearBound('endYear', event.target.value)}
-                        >
-                            <option value="">Any</option>
-                            {yearBounds
-                                .filter((year) => !draft.startYear || year >= draft.startYear)
-                                .map((year) => (
-                                    <option key={year} value={year}>{year}</option>
-                                ))}
-                        </select>
-                    </label>
-                </div>
-            </section>
 
-            <section className="pdm-section">
-                <h3>Author / Reference</h3>
-                <SearchableMultiSelect
-                    label="Select authors"
-                    placeholder="Select Authors"
-                    options={authorOptions}
-                    selected={draft.authors || []}
-                    onToggle={(value) => toggleDraftValue('authors', value)}
-                    emptyMessage="No authors available"
-                />
-            </section>
+                    <p className="pdm-year-or">or a range</p>
 
-            <section className="pdm-section">
-                <h3>Tags</h3>
-                <SearchableMultiSelect
-                    label="Select tags"
-                    placeholder="Select Tags"
-                    options={tagOptions}
-                    selected={draft.tags || []}
-                    onToggle={(value) => toggleDraftValue('tags', value)}
-                    emptyMessage="No tags yet"
-                />
-            </section>
+                    <div className="pdm-year-range">
+                        <label>
+                            <span>From</span>
+                            <select
+                                className="pdm-input"
+                                value={draft.startYear}
+                                onChange={(event) => setYearBound('startYear', event.target.value)}
+                            >
+                                <option value="">Any</option>
+                                {yearBounds
+                                    .filter((year) => !draft.endYear || year <= draft.endYear)
+                                    .map((year) => (
+                                        <option key={year} value={year}>{year}</option>
+                                    ))}
+                            </select>
+                        </label>
+                        <label>
+                            <span>To</span>
+                            <select
+                                className="pdm-input"
+                                value={draft.endYear}
+                                onChange={(event) => setYearBound('endYear', event.target.value)}
+                            >
+                                <option value="">Any</option>
+                                {yearBounds
+                                    .filter((year) => !draft.startYear || year >= draft.startYear)
+                                    .map((year) => (
+                                        <option key={year} value={year}>{year}</option>
+                                    ))}
+                            </select>
+                        </label>
+                    </div>
+                </section>
+
+                <section className="pdm-section">
+                    <h3>Author / Reference</h3>
+                    <SearchableMultiSelect
+                        label="Select authors"
+                        placeholder="Select Authors"
+                        options={authorOptions}
+                        selected={draft.authors || []}
+                        onToggle={(value) => toggleDraftValue('authors', value)}
+                        emptyMessage="No authors available"
+                    />
+                </section>
+
+                <section className="pdm-section">
+                    <h3>Tags</h3>
+                    <SearchableMultiSelect
+                        label="Select tags"
+                        placeholder="Select Tags"
+                        options={tagOptions}
+                        selected={draft.tags || []}
+                        onToggle={(value) => toggleDraftValue('tags', value)}
+                        emptyMessage="No tags yet"
+                    />
+                </section>
+            </div>
 
             <div className="pdm-actions">
                 <button

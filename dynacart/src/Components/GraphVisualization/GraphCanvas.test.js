@@ -1,7 +1,7 @@
 import React from 'react';
 import { fireEvent, render, screen, within } from '@testing-library/react';
 import GraphCanvas from './GraphCanvas';
-import { LEVELS } from './graphLayout';
+import { LEVELS, computeBands, outerRadius } from './graphLayout';
 
 /**
  * Rendered checks for the parts of the map that only exist once there is a DOM:
@@ -443,6 +443,57 @@ describe('node interaction', () => {
 
         expect(container.querySelector('.pdm-tooltip')).toBeNull();
         expect(screen.queryByText('Systems Engineering')).not.toBeInTheDocument();
+    });
+});
+
+describe('framing', () => {
+    /**
+     * jsdom measures every element as 0x0, so the container is stubbed with the
+     * size the map would really be given. The map is centred on (0, 0) in graph
+     * coordinates, so the transform on .pdm-root is the whole framing.
+     */
+    const frameIn = (width, height) => {
+        const original = Element.prototype.getBoundingClientRect;
+        Element.prototype.getBoundingClientRect = function stub() {
+            if (!this.classList?.contains('pdm-canvas')) return original.call(this);
+            return {
+                width, height, top: 0, left: 0, right: width, bottom: height, x: 0, y: 0, toJSON: () => {},
+            };
+        };
+
+        try {
+            const { container } = renderCanvas();
+            const transform = container.querySelector('.pdm-root').getAttribute('transform');
+            const parts = /translate\(([-\d.]+),([-\d.]+)\)\s*scale\(([\d.]+)\)/.exec(transform);
+            return { x: Number(parts[1]), y: Number(parts[2]), scale: Number(parts[3]) };
+        } finally {
+            Element.prototype.getBoundingClientRect = original;
+        }
+    };
+
+    const RADIUS = outerRadius(computeBands(BLOCKS, LEVELS));
+
+    it('centres the map and fits it inside the viewport', () => {
+        const { x, y, scale } = frameIn(1400, 760);
+
+        expect(x).toBe(700);
+        expect(y).toBe(380);
+        // Drawn radius within the half-height, and not so far within it that the
+        // map is needlessly small.
+        expect(RADIUS * scale).toBeLessThanOrEqual(380);
+        expect(RADIUS * scale).toBeGreaterThan(380 - 60);
+    });
+
+    /**
+     * The zoom floor used to be a fixed 0.3, which is above the scale a short
+     * viewport needs — a 1080p screen showed the map cropped top and bottom
+     * where the 4K screen it was built on did not.
+     */
+    it('zooms out past the default floor when the viewport is too short for it', () => {
+        const { scale } = frameIn(1400, 380);
+
+        expect(scale).toBeLessThan(0.3);
+        expect(RADIUS * scale).toBeLessThanOrEqual(190);
     });
 });
 

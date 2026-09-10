@@ -2,9 +2,20 @@
 
 const test = require('node:test');
 const assert = require('node:assert');
-const { parseFilters, GRAPH_PARAMS, BLOCK_DETAIL_PARAMS } = require('../services/filters');
+const {
+    parseFilters, GRAPH_PARAMS, BLOCK_DETAIL_PARAMS, STATUSES, PUBLIC_STATUS, PRIVILEGED_STATUSES,
+} = require('../services/filters');
 
-const parse = (query) => parseFilters(query, GRAPH_PARAMS);
+/**
+ * A reviewer's scope: signed in, unrestricted.
+ *
+ * Supplied by default because most of these tests are about parsing rather than
+ * about who is asking, and an unapproved status now REFUSES to parse without a
+ * scope — see the fail-closed guard at the end of this file.
+ */
+const REVIEWER = Object.freeze({ viewerId: null, viewerUserId: 'r1', viewerIsReviewer: true });
+
+const parse = (query, scope = REVIEWER) => parseFilters(query, GRAPH_PARAMS, scope);
 
 function expectBadRequest(query, code) {
     assert.throws(() => parse(query), (err) => {
@@ -20,8 +31,40 @@ test('no query yields an all-inactive filter defaulting to approved', () => {
         assert.strictEqual(f[key], null, `${key} should be null when inactive`);
     }
     assert.strictEqual(f.status, 'approved');
+    assert.strictEqual(f.challengeMatch, 'any');
     assert.strictEqual(f.evidenceActive, false);
     assert.deepStrictEqual(f.applied, {});
+});
+
+test('challengeMatch defaults to any and rejects anything but any/all', () => {
+    // The default is what keeps every caller written before the mode existed on
+    // the behaviour it already had.
+    assert.strictEqual(parse({ challenges: 'A,B' }).challengeMatch, 'any');
+    assert.strictEqual(parse({ challenges: 'A,B', challengeMatch: 'all' }).challengeMatch, 'all');
+    assert.strictEqual(parse({ challengeMatch: '  all  ' }).challengeMatch, 'all');
+    // Not a filter, so it is never reported as one unless it was supplied.
+    assert.deepStrictEqual(parse({ challengeMatch: 'all' }).applied, { challengeMatch: 'all' });
+    assert.deepStrictEqual(parse({ challenges: 'A' }).applied, { challenges: ['A'] });
+
+    // A closed domain, like levels and status: a typo is a 400, never a
+    // silently different answer.
+    expectBadRequest({ challengeMatch: 'intersection' }, 'INVALID_FILTER_VALUE');
+    expectBadRequest({ challengeMatch: 'ALL' }, 'INVALID_FILTER_VALUE');
+    expectBadRequest({ challengeMatch: ['any', 'all'] }, 'INVALID_PARAM');
+
+    assert.throws(() => parse({ challengeMatch: 'union' }), (err) => {
+        assert.match(err.message, /any, all/, 'error names the valid values');
+        return true;
+    });
+});
+
+test('challengeMatch is not an evidence filter and is absent from block detail', () => {
+    assert.strictEqual(parse({ challengeMatch: 'all' }).evidenceActive, false);
+    // The detail panel shows a block's true neighbourhood; it never annotates.
+    assert.throws(() => parseFilters({ challengeMatch: 'all' }, BLOCK_DETAIL_PARAMS), (err) => {
+        assert.strictEqual(err.code, 'UNKNOWN_PARAM');
+        return true;
+    });
 });
 
 test('comma lists and repeated params parse identically', () => {
@@ -118,4 +161,70 @@ test('the block detail endpoint accepts a narrower parameter set', () => {
         assert.strictEqual(err.code, 'UNKNOWN_PARAM');
         return true;
     });
+});
+
+// ── Who may read unapproved content ──────────────────────────────────────────
+/**
+ * The parsing half of the pending-visibility fix. The authorisation half —
+ * anonymous callers being refused outright — lives in scopeStatusAccess and is
+ * exercised over HTTP in verify-auth.js; what is checked here is that a status
+ * cannot be parsed into a query without somebody having decided the scope.
+ */
+
+test('all four review states are valid filter values', () => {
+    assert.deepStrictEqual([...STATUSES], ['approved', 'pending', 'changes_requested', 'rejected']);
+    assert.strictEqual(PUBLIC_STATUS, 'approved');
+    assert.deepStrictEqual([...PRIVILEGED_STATUSES], ['pending', 'changes_requested', 'rejected']);
+
+    // Every unapproved state parses, so every one of them reaches the
+    // authorisation check and answers 401 anonymously. With only two valid
+    // values, `?status=rejected` answered 400 before authorisation ran — which
+    // told an unauthenticated caller which values were worth trying.
+    for (const status of PRIVILEGED_STATUSES) {
+        assert.strictEqual(parse({ status }).status, status);
+    }
+    expectBadRequest({ status: 'nonsense' }, 'INVALID_FILTER_VALUE');
+});
+
+test('a privileged status will not parse without a viewer scope', () => {
+    // Fail closed. A route that forgets to thread req.statusScope through would
+    // otherwise hand one contributor everybody else's unreviewed work; this
+    // turns that omission into a loud 500 in the first test that touches it.
+    assert.throws(() => parseFilters({ status: 'pending' }, GRAPH_PARAMS), (err) => {
+        assert.strictEqual(err.status, undefined, 'this is a programming error, not a 4xx');
+        assert.match(err.message, /without a viewer scope/);
+        return true;
+    });
+
+    // The public status needs no scope: the map is public.
+    assert.strictEqual(parseFilters({ status: 'approved' }, GRAPH_PARAMS).status, 'approved');
+    assert.strictEqual(parseFilters({}, GRAPH_PARAMS).status, 'approved');
+});
+
+test('viewerId narrows a contributor and never a reviewer or the public map', () => {
+    const contributor = { viewerId: 'u1', viewerUserId: 'u1', viewerIsReviewer: false };
+
+    // A contributor asking for unapproved content sees only their own.
+    assert.strictEqual(parse({ status: 'pending' }, contributor).viewerId, 'u1');
+    // A reviewer sees everything: no narrowing.
+    assert.strictEqual(parse({ status: 'pending' }, REVIEWER).viewerId, null);
+    // And the approved map is never narrowed, whoever is asking — otherwise
+    // signing in would show a contributor LESS of the public map than an
+    // anonymous reader sees.
+    assert.strictEqual(parse({ status: 'approved' }, contributor).viewerId, null);
+    assert.strictEqual(parse({}, contributor).viewerId, null);
+});
+
+test('identity is carried separately from the status narrowing', () => {
+    // viewerId conflates "reviewer" and "anonymous" as null, both meaning "do
+    // not narrow". The by-name detail routes need to tell them apart, because
+    // one may read an unapproved node and the other may not.
+    const anon = { viewerId: null, viewerUserId: null, viewerIsReviewer: false };
+    const f = parse({}, anon);
+    assert.strictEqual(f.viewerUserId, null);
+    assert.strictEqual(f.viewerIsReviewer, false);
+
+    const r = parse({}, REVIEWER);
+    assert.strictEqual(r.viewerId, null);
+    assert.strictEqual(r.viewerIsReviewer, true);
 });

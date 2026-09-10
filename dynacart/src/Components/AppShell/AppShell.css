@@ -1,5 +1,9 @@
 /*
- * The app shell.
+ * The app shell: the navbar, and whatever page sits under it.
+ *
+ * These rules were page/Home.css. They moved here when the shell stopped being
+ * the map's own frame and became the frame every signed-in area shares, so the
+ * navbar no longer vanishes on the way to Collaborate or Review.
  *
  * The map used to size itself with `calc(100vh - 120px)`, guessing the navbar's
  * height. The navbar is nearer 60px, so the guess left a band of dead page

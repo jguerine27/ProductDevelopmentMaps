@@ -1,0 +1,329 @@
+/*
+ * The block detail card.
+ *
+ * Palette, radii and type scale from Collaborate.css so this reads as the same
+ * application:
+ *   accent #1a73e8 · wash #e8f0fe · accent border #d2e3fc
+ *   text #26292d / #3c4043 · muted #5f6368 · placeholder #80868b
+ *   border #dfe2e6 · hairline #e6e8eb · page #f8f9fa · hover #f1f3f4
+ *
+ * ── SCOPED UNDER `pdm-detail-` ──────────────────────────────────────────────
+ * Navbar.css declares bare `button`, `ul` and `li` rules that CRA bundles
+ * app-wide — a #555 background on every button, and padding on every list item.
+ * The blanket resets below undo them for this subtree, exactly as Collaborate.css
+ * does for its own, so each rule further down only has to say what it wants.
+ */
+
+/*
+ * ── A COLUMN IN THE ROW, NOT AN OVERLAY ON IT ────────────────────────────────
+ * This used to be `position: absolute` against .pdm-layout, floating over the
+ * right-hand side of the map. The idea was that the map would not be narrowed
+ * on every selection — but the cost was that half the map was simply covered,
+ * including the block that had just been clicked, and the zoom and Fit controls
+ * and the Export menu went under the panel with it.
+ *
+ * So it joins the flex row, exactly as the challenge results panel does:
+ * .pdm-main gives up the width, GraphCanvas's ResizeObserver reframes the map
+ * into what is left, and every one of those controls stays reachable. The map
+ * is smaller, but all of it is visible, which is the trade the overlay had
+ * backwards.
+ *
+ * `position: relative` is what the close button is placed against. It was the
+ * absolute positioning that provided that before, so this is not a new
+ * containing block — it is the same one, kept when the rest of it went.
+ */
+.pdm-detail {
+    /* 560px, not the 424px used elsewhere: this content carries nested lists,
+       diagrams and full bibliography entries, and 424 wraps all three badly. */
+    position: relative;
+    flex: 0 0 560px;
+    width: 560px;
+    max-width: 100%;
+    box-sizing: border-box;
+    padding: 24px 28px 48px;
+    overflow-y: auto;
+    background: #ffffff;
+    border-left: 1px solid #e6e8eb;
+    font-family: "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    color: #3c4043;
+    font-size: 14px;
+    line-height: 1.55;
+}
+
+/*
+ * Narrower screens give the map back some of it.
+ *
+ * As an overlay the panel's width cost the map nothing on paper, so it could
+ * stay 560px everywhere. In the row it is 560px taken off the map — and with
+ * the challenge results panel open too, that is 860px gone before the map gets
+ * any. These two steps keep the map the larger half down to roughly a laptop
+ * screen.
+ */
+@media (max-width: 1400px) {
+    .pdm-detail {
+        flex-basis: 480px;
+        width: 480px;
+        padding-left: 22px;
+        padding-right: 22px;
+    }
+}
+
+@media (max-width: 1100px) {
+    .pdm-detail {
+        flex-basis: 400px;
+        width: 400px;
+        padding-left: 18px;
+        padding-right: 18px;
+    }
+}
+
+.pdm-detail button {
+    margin: 0;
+    font: inherit;
+    background: transparent;
+    color: inherit;
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+    transition: none;
+    cursor: pointer;
+}
+
+.pdm-detail button:hover {
+    background: transparent;
+}
+
+/*
+ * Navbar.css's bundled globals are `ul { list-style-type: none; text-align:
+ * center }` and `li { display: inline; margin: 0 10px }`. Undoing the padding
+ * and the margin was not enough, and the two that were left did real damage:
+ * inline list items ran the PRINCIPLES bullets together into a single centred
+ * paragraph — "…valuable software.Welcome changing requirements…", no marker, no
+ * line break, no space — and centred every reference and comment with them.
+ *
+ * So the reset covers the rest of that global rule.
+ *
+ * ── AND DELIBERATELY DOES NOT SET `display` ─────────────────────────────────
+ * A `.pdm-detail li { display: block }` here looks like the obvious companion
+ * to the above and breaks the comment list: `.pdm-detail-comment` is an <li>
+ * laid out as a two-column grid, and a blanket rule outranks it — 0,1,1 against
+ * 0,1,0 — so the avatar drops onto its own line above the name. Every list in
+ * this panel already settles its own layout, so there is nothing for a default
+ * to rescue: the section lists take `list-item` below, and the reference and
+ * comment lists are flex containers, which blockify their children for free and
+ * leave an explicit `grid` standing.
+ *
+ * If a future list needs blockifying, give it its own rule. Do not put one here.
+ */
+.pdm-detail ul,
+.pdm-detail li {
+    padding: 0;
+    margin: 0;
+    background: transparent;
+    text-align: left;
+}
+
+.pdm-detail :focus-visible {
+    outline: 2px solid #1a73e8;
+    outline-offset: 2px;
+}
+
+/* ── Close ──────────────────────────────────────────────────────────────── */
+
+.pdm-detail button.pdm-detail-close {
+    position: absolute;
+    top: 12px;
+    right: 14px;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    font-size: 20px;
+    line-height: 1;
+    color: #5f6368;
+}
+
+.pdm-detail button.pdm-detail-close:hover {
+    background: #f1f3f4;
+    color: #26292d;
+}
+
+/* ── Status ─────────────────────────────────────────────────────────────── */
+
+.pdm-detail-status {
+    padding: 32px 4px;
+    color: #5f6368;
+    font-size: 13px;
+}
+
+.pdm-detail-status--error {
+    color: #c5221f;
+}
+
+.pdm-detail button {
+    /* The retry button inside the error state. */
+    color: inherit;
+}
+
+.pdm-detail-status--error button {
+    margin-top: 10px;
+    padding: 6px 14px;
+    border: 1px solid #dfe2e6;
+    border-radius: 8px;
+    color: #3c4043;
+    font-size: 13px;
+}
+
+.pdm-detail-status--error button:hover {
+    background: #f1f3f4;
+}
+
+/* ── Header ─────────────────────────────────────────────────────────────── */
+
+.pdm-detail-head {
+    position: relative;
+    /* Room for the colour bar, which is the approach family's own colour and
+       arrives as an inline custom property from the block payload. */
+    padding: 2px 36px 14px 14px;
+    border-bottom: 2px solid #26292d;
+    margin: 0 0 4px;
+}
+
+.pdm-detail-head::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 14px;
+    width: 4px;
+    border-radius: 2px;
+    background: var(--pdm-detail-accent, #9aa0a6);
+}
+
+.pdm-detail-level {
+    margin: 0 0 2px;
+    font-size: 12px;
+    font-weight: 500;
+    color: #5f6368;
+}
+
+.pdm-detail-head h2 {
+    margin: 0;
+    font-size: 17px;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    color: #26292d;
+    line-height: 1.3;
+}
+
+/* ── Sections ───────────────────────────────────────────────────────────── */
+
+.pdm-detail-section {
+    padding: 14px 0 4px;
+}
+
+/* A hairline above every section label except the first, which sits under the
+   header's own rule. */
+.pdm-detail-section + .pdm-detail-section {
+    border-top: 1px solid #e6e8eb;
+}
+
+.pdm-detail-label {
+    margin: 0 0 8px;
+    font-size: 12px;
+    font-weight: 400;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    color: #80868b;
+}
+
+.pdm-detail-label span {
+    /* The count, as in "TAGS (3)". */
+    letter-spacing: 0.04em;
+}
+
+.pdm-detail-para {
+    margin: 0 0 8px;
+    color: #26292d;
+}
+
+.pdm-detail-para:last-child {
+    margin-bottom: 0;
+}
+
+/* ── Lists ──────────────────────────────────────────────────────────────── */
+
+.pdm-detail-list {
+    margin: 0 0 8px;
+    padding-left: 18px;
+    list-style: disc;
+}
+
+/* `list-item` is what actually draws the marker — `list-style: disc` on an
+   inline item is silently inert, which is why these read as prose. This rule
+   also matches the nested level, so a sub-bullet is a marker too. */
+.pdm-detail-list li {
+    display: list-item;
+    margin: 0 0 4px;
+    padding: 0;
+    color: #26292d;
+    list-style: inherit;
+}
+
+/* The nested level. Kept visually close to its parent — the indent is the only
+   structure section_text carries, so it has to read as one. */
+.pdm-detail-list ul {
+    margin: 4px 0 6px;
+    padding-left: 18px;
+    list-style: disc;
+}
+
+.pdm-detail-list ul li {
+    margin: 0 0 3px;
+}
+
+/* ── Attribution ────────────────────────────────────────────────────────── */
+
+.pdm-detail-source {
+    margin: 6px 0 0;
+    font-size: 12.5px;
+    font-style: italic;
+    color: #80868b;
+}
+
+/* ── Figures ────────────────────────────────────────────────────────────── */
+
+.pdm-detail-figure {
+    margin: 12px 0 0;
+}
+
+.pdm-detail-figure img {
+    display: block;
+    width: 100%;
+    height: auto;
+    border: 1px solid #e6e8eb;
+    border-radius: 8px;
+    background: #f8f9fa;
+}
+
+.pdm-detail-figure figcaption {
+    margin: 0;
+}
+
+.pdm-detail-figure figcaption .pdm-detail-source {
+    margin-top: 6px;
+}
+
+/* Shown in place of an image that failed to load. A placeholder rather than
+   nothing, so a diagram-only section keeps its shape instead of collapsing to a
+   heading over empty space. */
+.pdm-detail-figure-missing {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 96px;
+    border: 1px dashed #dfe2e6;
+    border-radius: 8px;
+    background: #f8f9fa;
+    color: #80868b;
+    font-size: 12.5px;
+}
