@@ -10,9 +10,17 @@
  * keeps its appearance once serialised away from this stylesheet.
  */
 
-/* Fills whatever the shell leaves after the navbar — see Home.css. Sizing this
-   from the viewport instead left a band of dead page below the map. */
+/* Fills whatever the shell leaves after the navbar — see AppShell.css. Sizing
+   this from the viewport instead left a band of dead page below the map. */
 .pdm-layout {
+    /* Four columns, in DOM order: sidebar, map, challenge results, block detail.
+       The last two are each present only when they have something to say, and
+       .pdm-main absorbs whatever they are not using.
+
+       DetailPanel used to be absolutely positioned against this element instead,
+       floating over the right-hand side — see the note at the top of
+       DetailPanel.css for why it now takes a column like everything else. */
+    position: relative;
     display: flex;
     align-items: stretch;
     gap: 0;
@@ -42,6 +50,85 @@
     border-right: 1px solid #e6e8eb;
     overflow-y: auto;
     box-sizing: border-box;
+    /* Animates the collapse below. `visibility` has no delay here so the
+       sidebar is usable from the first frame of coming back. */
+    transition:
+        flex-basis 180ms ease,
+        width 180ms ease,
+        padding 180ms ease,
+        border-right-width 180ms ease,
+        visibility 0s linear 0s;
+}
+
+/*
+ * ── COLLAPSED WHILE A BLOCK IS OPEN ──────────────────────────────────────────
+ * DetailPanel takes a 560px column on the right of this row. Holding 250px on
+ * the left as well would leave the map as a strip between the two. Collapsing
+ * hands that space to .pdm-main, whose ResizeObserver reframes the canvas — so
+ * opening a block costs the map 560px and gives it 250 straight back.
+ *
+ * Both sidebars STAY IN THE DOM — they hold an unapplied filter draft and a
+ * search query, which unmounting would throw away — so `visibility: hidden`
+ * does the work `display: none` would: out of the tab order and out of the
+ * accessibility tree, without losing a single piece of state. Its delay matches
+ * the duration so the content fades out with the box rather than before it.
+ */
+.pdm-layout--detail .pdm-sidebar {
+    flex-basis: 0;
+    width: 0;
+    padding-left: 0;
+    padding-right: 0;
+    border-right-width: 0;
+    overflow: hidden;
+    visibility: hidden;
+    transition:
+        flex-basis 180ms ease,
+        width 180ms ease,
+        padding 180ms ease,
+        border-right-width 180ms ease,
+        visibility 0s linear 180ms;
+}
+
+/* The sidebar body carries the filter padding, and it has to go too or the
+   controls keep pushing a 32px-wide box open from the inside. */
+.pdm-layout--detail .pdm-sidebar-body,
+.pdm-layout--detail .pdm-actions {
+    padding-left: 0;
+    padding-right: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .pdm-sidebar,
+    .pdm-layout--detail .pdm-sidebar {
+        transition: none;
+    }
+}
+
+/*
+ * Filter mode splits in two: the controls scroll, the actions below them do not.
+ *
+ * The controls are taller than the sidebar on a 1080p screen, so the actions
+ * have to be reachable without scrolling — and a sticky footer inside the scroll
+ * is not that: it still moves with the content and overlays whatever is under
+ * it. The scrolling is therefore confined to the body, and the footer is a
+ * sibling that the flex column keeps at the bottom.
+ */
+.pdm-sidebar--filters {
+    display: flex;
+    flex-direction: column;
+    /* Without this a flex item will not shrink below its content, and the
+       sidebar would push the whole layout past the viewport instead of
+       scrolling its own body. */
+    min-height: 0;
+    padding: 0;
+    overflow: hidden;
+}
+
+.pdm-sidebar-body {
+    flex: 1 1 auto;
+    min-height: 0;
+    padding: 18px 16px 10px;
+    overflow-y: auto;
 }
 
 .pdm-sidebar-error {
@@ -281,15 +368,16 @@
     background: rgba(28, 69, 135, 0.14);
 }
 
+/* The sidebar's foot: outside the scrolling body, so it neither moves nor
+   covers the last control. */
 .pdm-actions {
-    position: sticky;
-    bottom: 0;
+    flex: 0 0 auto;
     display: flex;
     flex-direction: column;
     gap: 8px;
-    margin-top: 26px;
-    padding: 12px 0 4px;
-    background: linear-gradient(to bottom, rgba(255, 255, 255, 0), #ffffff 22%);
+    padding: 12px 16px 16px;
+    border-top: 1px solid #e6e8eb;
+    background: #ffffff;
 }
 
 .pdm-sidebar button.pdm-apply {
@@ -533,6 +621,50 @@
     color: #5f6368;
 }
 
+/* A segmented control: two exclusive answers sitting side by side, so the one
+   not chosen is always visible as the alternative. The radio itself is hidden
+   from sight but not from assistive technology or the keyboard — the whole
+   segment is a label, so a click anywhere in it selects. */
+.pdm-results-modes {
+    display: flex;
+    margin-top: 12px;
+    padding: 2px;
+    background: #f1f3f4;
+    border-radius: 8px;
+}
+
+.pdm-results-mode {
+    flex: 1 1 0;
+    padding: 6px 4px;
+    font-size: 12px;
+    color: #5f6368;
+    text-align: center;
+    border-radius: 6px;
+    cursor: pointer;
+    user-select: none;
+}
+
+.pdm-results-mode input {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.pdm-results-mode--on {
+    color: #202124;
+    font-weight: 600;
+    background: #ffffff;
+    box-shadow: 0 1px 2px rgba(60, 64, 67, 0.25);
+}
+
+/* Focus lives on the hidden input, so it has to be forwarded to the segment. */
+.pdm-results-mode:focus-within {
+    outline: 2px solid #1a73e8;
+    outline-offset: 1px;
+}
+
 .pdm-results-empty {
     margin-top: 18px;
     padding: 12px;
@@ -563,6 +695,15 @@
 
 .pdm-results-group {
     margin-top: 20px;
+}
+
+/* "All challenges" is one list with no heading — the panel header has already
+   said how many blocks address all of them. The rule the heading used to draw
+   is kept, so the rows still start against a line instead of floating under the
+   mode radios. */
+.pdm-results-group--all {
+    padding-top: 14px;
+    border-top: 1px solid #eef0f2;
 }
 
 /* The challenge is the organising idea now, so its heading carries the weight

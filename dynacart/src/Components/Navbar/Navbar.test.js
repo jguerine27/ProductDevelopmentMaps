@@ -5,7 +5,13 @@ import Navbar from './Navbar';
 /**
  * The bar switches Home's view rather than navigating, so "active" means the
  * current `activeForm` and the controls are buttons, not anchors.
+ *
+ * It is presentational: `user`, `loading` and the account callbacks arrive as
+ * props from Home, so these tests need neither an auth provider nor a Router.
  */
+
+const USER = { id: 'u1', display_name: 'Ada Lovelace', role: 'user', provider: 'firebase', orcid: '' };
+const REVIEWER = { id: 'u2', display_name: 'Grace Hopper', role: 'reviewer', provider: 'orcid', orcid: '0000-0001' };
 
 const show = (props = {}) => {
     const setActiveForm = jest.fn();
@@ -19,32 +25,85 @@ const bar = () => screen.getByRole('navigation', { name: 'Main' });
 const link = (name) => within(bar()).getByRole('button', { name });
 /** By class, not by text — the wordmark is product naming and may be reworded. */
 const brand = () => bar().querySelector('.pdm-nav-brand');
+const labels = () => [...bar().querySelectorAll('button')]
+    .map((button) => button.textContent.trim())
+    .filter(Boolean);
 
-it('shows the wordmark, the four sections and the account controls in order', () => {
+it('shows the wordmark, the sections and the signed-out account controls in order', () => {
     show();
 
-    const labels = [...bar().querySelectorAll('button')]
-        .map((button) => button.textContent.trim())
-        .filter(Boolean);
-
     expect(brand()).toBeInTheDocument();
-    expect(labels[0]).toBe(brand().textContent.trim());
-    expect(labels.slice(1)).toEqual([
-        'Home', 'Map', 'Collaborate', 'Review', 'Sign in', 'Register',
+    expect(labels()[0]).toBe(brand().textContent.trim());
+    expect(labels().slice(1)).toEqual([
+        'Home', 'Map', 'Collaborate', 'Sign in', 'Register',
     ]);
 });
 
-it('swaps the signed-out pair for Log out when a session exists', () => {
-    const onLogout = jest.fn();
-    show({ onLogout });
+describe('the account slot', () => {
+    it('renders a neutral placeholder while the session is still unknown', () => {
+        show({ loading: true });
 
-    // The app has a working signed-in state; showing Sign in / Register there
-    // would strand a signed-in user with no way out.
-    expect(screen.queryByRole('button', { name: 'Sign in' })).not.toBeInTheDocument();
-    expect(screen.queryByRole('button', { name: 'Register' })).not.toBeInTheDocument();
+        // Showing Sign in / Register and swapping them for the account name a
+        // moment later reads as a bug, and it is the first thing a visitor sees.
+        expect(screen.queryByRole('button', { name: 'Sign in' })).not.toBeInTheDocument();
+        expect(screen.queryByRole('button', { name: 'Register' })).not.toBeInTheDocument();
+        expect(screen.queryByRole('button', { name: 'Log out' })).not.toBeInTheDocument();
+        expect(bar().querySelector('.pdm-nav-account-pending')).toBeInTheDocument();
+    });
 
-    fireEvent.click(link('Log out'));
-    expect(onLogout).toHaveBeenCalled();
+    it('wires Sign in and Register when signed out', () => {
+        const onSignIn = jest.fn();
+        const onRegister = jest.fn();
+        show({ onSignIn, onRegister });
+
+        fireEvent.click(link('Sign in'));
+        expect(onSignIn).toHaveBeenCalled();
+
+        fireEvent.click(link('Register'));
+        expect(onRegister).toHaveBeenCalled();
+    });
+
+    it('swaps the signed-out pair for the account name and Log out', () => {
+        const onLogout = jest.fn();
+        show({ user: USER, onLogout });
+
+        expect(screen.queryByRole('button', { name: 'Sign in' })).not.toBeInTheDocument();
+        expect(screen.queryByRole('button', { name: 'Register' })).not.toBeInTheDocument();
+        expect(screen.getByText('Ada Lovelace')).toBeInTheDocument();
+
+        fireEvent.click(link('Log out'));
+        expect(onLogout).toHaveBeenCalled();
+    });
+
+    it('shows the name as quiet text, not a third coloured button', () => {
+        show({ user: USER });
+
+        const name = bar().querySelector('.pdm-nav-account-name');
+        expect(name).toBeInTheDocument();
+        expect(name.tagName).toBe('SPAN');
+    });
+});
+
+describe('the Review link', () => {
+    // Hiding it is a COURTESY, not a security control — the API enforces the
+    // rule on every reviewer route. These tests assert the courtesy only.
+    it('is hidden from signed-out visitors', () => {
+        show();
+        expect(screen.queryByRole('button', { name: 'Review' })).not.toBeInTheDocument();
+    });
+
+    it('is hidden from a signed-in contributor', () => {
+        show({ user: USER });
+        expect(screen.queryByRole('button', { name: 'Review' })).not.toBeInTheDocument();
+    });
+
+    it('appears for a reviewer and calls onReview', () => {
+        const onReview = jest.fn();
+        show({ user: REVIEWER, onReview });
+
+        fireEvent.click(link('Review'));
+        expect(onReview).toHaveBeenCalled();
+    });
 });
 
 describe('navigation', () => {
@@ -61,33 +120,32 @@ describe('navigation', () => {
         expect(setActiveForm).toHaveBeenLastCalledWith('home');
     });
 
-    it('renders the unbuilt sections normally but leaves them inert', () => {
+    it('renders the unbuilt section normally but leaves it inert', () => {
         const { setActiveForm } = show();
 
-        for (const label of ['Collaborate', 'Review']) {
-            const button = link(label);
-            // Not disabled and not greyed: they say "coming", not "broken".
-            expect(button).toBeEnabled();
-            expect(button).toHaveClass('pdm-nav-link');
-            fireEvent.click(button);
-        }
+        const button = link('Collaborate');
+        // Not disabled and not greyed: it says "coming", not "broken".
+        expect(button).toBeEnabled();
+        expect(button).toHaveClass('pdm-nav-link');
+        fireEvent.click(button);
 
         expect(setActiveForm).not.toHaveBeenCalled();
     });
 
-    it('leaves Sign in and Register inert', () => {
-        const { setActiveForm } = show();
+    it('does not switch the view when the account controls are used', () => {
+        const { setActiveForm } = show({ onSignIn: jest.fn(), onRegister: jest.fn() });
 
         fireEvent.click(link('Sign in'));
         fireEvent.click(link('Register'));
 
+        // They navigate; they do not change which section Home is showing.
         expect(setActiveForm).not.toHaveBeenCalled();
     });
 });
 
 describe('the active section', () => {
     it('marks the showing section and only that one', () => {
-        show({ activeForm: 'graph' });
+        show({ activeForm: 'graph', user: REVIEWER });
 
         expect(link('Map')).toHaveAttribute('aria-current', 'page');
         for (const label of ['Home', 'Collaborate', 'Review']) {

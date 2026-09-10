@@ -1,0 +1,516 @@
+/*
+ * The community tier of the detail card: tags, ratings, peer experience and
+ * references.
+ *
+ * Split from DetailPanel.css along the same line the backend splits on — that
+ * file styles authored, reviewed content; this one styles contributed content
+ * and the controls that write it. Same tokens, listed at the head of
+ * DetailPanel.css, and the `.pdm-detail` resets there cover everything here.
+ */
+
+/* ── Sign-in prompts and write errors ───────────────────────────────────── */
+
+.pdm-detail-signin {
+    margin: 8px 0 0;
+    font-size: 13px;
+    color: #5f6368;
+}
+
+.pdm-detail-signin a {
+    color: #1a73e8;
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.pdm-detail-signin a:hover {
+    text-decoration: underline;
+}
+
+/* Inline, beside the control that failed — the user is looking there, and a
+   message somewhere else asks them to go and find out what happened. */
+.pdm-detail-writeerror {
+    margin: 8px 0 0;
+    padding: 6px 10px;
+    border: 1px solid #f5c6c2;
+    border-radius: 8px;
+    background: #fce8e6;
+    color: #c5221f;
+    font-size: 12.5px;
+}
+
+/* ── Tags ───────────────────────────────────────────────────────────────── */
+
+.pdm-detail-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    align-items: center;
+}
+
+.pdm-detail-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 5px 12px;
+    border: 1px solid #d2e3fc;
+    border-radius: 999px;
+    background: #e8f0fe;
+    color: #1a73e8;
+    font-size: 12.5px;
+    line-height: 1.3;
+}
+
+/* The caller's own votes carry the × that withdraws them; nothing else does.
+   No counts anywhere — a count turns a label into a score. */
+.pdm-detail-chip.is-mine {
+    padding-right: 6px;
+}
+
+.pdm-detail-chip button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    color: #1a73e8;
+    font-size: 14px;
+    line-height: 1;
+}
+
+.pdm-detail-chip button:hover {
+    background: #d2e3fc;
+}
+
+.pdm-detail button.pdm-detail-chip--add {
+    border: 1px dashed #dfe2e6;
+    background: transparent;
+    color: #80868b;
+}
+
+.pdm-detail button.pdm-detail-chip--add:hover {
+    border-color: #1a73e8;
+    background: #f8f9fa;
+    color: #1a73e8;
+}
+
+.pdm-detail-tagform {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.pdm-detail-tagform input {
+    width: 180px;
+    padding: 5px 10px;
+    border: 1px solid #dfe2e6;
+    border-radius: 999px;
+    font: inherit;
+    font-size: 12.5px;
+    color: #26292d;
+    background: #ffffff;
+}
+
+.pdm-detail-tagform input:focus {
+    outline: 2px solid #1a73e8;
+    outline-offset: 1px;
+}
+
+.pdm-detail-tagform button {
+    padding: 5px 10px;
+    border-radius: 8px;
+    font-size: 12.5px;
+    color: #1a73e8;
+}
+
+.pdm-detail-tagform button:hover:not(:disabled) {
+    background: #e8f0fe;
+}
+
+.pdm-detail-tagform button:disabled {
+    color: #bdc1c6;
+    cursor: default;
+}
+
+/* ── Ratings: the aggregate bars ────────────────────────────────────────── */
+
+.pdm-detail-bars {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+}
+
+.pdm-detail-bar-row,
+.pdm-detail-star-row {
+    display: grid;
+    grid-template-columns: 200px 1fr auto;
+    align-items: center;
+    gap: 12px;
+}
+
+.pdm-detail-bar-label {
+    font-size: 12.5px;
+    color: #3c4043;
+}
+
+/* "(lower is better)" on the cost dimension. Said on screen rather than only in
+   a comment: a reader of the card cannot see the source. */
+.pdm-detail-bar-label em {
+    font-style: normal;
+    font-size: 11px;
+    color: #80868b;
+}
+
+.pdm-detail-bar-track {
+    position: relative;
+    height: 8px;
+    border-radius: 999px;
+    background: #e6e8eb;
+    overflow: hidden;
+}
+
+.pdm-detail-bar-fill {
+    display: block;
+    height: 100%;
+    border-radius: 999px;
+    background: #1a73e8;
+}
+
+/* Dependency on resources is a COST — low is good — so it is deliberately not
+   painted in the same "more is better" blue as the other three. */
+.pdm-detail-bar-fill.is-cost {
+    background: #9aa0a6;
+}
+
+.pdm-detail-bar-value {
+    min-width: 26px;
+    text-align: right;
+    font-size: 12.5px;
+    font-variant-numeric: tabular-nums;
+    color: #3c4043;
+}
+
+/* ── Ratings: the star input ────────────────────────────────────────────── */
+
+.pdm-detail-rate-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    margin-top: 10px;
+}
+
+.pdm-detail-rate-actions button {
+    padding: 6px 14px;
+    border: 1px solid #dfe2e6;
+    border-radius: 8px;
+    font-size: 12.5px;
+    color: #3c4043;
+    background: #ffffff;
+}
+
+.pdm-detail-rate-actions button:hover:not(:disabled) {
+    background: #f1f3f4;
+}
+
+.pdm-detail button.pdm-detail-rate-open {
+    border-color: #d2e3fc;
+    background: #e8f0fe;
+    color: #1a73e8;
+}
+
+.pdm-detail button.pdm-detail-rate-open:hover {
+    background: #d2e3fc;
+}
+
+.pdm-detail button.pdm-detail-submit {
+    border-color: #1a73e8;
+    background: #1a73e8;
+    color: #ffffff;
+}
+
+.pdm-detail button.pdm-detail-submit:hover:not(:disabled) {
+    background: #1765cc;
+}
+
+.pdm-detail button.pdm-detail-submit:disabled {
+    border-color: #dfe2e6;
+    background: #f1f3f4;
+    color: #bdc1c6;
+    cursor: default;
+}
+
+.pdm-detail button.pdm-detail-rate-remove {
+    margin-right: auto;
+    border-color: #f5c6c2;
+    color: #c5221f;
+}
+
+.pdm-detail button.pdm-detail-rate-remove:hover:not(:disabled) {
+    background: #fce8e6;
+}
+
+/* Hidden until "Rate this…" is pressed, so the aggregate reads as a summary
+   rather than as a form somebody left half-filled. */
+.pdm-detail-rate-form {
+    margin-top: 14px;
+    padding: 14px;
+    border: 1px solid #e6e8eb;
+    border-radius: 12px;
+    background: #f8f9fa;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.pdm-detail-star-row {
+    grid-template-columns: 200px 1fr;
+}
+
+.pdm-detail-stars {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+}
+
+.pdm-detail button.pdm-detail-star {
+    padding: 0 2px;
+    font-size: 19px;
+    line-height: 1;
+    color: #dadce0;
+}
+
+.pdm-detail button.pdm-detail-star:hover:not(:disabled) {
+    color: #f9ab00;
+}
+
+.pdm-detail button.pdm-detail-star.is-on {
+    color: #f9ab00;
+}
+
+.pdm-detail button.pdm-detail-star-clear {
+    margin-left: 8px;
+    font-size: 11.5px;
+    color: #80868b;
+    text-decoration: underline;
+}
+
+.pdm-detail-star-hint {
+    margin-left: 8px;
+    font-size: 11px;
+    color: #bdc1c6;
+}
+
+.pdm-detail-rate-note {
+    margin: 2px 0 0;
+    font-size: 11.5px;
+    color: #80868b;
+}
+
+/* ── Comments ───────────────────────────────────────────────────────────── */
+
+.pdm-detail-comments {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.pdm-detail-comment {
+    display: grid;
+    grid-template-columns: 30px 1fr;
+    gap: 10px;
+    list-style: none;
+}
+
+.pdm-detail-avatar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background: #e8f0fe;
+    color: #1a73e8;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+}
+
+/* An erased author gets a neutral circle rather than initials taken from the
+   "Deleted user" label, which would read as a person by that name. */
+.pdm-detail-avatar.is-erased {
+    background: #f1f3f4;
+    color: #bdc1c6;
+}
+
+.pdm-detail-comment-body {
+    min-width: 0;
+}
+
+.pdm-detail-comment-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 10px;
+    margin: 0 0 2px;
+}
+
+.pdm-detail-comment-name {
+    font-size: 13px;
+    font-weight: 600;
+    color: #26292d;
+}
+
+.pdm-detail-comment-name.is-erased {
+    font-weight: 400;
+    font-style: italic;
+    color: #80868b;
+}
+
+.pdm-detail-comment-head time {
+    flex: none;
+    font-size: 11.5px;
+    color: #80868b;
+}
+
+.pdm-detail-comment-text {
+    margin: 0;
+    font-size: 12.5px;
+    color: #5f6368;
+    /* User-typed: newlines are preserved, but nothing is parsed. This text
+       never goes through the section_text convention. */
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+}
+
+.pdm-detail-comment-foot {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-top: 6px;
+}
+
+.pdm-detail-comment-foot button {
+    font-size: 11.5px;
+    color: #5f6368;
+}
+
+.pdm-detail-comment-foot button:hover:not(:disabled) {
+    color: #1a73e8;
+}
+
+.pdm-detail button.pdm-detail-helpful {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 12px;
+    color: #5f6368;
+}
+
+.pdm-detail button.pdm-detail-helpful.is-on {
+    color: #1a73e8;
+    font-weight: 600;
+}
+
+.pdm-detail button.pdm-detail-helpful:disabled {
+    cursor: default;
+}
+
+.pdm-detail-comment-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    margin-top: 8px;
+}
+
+.pdm-detail-comment-actions button {
+    padding: 6px 14px;
+    border: 1px solid #dfe2e6;
+    border-radius: 8px;
+    font-size: 12.5px;
+    color: #3c4043;
+    background: #ffffff;
+}
+
+.pdm-detail-comment-actions button:hover:not(:disabled) {
+    background: #f1f3f4;
+}
+
+.pdm-detail-composer {
+    margin-top: 16px;
+}
+
+.pdm-detail-composer label {
+    display: block;
+    margin-bottom: 6px;
+    font-size: 12.5px;
+    color: #5f6368;
+}
+
+.pdm-detail textarea {
+    display: block;
+    width: 100%;
+    box-sizing: border-box;
+    padding: 9px 11px;
+    border: 1px solid #dfe2e6;
+    border-radius: 8px;
+    font: inherit;
+    font-size: 12.5px;
+    color: #26292d;
+    background: #ffffff;
+    resize: vertical;
+}
+
+.pdm-detail textarea:focus {
+    outline: 2px solid #1a73e8;
+    outline-offset: -1px;
+    border-color: #1a73e8;
+}
+
+/* ── References ─────────────────────────────────────────────────────────── */
+
+.pdm-detail-refs {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.pdm-detail-ref {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    font-size: 12.5px;
+    color: #3c4043;
+    line-height: 1.5;
+}
+
+/* Degraded to "Author Year" — the majority case, given 2 of 128 records carry a
+   title. Muted, so it does not pretend to be a full citation. */
+.pdm-detail-ref.is-plain {
+    color: #5f6368;
+}
+
+.pdm-detail-ref em {
+    font-style: italic;
+}
+
+.pdm-detail-ref a {
+    color: #1a73e8;
+    text-decoration: underline;
+    overflow-wrap: anywhere;
+}
+
+.pdm-detail button.pdm-detail-more {
+    margin-top: 10px;
+    font-size: 12.5px;
+    color: #1a73e8;
+}
+
+.pdm-detail button.pdm-detail-more:hover {
+    text-decoration: underline;
+}

@@ -1,0 +1,1163 @@
+/*
+ * The Collaborate area: the hub, the proposal forms, the shared picker and the
+ * submissions list.
+ *
+ * ── SCOPED UNDER `pdm-collab-` ON PURPOSE ────────────────────────────────────
+ * Navbar.css declares bare `button`, `ul` and `li` rules which CRA bundles
+ * app-wide (#555 background, 10px 20px padding, a colour transition). Every
+ * control below therefore either carries a `pdm-collab-` class specific enough
+ * to win, or is reset by the blanket rules at the top of this file. Nothing here
+ * styles a bare element, and nothing here leaks out of `.pdm-collab`.
+ *
+ * Colours, radii and the type scale are taken from AuthScreens.css and
+ * GraphVisualization.css so this reads as the same application:
+ *   accent #1a73e8 · hover #1765cc · wash #e8f0fe · accent border #d2e3fc
+ *   text #26292d / #3c4043 · muted #5f6368 · placeholder #80868b
+ *   border #dfe2e6 · hairline #e6e8eb · page #f8f9fa · hover #f1f3f4
+ *   error #c5221f / #d93025 · error wash #fce8e6 · error border #f5c6c2
+ *   success #137333 · success wash #e6f4ea · success border #b7dfc3
+ *   warning #9a6700 · warning wash #fef7e0 · warning border #f1dfa8
+ *   radius 8px, cards 12px · "Segoe UI", Roboto, Helvetica, Arial
+ */
+
+.pdm-collab {
+    min-height: 100%;
+    padding: 32px 24px 64px;
+    background: #f8f9fa;
+    font-family: "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    color: #3c4043;
+    box-sizing: border-box;
+}
+
+.pdm-collab-inner {
+    max-width: 880px;
+    margin: 0 auto;
+}
+
+/* Beats the bundled bare `button` rule for every control in this area, so each
+   rule below only has to say what it wants rather than undo what it inherited. */
+.pdm-collab button {
+    margin: 0;
+    font: inherit;
+    background: transparent;
+    color: inherit;
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+    transition: none;
+    cursor: pointer;
+}
+
+.pdm-collab button:hover {
+    background: transparent;
+}
+
+.pdm-collab :focus-visible {
+    outline: 2px solid #1a73e8;
+    outline-offset: 2px;
+}
+
+/* ── Page heading ────────────────────────────────────────────────────────── */
+
+.pdm-collab-head {
+    margin: 0 0 28px;
+}
+
+.pdm-collab-eyebrow {
+    margin: 0 0 4px;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: #5f6368;
+}
+
+.pdm-collab-head h1 {
+    margin: 0 0 8px;
+    font-size: 24px;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    color: #26292d;
+}
+
+.pdm-collab-lede {
+    margin: 0;
+    max-width: 60ch;
+    font-size: 14px;
+    line-height: 1.6;
+    color: #5f6368;
+}
+
+/* ── The hub ─────────────────────────────────────────────────────────────── */
+
+.pdm-collab-group {
+    margin: 0 0 28px;
+}
+
+.pdm-collab-group h2 {
+    margin: 0 0 4px;
+    font-size: 15px;
+    font-weight: 600;
+    color: #26292d;
+}
+
+.pdm-collab-group-note {
+    margin: 0 0 14px;
+    font-size: 13px;
+    line-height: 1.5;
+    color: #5f6368;
+}
+
+.pdm-collab-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(232px, 1fr));
+    gap: 14px;
+}
+
+/* An anchor, not a button: each card is a real destination with a real URL, so
+   it must be middle-clickable and copyable like any other link. */
+.pdm-collab-card {
+    display: block;
+    padding: 16px 16px 18px;
+    background: #ffffff;
+    border: 1px solid #e6e8eb;
+    border-radius: 12px;
+    text-decoration: none;
+    color: inherit;
+    box-shadow: 0 1px 2px rgba(60, 64, 67, 0.06);
+}
+
+.pdm-collab-card:hover {
+    border-color: #d2e3fc;
+    background: #fbfcfe;
+}
+
+.pdm-collab-card-title {
+    display: block;
+    margin-bottom: 5px;
+    font-size: 15px;
+    font-weight: 600;
+    color: #26292d;
+}
+
+.pdm-collab-card-note {
+    display: block;
+    font-size: 13px;
+    line-height: 1.5;
+    color: #5f6368;
+}
+
+/*
+ * The relationship pair. Grouped and set on a tinted panel so the eye reaches
+ * the primary five first — these two connect things that already exist and are
+ * meaningless to a contributor with nothing on the map yet.
+ */
+.pdm-collab-group-secondary {
+    padding: 18px 18px 20px;
+    background: #ffffff;
+    border: 1px solid #e6e8eb;
+    border-radius: 12px;
+}
+
+.pdm-collab-group-secondary .pdm-collab-card {
+    background: #f8f9fa;
+    box-shadow: none;
+}
+
+.pdm-collab-group-secondary .pdm-collab-card:hover {
+    background: #f1f3f4;
+}
+
+/*
+ * Cartography is rare — a whole new cartography, not a contribution to one.
+ * De-emphasised to a single quiet line rather than a sixth equal card, so it is
+ * available without inviting anyone to try it.
+ */
+.pdm-collab-rare {
+    margin: 12px 0 0;
+    font-size: 13px;
+    line-height: 1.6;
+    color: #5f6368;
+}
+
+.pdm-collab-rare a {
+    color: #1a73e8;
+    font-weight: 600;
+}
+
+.pdm-collab-aside {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    align-items: center;
+    margin-top: 8px;
+    padding-top: 20px;
+    border-top: 1px solid #e6e8eb;
+}
+
+.pdm-collab-aside-note {
+    flex: 1 1 240px;
+    margin: 0;
+    font-size: 13px;
+    line-height: 1.5;
+    color: #5f6368;
+}
+
+/* ── Buttons ─────────────────────────────────────────────────────────────── */
+
+.pdm-collab button.pdm-collab-submit,
+.pdm-collab a.pdm-collab-submit {
+    display: inline-block;
+    box-sizing: border-box;
+    min-width: 200px;
+    padding: 11px 24px;
+    font-size: 14px;
+    font-weight: 600;
+    text-align: center;
+    text-decoration: none;
+    color: #ffffff;
+    background: #1a73e8;
+    border: 1px solid #1a73e8;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.pdm-collab button.pdm-collab-submit:hover:not(:disabled),
+.pdm-collab a.pdm-collab-submit:hover {
+    background: #1765cc;
+    border-color: #1765cc;
+}
+
+.pdm-collab button.pdm-collab-submit:disabled {
+    background: #c6d9f7;
+    border-color: #c6d9f7;
+    cursor: not-allowed;
+}
+
+.pdm-collab button.pdm-collab-ghost,
+.pdm-collab a.pdm-collab-ghost {
+    display: inline-block;
+    box-sizing: border-box;
+    padding: 9px 16px;
+    font-size: 13px;
+    font-weight: 600;
+    text-align: center;
+    text-decoration: none;
+    color: #3c4043;
+    background: #ffffff;
+    border: 1px solid #dfe2e6;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.pdm-collab button.pdm-collab-ghost:hover,
+.pdm-collab a.pdm-collab-ghost:hover {
+    background: #f1f3f4;
+}
+
+.pdm-collab-back {
+    display: inline-block;
+    margin-bottom: 18px;
+    font-size: 13px;
+    font-weight: 600;
+    color: #5f6368;
+    text-decoration: none;
+}
+
+.pdm-collab-back:hover {
+    color: #3c4043;
+    text-decoration: underline;
+}
+
+/* ── The form card ───────────────────────────────────────────────────────── */
+
+.pdm-collab-form-card {
+    padding: 28px 28px 32px;
+    background: #ffffff;
+    border: 1px solid #e6e8eb;
+    border-radius: 12px;
+    box-shadow: 0 1px 3px rgba(60, 64, 67, 0.06);
+}
+
+.pdm-collab-form-card h1 {
+    margin: 0 0 6px;
+    font-size: 20px;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    color: #26292d;
+}
+
+.pdm-collab-form-lede {
+    margin: 0 0 24px;
+    max-width: 66ch;
+    font-size: 13px;
+    line-height: 1.6;
+    color: #5f6368;
+}
+
+/* The two-column field grid from the design reference. Anything that needs the
+   full width — a textarea, a map chooser, an explanatory panel — opts in with
+   `is-wide` rather than the grid guessing. */
+.pdm-collab-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 18px 20px;
+}
+
+.pdm-collab-field.is-wide {
+    grid-column: 1 / -1;
+}
+
+.pdm-collab-actions {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    margin-top: 28px;
+    padding-top: 24px;
+    border-top: 1px solid #e6e8eb;
+}
+
+.pdm-collab-actions-note {
+    margin: 0;
+    font-size: 12px;
+    text-align: center;
+    color: #5f6368;
+}
+
+/* ── Fields ──────────────────────────────────────────────────────────────── */
+
+.pdm-collab-field {
+    min-width: 0;
+}
+
+.pdm-collab-field > label,
+.pdm-collab-legend {
+    display: block;
+    margin-bottom: 6px;
+    padding: 0;
+    font-size: 13px;
+    font-weight: 600;
+    color: #3c4043;
+}
+
+.pdm-collab-optional {
+    margin-left: 6px;
+    font-weight: 400;
+    color: #80868b;
+}
+
+.pdm-collab-field input[type="text"],
+.pdm-collab-field textarea,
+.pdm-collab-field select {
+    box-sizing: border-box;
+    display: block;
+    width: 100%;
+    padding: 10px 12px;
+    font: inherit;
+    font-size: 14px;
+    color: #26292d;
+    background: #ffffff;
+    border: 1px solid #dfe2e6;
+    border-radius: 8px;
+}
+
+.pdm-collab-field input::placeholder,
+.pdm-collab-field textarea::placeholder {
+    color: #80868b;
+}
+
+.pdm-collab-field textarea {
+    min-height: 88px;
+    line-height: 1.5;
+    resize: vertical;
+}
+
+/* The chevron is drawn, not loaded — no external asset and no request, the same
+   choice AuthScreens.css makes for the ORCID mark. */
+.pdm-collab-field select {
+    appearance: none;
+    -webkit-appearance: none;
+    padding-right: 34px;
+    background-image:
+        linear-gradient(45deg, transparent 50%, #5f6368 50%),
+        linear-gradient(135deg, #5f6368 50%, transparent 50%);
+    background-position: right 15px top 50%, right 10px top 50%;
+    background-size: 5px 5px, 5px 5px;
+    background-repeat: no-repeat;
+    cursor: pointer;
+}
+
+.pdm-collab-field input:focus,
+.pdm-collab-field textarea:focus,
+.pdm-collab-field select:focus {
+    border-color: #1a73e8;
+    outline: 2px solid #d2e3fc;
+    outline-offset: 0;
+}
+
+.pdm-collab-field [aria-invalid="true"] {
+    border-color: #d93025;
+}
+
+.pdm-collab-hint {
+    display: block;
+    margin-top: 5px;
+    font-size: 12px;
+    line-height: 1.5;
+    color: #5f6368;
+}
+
+.pdm-collab-error {
+    display: block;
+    margin-top: 5px;
+    font-size: 12px;
+    line-height: 1.5;
+    color: #c5221f;
+}
+
+.pdm-collab-warn {
+    display: block;
+    margin-top: 5px;
+    font-size: 12px;
+    line-height: 1.5;
+    color: #9a6700;
+}
+
+/* ── Read-only derived values (the block colour swatch) ──────────────────── */
+
+.pdm-collab-derived {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    box-sizing: border-box;
+    width: 100%;
+    padding: 9px 12px;
+    font-size: 14px;
+    color: #3c4043;
+    background: #f8f9fa;
+    border: 1px solid #e6e8eb;
+    border-radius: 8px;
+}
+
+.pdm-collab-swatch {
+    flex: 0 0 auto;
+    width: 18px;
+    height: 18px;
+    border: 1px solid rgba(0, 0, 0, 0.18);
+    border-radius: 4px;
+}
+
+.pdm-collab-derived code {
+    font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+    font-size: 12px;
+    color: #5f6368;
+}
+
+.pdm-collab-derived-empty {
+    color: #80868b;
+}
+
+/* ── Checkbox groups (maps) ──────────────────────────────────────────────── */
+
+.pdm-collab-checks {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin: 0;
+    padding: 0;
+    border: 0;
+}
+
+.pdm-collab-check {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 12px;
+    font-size: 13px;
+    color: #3c4043;
+    background: #ffffff;
+    border: 1px solid #dfe2e6;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.pdm-collab-check:hover {
+    background: #f8f9fa;
+}
+
+.pdm-collab-check input[type="checkbox"],
+.pdm-collab-check input[type="radio"] {
+    width: 15px;
+    height: 15px;
+    margin: 0;
+    accent-color: #1a73e8;
+}
+
+.pdm-collab-check.is-checked {
+    background: #e8f0fe;
+    border-color: #d2e3fc;
+    color: #174ea6;
+}
+
+.pdm-collab-check.is-disabled {
+    color: #80868b;
+    background: #f8f9fa;
+    cursor: not-allowed;
+}
+
+.pdm-collab-check-code {
+    font-weight: 600;
+}
+
+/* ── Link-type legend ───────────────────────────────────────────────────── */
+
+/*
+ * The three codes mean nothing on their own, so each is shown with the line the
+ * map actually draws for it and a sentence of what it claims. Overrides the
+ * bundled bare `li` rule (`display: inline`).
+ */
+.pdm-collab-ltypes {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.pdm-collab-ltypes li {
+    display: grid;
+    grid-template-columns: 2.4em 44px 1fr;
+    gap: 10px;
+    align-items: baseline;
+    margin: 0 0 8px;
+    font-size: 13px;
+    line-height: 1.5;
+}
+
+.pdm-collab-ltypes li:last-child {
+    margin-bottom: 0;
+}
+
+.pdm-collab-ltype-code {
+    font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+    font-weight: 600;
+    color: #26292d;
+}
+
+/* Drawn, not an image: no asset and no request, and it tracks the legend's
+   own vocabulary rather than a screenshot of it. All three use the same
+   mechanism because `border-style` has no dash-dot. */
+.pdm-collab-ltype-line {
+    align-self: center;
+    height: 2px;
+    border-radius: 1px;
+}
+
+.pdm-collab-ltype-line.is-solid {
+    background: #5f6368;
+}
+
+.pdm-collab-ltype-line.is-dashed {
+    background: repeating-linear-gradient(to right, #5f6368 0 7px, transparent 7px 12px);
+}
+
+.pdm-collab-ltype-line.is-dash-dot {
+    background: repeating-linear-gradient(
+        to right,
+        #5f6368 0 9px, transparent 9px 13px,
+        #5f6368 13px 16px, transparent 16px 20px
+    );
+}
+
+/* ── Panels: explanation, warning, error, success ───────────────────────── */
+
+.pdm-collab-panel {
+    padding: 12px 14px;
+    font-size: 13px;
+    line-height: 1.6;
+    border-radius: 8px;
+}
+
+.pdm-collab-panel p {
+    margin: 0 0 8px;
+}
+
+.pdm-collab-panel p:last-child {
+    margin-bottom: 0;
+}
+
+.pdm-collab-panel-info {
+    color: #3c4043;
+    background: #f8f9fa;
+    border: 1px solid #e6e8eb;
+}
+
+.pdm-collab-panel-warn {
+    color: #7a5200;
+    background: #fef7e0;
+    border: 1px solid #f1dfa8;
+}
+
+.pdm-collab-panel-error {
+    margin-bottom: 20px;
+    color: #c5221f;
+    background: #fce8e6;
+    border: 1px solid #f5c6c2;
+}
+
+.pdm-collab-panel-success {
+    color: #137333;
+    background: #e6f4ea;
+    border: 1px solid #b7dfc3;
+}
+
+/* ── Success state ──────────────────────────────────────────────────────── */
+
+.pdm-collab-done {
+    padding: 28px;
+    background: #ffffff;
+    border: 1px solid #e6e8eb;
+    border-radius: 12px;
+    box-shadow: 0 1px 3px rgba(60, 64, 67, 0.06);
+}
+
+.pdm-collab-done h1 {
+    margin: 0 0 8px;
+    font-size: 20px;
+    font-weight: 600;
+    color: #26292d;
+}
+
+.pdm-collab-done-item {
+    margin: 0 0 14px;
+    padding: 12px 14px;
+    font-size: 14px;
+    font-weight: 600;
+    color: #26292d;
+    background: #f8f9fa;
+    border: 1px solid #e6e8eb;
+    border-left: 3px solid #1a73e8;
+    border-radius: 0 8px 8px 0;
+}
+
+.pdm-collab-done p {
+    margin: 0 0 16px;
+    max-width: 62ch;
+    font-size: 14px;
+    line-height: 1.6;
+    color: #5f6368;
+}
+
+.pdm-collab-done-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+/* ── Loading / empty ────────────────────────────────────────────────────── */
+
+.pdm-collab-status {
+    padding: 40px 24px;
+    font-size: 14px;
+    text-align: center;
+    color: #5f6368;
+}
+
+/* ── My submissions ─────────────────────────────────────────────────────── */
+
+.pdm-collab-submissions {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+/* Overrides the bundled bare `li { display: inline; margin: 0 10px }`. */
+.pdm-collab-submissions li.pdm-collab-submission {
+    display: block;
+    margin: 0 0 10px;
+    padding: 14px 16px;
+    background: #ffffff;
+    border: 1px solid #e6e8eb;
+    border-radius: 10px;
+}
+
+.pdm-collab-submission-head {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    align-items: baseline;
+}
+
+.pdm-collab-submission-item {
+    flex: 1 1 200px;
+    font-size: 14px;
+    font-weight: 600;
+    color: #26292d;
+    overflow-wrap: anywhere;
+}
+
+.pdm-collab-submission-when {
+    flex: 0 0 auto;
+    font-size: 12px;
+    color: #5f6368;
+}
+
+.pdm-collab-submission-detail {
+    margin: 6px 0 0;
+    font-size: 13px;
+    line-height: 1.5;
+    color: #5f6368;
+}
+
+.pdm-collab-submission-reason {
+    margin: 10px 0 0;
+    padding: 10px 12px;
+    font-size: 13px;
+    line-height: 1.5;
+    color: #3c4043;
+    background: #f8f9fa;
+    border-left: 3px solid #dfe2e6;
+    border-radius: 0 6px 6px 0;
+}
+
+/* A status chip. The neutral base carries the shape; each state tints it. */
+.pdm-collab-tag {
+    flex: 0 0 auto;
+    padding: 3px 9px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+    color: #5f6368;
+    background: #f1f3f4;
+    border-radius: 999px;
+}
+
+.pdm-collab-tag.is-pending {
+    color: #7a5200;
+    background: #fef7e0;
+}
+
+.pdm-collab-tag.is-changes_requested {
+    color: #7a5200;
+    background: #fef7e0;
+}
+
+.pdm-collab-tag.is-approved {
+    color: #137333;
+    background: #e6f4ea;
+}
+
+.pdm-collab-tag.is-rejected {
+    color: #c5221f;
+    background: #fce8e6;
+}
+
+.pdm-collab-submission button.pdm-collab-ghost,
+.pdm-collab-submission button.pdm-collab-danger {
+    margin-top: 12px;
+}
+
+.pdm-collab-confirm {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    align-items: center;
+    margin-top: 12px;
+    padding: 10px 12px;
+    font-size: 13px;
+    color: #7a5200;
+    background: #fef7e0;
+    border: 1px solid #f1dfa8;
+    border-radius: 8px;
+}
+
+.pdm-collab-confirm button.pdm-collab-ghost,
+.pdm-collab-confirm button.pdm-collab-danger {
+    margin-top: 0;
+}
+
+.pdm-collab button.pdm-collab-danger {
+    padding: 8px 14px;
+    font-size: 13px;
+    font-weight: 600;
+    color: #ffffff;
+    background: #c5221f;
+    border: 1px solid #c5221f;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.pdm-collab button.pdm-collab-danger:hover:not(:disabled) {
+    background: #a50e0e;
+    border-color: #a50e0e;
+}
+
+.pdm-collab button.pdm-collab-danger:disabled {
+    background: #e8a3a1;
+    border-color: #e8a3a1;
+    cursor: not-allowed;
+}
+
+/* ── The searchable picker ──────────────────────────────────────────────── */
+
+.pdm-collab-picker {
+    position: relative;
+}
+
+.pdm-collab-picker-control {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.pdm-collab-picker input[type="text"] {
+    padding-right: 36px;
+}
+
+.pdm-collab button.pdm-collab-picker-clear {
+    position: absolute;
+    right: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 22px;
+    height: 22px;
+    font-size: 15px;
+    line-height: 1;
+    color: #5f6368;
+    background: transparent;
+    border: 0;
+    border-radius: 50%;
+    cursor: pointer;
+}
+
+.pdm-collab button.pdm-collab-picker-clear:hover {
+    background: #f1f3f4;
+    color: #26292d;
+}
+
+.pdm-collab-picker-list {
+    position: absolute;
+    z-index: 20;
+    top: calc(100% + 4px);
+    left: 0;
+    right: 0;
+    max-height: 264px;
+    margin: 0;
+    padding: 4px;
+    overflow-y: auto;
+    list-style: none;
+    background: #ffffff;
+    border: 1px solid #dfe2e6;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(60, 64, 67, 0.15);
+}
+
+/* Overrides the bundled bare `li { display: inline; margin: 0 10px }`. */
+.pdm-collab-picker-list li {
+    display: block;
+    margin: 0;
+}
+
+.pdm-collab-picker-option {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 8px 10px;
+    font-size: 13px;
+    color: #26292d;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+/*
+ * A row carrying a swatch is three parts, not two, so the label has to take the
+ * slack — otherwise space-between pushes the swatch away from the name it
+ * belongs to. Sized down and centred against the text baseline the rest of the
+ * row sits on.
+ */
+.pdm-collab-picker-option .pdm-collab-swatch {
+    width: 14px;
+    height: 14px;
+    align-self: center;
+}
+
+.pdm-collab-picker-option .pdm-collab-picker-label {
+    flex: 1 1 auto;
+}
+
+/*
+ * The highlight follows `aria-activedescendant`, not DOM focus — focus stays in
+ * the input throughout, which is what lets the arrow keys walk the list while
+ * typing continues to filter it.
+ */
+.pdm-collab-picker-option.is-active {
+    background: #e8f0fe;
+}
+
+.pdm-collab-picker-option[aria-selected="true"] {
+    font-weight: 600;
+}
+
+.pdm-collab-picker-label {
+    min-width: 0;
+    overflow-wrap: anywhere;
+}
+
+.pdm-collab-picker-meta {
+    flex: 0 0 auto;
+    font-size: 12px;
+    color: #5f6368;
+}
+
+.pdm-collab-picker-empty {
+    padding: 10px;
+    font-size: 13px;
+    color: #5f6368;
+}
+
+.pdm-collab-picker-count {
+    display: block;
+    margin-top: 5px;
+    font-size: 12px;
+    color: #5f6368;
+}
+
+/* ── One submission's parts, and its review history ──────────────────────── */
+
+/*
+ * A submission is now a claim rather than a single artefact — a connection
+ * arrives with the references supporting it. Listing the parts is what makes it
+ * obvious that withdrawing takes all of them, and that a reviewer decides on the
+ * whole thing rather than on one row.
+ */
+.pdm-collab-submission-items {
+    list-style: none;
+    margin: 8px 0 0;
+    padding: 0 0 0 12px;
+    border-left: 2px solid #e8eaed;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.pdm-collab-submission-items li {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    font-size: 13px;
+    color: #3c4043;
+}
+
+.pdm-collab-submission-item-type {
+    flex: 0 0 auto;
+    min-width: 130px;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: #80868b;
+}
+
+.pdm-collab-submission-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    margin-top: 12px;
+}
+
+/*
+ * Earlier rounds, collapsed. A contributor on a second revision needs the first
+ * round's request available — but not competing with the one they are answering
+ * now, which is why the current request is a panel above and this is a
+ * disclosure below.
+ */
+.pdm-collab-history {
+    margin-top: 10px;
+    font-size: 13px;
+}
+
+.pdm-collab-history > summary {
+    cursor: pointer;
+    color: #1a73e8;
+    font-size: 13px;
+}
+
+.pdm-collab-history-list {
+    list-style: none;
+    margin: 8px 0 0;
+    padding: 0 0 0 12px;
+    border-left: 2px solid #e8eaed;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.pdm-collab-history-list p {
+    margin: 4px 0 0;
+    color: #3c4043;
+}
+
+.pdm-collab-history-action {
+    font-weight: 600;
+    color: #26292d;
+}
+
+.pdm-collab-history-when {
+    margin-left: 8px;
+    font-size: 12px;
+    color: #80868b;
+}
+
+/* ── Repeatable rows (references on a connection, blocks on a challenge) ─── */
+
+/*
+ * A submission can now carry several references, each with its own maps and
+ * flags. The rows are visibly bounded and numbered because the fields inside one
+ * row are the same fields as the row above it — without a boundary, "Year" three
+ * times in a column is unreadable.
+ *
+ * `list-style: none` and the explicit padding override the bundled `ol` rules;
+ * the number comes from the row's own heading, which stays correct when a middle
+ * row is removed.
+ */
+.pdm-collab-rows {
+    list-style: none;
+    margin: 12px 0 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.pdm-collab-row {
+    padding: 16px;
+    background: #fbfcfd;
+    border: 1px solid #dfe2e6;
+    border-radius: 10px;
+}
+
+.pdm-collab-row-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 12px;
+}
+
+.pdm-collab-row-title {
+    font-size: 13px;
+    font-weight: 600;
+    color: #3c4043;
+    letter-spacing: 0.01em;
+}
+
+.pdm-collab button.pdm-collab-row-remove {
+    padding: 4px 12px;
+    font-size: 12px;
+}
+
+/* A row's own field grid sits inside the outer one, so it needs its own gap. */
+.pdm-collab-row .pdm-collab-grid {
+    gap: 14px 18px;
+}
+
+.pdm-collab-inline-strong {
+    font-weight: 600;
+}
+
+/* ── Chips (the blocks chosen against a challenge) ───────────────────────── */
+
+/*
+ * A multi-select spelled as a picker plus removable chips, rather than a
+ * <select multiple> nobody can operate without discovering ctrl-click. The chip
+ * carries the block's level because block names are ambiguous on their own —
+ * "System modelling techniques" and "Interface modelling technique" are
+ * different things at different levels.
+ */
+.pdm-collab-chips {
+    list-style: none;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin: 10px 0 12px;
+    padding: 0;
+}
+
+.pdm-collab-chip {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 6px 6px 12px;
+    font-size: 13px;
+    color: #174ea6;
+    background: #e8f0fe;
+    border: 1px solid #d2e3fc;
+    border-radius: 999px;
+}
+
+/* A pairing that already exists. Marked rather than silently dropped: the
+   contributor chose it, and being told why it cannot go is the useful answer. */
+.pdm-collab-chip.is-invalid {
+    color: #a50e0e;
+    background: #fce8e6;
+    border-color: #f5c6c2;
+}
+
+.pdm-collab-chip-label {
+    font-weight: 500;
+}
+
+.pdm-collab-chip-meta {
+    font-size: 12px;
+    color: #5f6368;
+}
+
+.pdm-collab-chip.is-invalid .pdm-collab-chip-meta {
+    color: #a50e0e;
+}
+
+.pdm-collab button.pdm-collab-chip-remove {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+    padding: 0;
+    font-size: 16px;
+    line-height: 1;
+    color: inherit;
+    background: transparent;
+    border: 0;
+    border-radius: 50%;
+    cursor: pointer;
+}
+
+.pdm-collab button.pdm-collab-chip-remove:hover {
+    background: rgba(0, 0, 0, 0.08);
+}
+
+/* ── Narrow screens ─────────────────────────────────────────────────────── */
+
+@media (max-width: 720px) {
+    .pdm-collab {
+        padding: 24px 16px 48px;
+    }
+
+    .pdm-collab-grid {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .pdm-collab-row {
+        padding: 12px;
+    }
+
+    .pdm-collab-form-card {
+        padding: 20px 18px 24px;
+    }
+
+    .pdm-collab button.pdm-collab-submit {
+        width: 100%;
+    }
+}
