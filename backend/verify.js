@@ -178,6 +178,7 @@ async function main() {
         ['/api/metadata', await get('/api/metadata')],
         ['/api/challenges', await get('/api/challenges')],
         ['/api/challenges/Customer%20needs', await get('/api/challenges/Customer%20needs')],
+        ['/api/references', await get('/api/references')],
         ['/api/blocks/Systems%20engineering', await get('/api/blocks/Systems%20engineering')],
         ['/api/health', await get('/api/health')],
     ];
@@ -261,11 +262,126 @@ async function main() {
         assert.deepStrictEqual(m.levels, ['Approach', 'Process', 'Method', 'Tool']);
         assert.deepStrictEqual(m.maps.map((x) => x.code), ['M', 'C', 'S']);
         assert.deepStrictEqual(m.ltypes.map((x) => x.code), ['ec', 'oc', 'h']);
-        assert.deepStrictEqual(m.tags, []);
+        /**
+         * ── NO LONGER ASSERTED EMPTY ────────────────────────────────────────
+         * This read `deepStrictEqual(m.tags, [])` from when Block.tags was the
+         * expert-taxonomy string and was empty on all 198 blocks. The property
+         * is gone; tags are now (:Tag) nodes written by real users through
+         * POST /api/blocks/:name/tags, and the list is whatever they have
+         * applied. Asserting it empty asserts that nobody has used the feature.
+         *
+         * What still holds, and is what the shape check is for: it is an array
+         * of non-empty strings, lower-cased as the write path normalises them.
+         */
+        assert.ok(Array.isArray(m.tags), 'tags is not an array');
+        for (const tag of m.tags) {
+            assert.strictEqual(typeof tag, 'string', `tag is not a string: ${JSON.stringify(tag)}`);
+            assert.ok(tag.length > 0, 'an empty tag reached the metadata list');
+            assert.strictEqual(tag, tag.toLowerCase(), `tag is not normalised: "${tag}"`);
+        }
         assert.ok(m.approaches.length > 0 && m.approaches.every((a) => typeof a.block_count === 'number'));
         assert.ok(m.years.includes('1996a') && m.years.indexOf('1996') < m.years.indexOf('1996a'),
             "'1996a' must sort after '1996'");
         assert.ok(m.authors.length > 0);
+    });
+    await record('13b. GET /api/references -> the full bibliography, 126 records', async () => {
+        const res = await get('/api/references');
+        assert.strictEqual(res.status, 200, `status: got ${res.status}`);
+        const refs = res.body.references;
+        assert.strictEqual(refs.length, 126, `references: got ${refs.length}`);
+        assert.strictEqual(res.body.meta.counts.references, 126);
+
+        // The SHAPE is the contract: every bibliographic field is always present
+        // as a string, empty when unknown, so a consumer never has to test for
+        // undefined. Whether they are POPULATED is a separate matter — see 13d.
+        const FIELDS = [
+            'author', 'year', 'authors_full', 'title', 'type', 'journal', 'conference',
+            'volume', 'issue', 'pages', 'institution', 'publisher', 'editors',
+            'book_title', 'doi', 'status',
+        ];
+        for (const field of FIELDS) {
+            assert.ok(refs.every((r) => typeof r[field] === 'string'),
+                `"${field}" is not always a string`);
+        }
+        assert.ok(refs.every((r) => r.author && r.year), 'author and year are always populated');
+
+        // Bare, never a URL — the https://doi.org/ prefix is added at render
+        // time. Vacuous while no DOI is recorded; it is the guard that matters.
+        assert.ok(refs.every((r) => !/^https?:/i.test(r.doi)),
+            `a DOI is stored as a URL: ${JSON.stringify(refs.find((r) => /^https?:/i.test(r.doi)))}`);
+
+        // Year is a String and sorts lexicographically, so a suffix sorts after
+        // its bare year rather than being cast to a number and mangled.
+        const suffixed = refs.filter((r) => /[A-Za-z]$/.test(r.year));
+        assert.ok(suffixed.length > 0, "no suffixed year ('1996a') in the data");
+
+        // Sorted by author then year, so the picker's list is stable.
+        const keys = refs.map((r) => `${r.author} ${r.year}`);
+        assert.deepStrictEqual(keys, [...keys].sort(), 'references are not sorted by author, year');
+
+        // link_count is an ordinary number, not a Neo4j Integer, and counts the
+        // links this paper supports.
+        assert.ok(refs.every((r) => Number.isInteger(r.link_count)), 'link_count is not a plain integer');
+        const total = refs.reduce((sum, r) => sum + r.link_count, 0);
+        assert.strictEqual(total, 344, `SUPPORTED_BY edges via link_count: got ${total}`);
+    });
+    await record('13c. GET /api/references rejects an unknown parameter and a bad status', async () => {
+        const unknown = await get('/api/references?author=Mhenni');
+        assert.strictEqual(unknown.status, 400, `unknown param: got ${unknown.status}`);
+        assert.strictEqual(unknown.body.error.code, 'UNKNOWN_PARAM');
+
+        const bad = await get('/api/references?status=nonsense');
+        assert.strictEqual(bad.status, 400, `bad status: got ${bad.status}`);
+        assert.strictEqual(bad.body.error.code, 'INVALID_FILTER_VALUE');
+
+        /**
+         * ── THIS CHECK USED TO ASSERT THE SECURITY HOLE ──────────────────────
+         * It asserted that an ANONYMOUS `?status=pending` answered 200. That was
+         * the defect, not the contract: unreviewed content was readable by
+         * anyone who knew the URL, which walked around the review gate the whole
+         * workflow rests on. The most damaging case is a false attribution —
+         * "this connection is supported by Mhenni et al. 2014" when it is not —
+         * being world-readable before any reviewer sees it.
+         *
+         * It is 401 now. This file runs entirely unauthenticated, so every
+         * unapproved status is refused here; the authorised behaviour — a
+         * contributor seeing their own and nobody else's, a reviewer seeing
+         * everything — is exercised in verify-visibility.js, which has sessions.
+         */
+        for (const status of ['pending', 'changes_requested', 'rejected']) {
+            const refused = await get(`/api/references?status=${status}`);
+            assert.strictEqual(refused.status, 401,
+                `anonymous ?status=${status}: got ${refused.status}`);
+            assert.strictEqual(refused.body.error.code, 'AUTH_REQUIRED');
+        }
+    });
+    /**
+     * A TRIPWIRE, NOT A CELEBRATION.
+     *
+     * The spreadsheet carries only (author, year) — see the header of
+     * populate-database.js, which writes every other bibliographic field as ''
+     * with ON CREATE SET so it can be filled in later through the app. Nobody
+     * has filled any of it in, so all 126 references currently have an empty
+     * title, type and DOI.
+     *
+     * That is why this asserts ZERO rather than asserting the fields are
+     * populated: the day someone enters a bibliography, this check fails, and
+     * the failure is the notification. What it should prompt is a frontend
+     * change — the reference picker's secondary text falls back to the year and
+     * the number of connections supported because there is nothing better to
+     * show; once titles exist it should show the title, and this check should be
+     * replaced with one asserting they are all present.
+     */
+    await record('13d. TRIPWIRE: the bibliography is still empty (author + year only)', async () => {
+        const refs = (await get('/api/references')).body.references;
+        const withTitle = refs.filter((r) => r.title).length;
+        const withType = refs.filter((r) => r.type).length;
+        const withDoi = refs.filter((r) => r.doi).length;
+        assert.strictEqual(withTitle + withType + withDoi, 0,
+            `bibliographic detail has appeared (${withTitle} titles, ${withType} types, ${withDoi} DOIs). `
+            + 'This is good news: update the reference picker to show titles, and replace this tripwire '
+            + 'with a check that every reference carries a title and a type.');
+        console.log(`        126 references, 0 titles — the picker can offer author + year + link count only`);
     });
     await record('14. block detail agrees with the map on line style', async () => {
         const res = await get('/api/blocks/Systems%20engineering');
@@ -294,14 +410,18 @@ async function main() {
         assert.strictEqual(res.body.meta.challenge_match_count, 6);
         assert.deepStrictEqual(res.body.meta.challenges_selected, ['Customer needs']);
         assert.ok(matched.every((b) => b.matched_challenges.includes('Customer needs')));
+        // Absent means "any", so a caller written before the mode existed is
+        // unaffected by it.
+        assert.strictEqual(res.body.meta.challenge_match_mode, 'any');
     });
 
-    await record('15b. challenge selection unions rather than intersects', async () => {
+    await record('15b. the default match is "any", not "all"', async () => {
         const res = await get('/api/graph?challenges=Customer%20needs,Product%20and%20process%20knowledge');
         const matched = res.body.blocks.filter((b) => b.matched_challenges.length > 0);
         // 6 for Customer needs + 3 for Product and process knowledge, less the
-        // 2 they share. An intersection would return those 2 alone.
+        // 2 they share. "all" would return those 2 alone — see 15e.
         assert.strictEqual(matched.length, 7, `matched blocks: got ${matched.length}`);
+        assert.strictEqual(res.body.meta.challenge_match_mode, 'any');
         const both = matched.filter((b) => b.matched_challenges.length === 2).map((b) => b.name).sort();
         assert.deepStrictEqual(both,
             ['Model-based and model-driven practices', 'System modelling techniques']);
@@ -312,6 +432,7 @@ async function main() {
             'matched_challenges must be present and empty with no challenge selected');
         assert.strictEqual(all.body.meta.challenge_match_count, 0);
         assert.deepStrictEqual(all.body.meta.challenges_selected, []);
+        assert.strictEqual(all.body.meta.challenge_match_mode, 'any');
     });
 
     await record('15d. challenge selection composes with a map filter', async () => {
@@ -321,6 +442,54 @@ async function main() {
         const matched = res.body.blocks.filter((b) => b.matched_challenges.length > 0);
         assert.ok(matched.every((b) => b.maps.includes('S')),
             'a matched block outside the selected map leaked through');
+    });
+
+    // challengeMatch=all narrows the ANNOTATION, never the graph. The map is
+    // still the whole landscape; only the highlighting answers a different
+    // question — "what helps with all of my problems at once".
+    await record('15e. challengeMatch=all annotates only blocks covering every challenge', async () => {
+        const res = await get(
+            '/api/graph?challenges=Customer%20needs,Product%20and%20process%20knowledge&challengeMatch=all');
+        assert.strictEqual(res.status, 200);
+        assert.strictEqual(res.body.blocks.length, 198,
+            `the full graph must survive "all" too: got ${res.body.blocks.length}`);
+        assert.strictEqual(res.body.edges.length, 272, `edges: got ${res.body.edges.length}`);
+
+        const matched = res.body.blocks.filter((b) => b.matched_challenges.length > 0);
+        assert.deepStrictEqual(matched.map((b) => b.name).sort(),
+            ['Model-based and model-driven practices', 'System modelling techniques'],
+            'only the blocks addressing BOTH challenges may be annotated');
+        assert.strictEqual(res.body.meta.challenge_match_count, 2);
+        assert.strictEqual(res.body.meta.challenge_match_mode, 'all');
+        // A block that covers all of them is annotated with all of them, which
+        // is what lets the panel list it under every selected challenge.
+        assert.ok(matched.every((b) => b.matched_challenges.length === 2));
+    });
+
+    // Sparse data makes the empty "all" the common case, not the exceptional
+    // one: 69% of two-challenge pairs return nothing. It has to be a clean zero.
+    await record('15f. challengeMatch=all with no common block annotates nothing', async () => {
+        const path = '/api/graph?challenges=Customer%20needs,Customer%20validation';
+        const any = await get(path);
+        const all2 = await get(`${path}&challengeMatch=all`);
+
+        // 6 + 2 with nothing shared.
+        assert.strictEqual(any.body.blocks.filter((b) => b.matched_challenges.length > 0).length, 8,
+            `"any": got ${any.body.blocks.filter((b) => b.matched_challenges.length > 0).length}`);
+        assert.strictEqual(all2.body.meta.challenge_match_count, 0);
+        assert.ok(all2.body.blocks.every((b) => b.matched_challenges.length === 0),
+            'a partial match must not survive under "all"');
+        // Nothing matched, and still nothing was removed.
+        assert.strictEqual(all2.body.blocks.length, 198, `blocks: got ${all2.body.blocks.length}`);
+        assert.strictEqual(all2.body.edges.length, 272, `edges: got ${all2.body.edges.length}`);
+    });
+
+    await record('15g. an unknown challengeMatch value -> 400 naming the valid values', async () => {
+        const res = await get('/api/graph?challenges=Customer%20needs&challengeMatch=intersection');
+        assert.strictEqual(res.status, 400, `status: got ${res.status}`);
+        assert.strictEqual(res.body.error.code, 'INVALID_FILTER_VALUE');
+        assert.match(res.body.error.message, /any, all/,
+            `error should name the valid values: ${res.body.error.message}`);
     });
     await record('16. unknown query parameter -> 400', async () => {
         const res = await get('/api/graph?map=M');

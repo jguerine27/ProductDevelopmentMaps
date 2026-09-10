@@ -1,0 +1,589 @@
+/*
+ * The review queue.
+ *
+ * Collaborate.css carries the shared visual language — the page frame, the
+ * buttons, the panels, the field tokens — and is imported alongside this file
+ * with the page wrapped in `.pdm-collab`, because those button rules are scoped
+ * to that class. What follows is only what a QUEUE needs and a form does not:
+ * tabs, filters, the card, and the decision panel.
+ */
+
+.pdm-review-tabs {
+    display: flex;
+    gap: 4px;
+    margin: 0 0 20px;
+    border-bottom: 1px solid #e8eaed;
+}
+
+.pdm-collab button.pdm-review-tab {
+    padding: 10px 16px;
+    font-size: 14px;
+    font-weight: 500;
+    color: #5f6368;
+    background: transparent;
+    border: 0;
+    border-bottom: 2px solid transparent;
+    border-radius: 0;
+    cursor: pointer;
+}
+
+.pdm-collab button.pdm-review-tab:hover {
+    color: #26292d;
+    background: #f8f9fa;
+}
+
+.pdm-collab button.pdm-review-tab.is-active {
+    color: #1a73e8;
+    border-bottom-color: #1a73e8;
+}
+
+/* ── Type filters ───────────────────────────────────────────────────────── */
+
+.pdm-review-filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin: 0 0 20px;
+}
+
+.pdm-collab button.pdm-review-filter {
+    padding: 6px 14px;
+    font-size: 13px;
+    color: #3c4043;
+    background: #ffffff;
+    border: 1px solid #dfe2e6;
+    border-radius: 999px;
+    cursor: pointer;
+}
+
+.pdm-collab button.pdm-review-filter:hover {
+    background: #f8f9fa;
+}
+
+.pdm-collab button.pdm-review-filter.is-active {
+    color: #174ea6;
+    background: #e8f0fe;
+    border-color: #d2e3fc;
+}
+
+/*
+ * The count on a tab or filter. It is what makes "where is the work" answerable
+ * at a glance, which is the difference between a queue and a list.
+ */
+.pdm-review-count {
+    display: inline-block;
+    min-width: 18px;
+    margin-left: 6px;
+    padding: 0 5px;
+    font-size: 12px;
+    font-weight: 600;
+    text-align: center;
+    color: #5f6368;
+    background: #f1f3f4;
+    border-radius: 9px;
+}
+
+.pdm-review-filter.is-active .pdm-review-count,
+.pdm-review-tab.is-active .pdm-review-count {
+    color: #174ea6;
+    background: #d2e3fc;
+}
+
+/* ── The cards ──────────────────────────────────────────────────────────── */
+
+.pdm-review-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.pdm-review-list li.pdm-review-card {
+    padding: 20px;
+    background: #ffffff;
+    border: 1px solid #dfe2e6;
+    border-radius: 12px;
+}
+
+/* Sent back: with its author, and nothing to do here. Visibly quieter. */
+.pdm-review-list li.pdm-review-card.is-waiting {
+    background: #fbfcfd;
+}
+
+.pdm-review-card-head {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+    margin-bottom: 6px;
+}
+
+.pdm-review-card-summary {
+    flex: 1 1 auto;
+    font-size: 16px;
+    font-weight: 600;
+    color: #26292d;
+    word-break: break-word;
+}
+
+.pdm-review-card-age {
+    flex: 0 0 auto;
+    font-size: 12px;
+    color: #80868b;
+    white-space: nowrap;
+}
+
+.pdm-review-card-meta {
+    margin: 0 0 14px;
+    font-size: 13px;
+    color: #5f6368;
+}
+
+/* ── The per-type detail ────────────────────────────────────────────────── */
+
+.pdm-review-detail {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 14px 16px;
+    margin-bottom: 14px;
+    background: #fbfcfd;
+    border: 1px solid #e8eaed;
+    border-radius: 8px;
+}
+
+.pdm-review-field {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+    font-size: 13px;
+}
+
+.pdm-review-field-label {
+    flex: 0 0 auto;
+    width: 130px;
+    color: #80868b;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+
+.pdm-review-field-value {
+    flex: 1 1 auto;
+    color: #26292d;
+    word-break: break-word;
+}
+
+.pdm-review-swatch-row {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.pdm-review-swatch-row code {
+    font-size: 12px;
+    color: #5f6368;
+}
+
+.pdm-review-plain-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.pdm-review-plain-list li {
+    padding: 1px 0;
+}
+
+/* A field the submission left empty. Named rather than blank: "no citations"
+   is itself something a reviewer weighs. */
+.pdm-review-absent {
+    color: #80868b;
+    font-style: italic;
+}
+
+.pdm-review-items {
+    list-style: none;
+    margin: 0 0 14px;
+    padding: 0 0 0 12px;
+    border-left: 2px solid #e8eaed;
+}
+
+.pdm-review-items li {
+    display: flex;
+    gap: 10px;
+    font-size: 13px;
+    padding: 2px 0;
+}
+
+.pdm-review-item-type {
+    flex: 0 0 auto;
+    min-width: 130px;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: #80868b;
+}
+
+/* ── A submission that has been round before ────────────────────────────── */
+
+.pdm-review-revised {
+    padding: 12px 14px;
+    margin-bottom: 14px;
+    background: #fef7e0;
+    border: 1px solid #feefc3;
+    border-radius: 8px;
+}
+
+.pdm-review-revised-note {
+    margin: 0 0 6px;
+    font-size: 13px;
+    color: #5f4200;
+}
+
+/* ── The three decisions ────────────────────────────────────────────────── */
+
+.pdm-review-actions {
+    padding-top: 14px;
+    border-top: 1px solid #e8eaed;
+}
+
+.pdm-review-actions-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    align-items: center;
+}
+
+/* Why the buttons are dead: a reviewer's own submission. */
+.pdm-review-blocked {
+    margin: 10px 0 0;
+    font-size: 13px;
+    color: #5f6368;
+}
+
+.pdm-review-decide {
+    padding: 16px;
+    background: #f8f9fa;
+    border: 1px solid #dfe2e6;
+    border-radius: 8px;
+}
+
+.pdm-review-decide.is-reject {
+    background: #fce8e6;
+    border-color: #f5c6c2;
+}
+
+.pdm-review-decide h3 {
+    margin: 0 0 6px;
+    font-size: 15px;
+    font-weight: 600;
+    color: #26292d;
+}
+
+.pdm-review-prompt {
+    margin: 0 0 12px;
+    font-size: 13px;
+    color: #3c4043;
+}
+
+.pdm-review-label {
+    display: block;
+    margin-bottom: 6px;
+    font-size: 13px;
+    font-weight: 500;
+    color: #3c4043;
+}
+
+.pdm-review-decide textarea {
+    width: 100%;
+    padding: 10px 12px;
+    font: inherit;
+    font-size: 14px;
+    color: #26292d;
+    background: #ffffff;
+    border: 1px solid #dfe2e6;
+    border-radius: 8px;
+    resize: vertical;
+}
+
+.pdm-review-decide textarea:focus {
+    border-color: #1a73e8;
+    outline: none;
+}
+
+.pdm-review-consequence {
+    margin: 10px 0 0;
+    font-size: 12px;
+    color: #5f6368;
+}
+
+/* Rejection is the one action with no way back, and says so in its own voice. */
+.pdm-review-consequence.is-grave {
+    color: #a50e0e;
+    font-weight: 500;
+}
+
+.pdm-review-decide-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 14px;
+}
+
+@media (max-width: 720px) {
+    .pdm-review-field {
+        flex-direction: column;
+        gap: 2px;
+    }
+
+    .pdm-review-field-label {
+        width: auto;
+    }
+
+    .pdm-review-card-head {
+        flex-wrap: wrap;
+    }
+}
+
+/* ── The connection card's evidence ─────────────────────────────────────── */
+
+/*
+ * A field whose value is a block rather than a line — the reference list. The
+ * label sits above it instead of beside it, because a list indented into a
+ * value column loses its own left edge and stops reading as a list.
+ */
+.pdm-review-field.is-stacked {
+    flex-direction: column;
+    gap: 6px;
+}
+
+.pdm-review-field.is-stacked .pdm-review-field-label {
+    width: auto;
+}
+
+.pdm-review-endpoint-meta {
+    color: #5f6368;
+}
+
+.pdm-review-ltype {
+    display: inline-block;
+}
+
+/* The sentence saying what a link type CLAIMS. On its own line: it is the
+   difference between "ec" meaning something and being three letters. */
+.pdm-review-meaning {
+    display: block;
+    margin-top: 2px;
+    font-size: 12px;
+    color: #5f6368;
+}
+
+/* Attach mode — only the evidence is being proposed, and the reviewer has to
+   know that before reading the card as a new connection. */
+.pdm-review-mode {
+    margin: 0 0 10px;
+    padding: 8px 10px;
+    font-size: 13px;
+    color: #174ea6;
+    background: #e8f0fe;
+    border-radius: 6px;
+}
+
+.pdm-review-citations {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.pdm-review-citation {
+    padding: 10px 12px;
+    background: #ffffff;
+    border: 1px solid #e8eaed;
+    border-radius: 6px;
+}
+
+.pdm-review-citation-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.pdm-review-citation-meta {
+    margin: 4px 0 0;
+    font-size: 12px;
+    color: #5f6368;
+}
+
+/* The rendered citation for a paper this submission CREATES. A reviewer is
+   approving a bibliographic entry as well as a claim, so it is shown as it will
+   be read rather than as a field list. */
+.pdm-review-citation-record {
+    margin: 6px 0 0;
+    padding: 6px 8px;
+    font-size: 12px;
+    color: #3c4043;
+    background: #f8f9fa;
+    border-left: 2px solid #dfe2e6;
+}
+
+/*
+ * Where the paper stands. Three states, three weights: an existing record is
+ * unremarkable, a new one is worth reading, and one that is not approved anywhere
+ * blocks the decision entirely — amber because it is a wait, not a fault.
+ */
+.pdm-review-provenance {
+    flex: 0 0 auto;
+    padding: 1px 8px;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    border-radius: 999px;
+}
+
+.pdm-review-provenance.is-existing {
+    color: #5f6368;
+    background: #f1f3f4;
+}
+
+.pdm-review-provenance.is-new {
+    color: #174ea6;
+    background: #e8f0fe;
+}
+
+.pdm-review-provenance.is-blocking {
+    color: #8a5200;
+    background: #fef7e0;
+}
+
+/*
+ * Not a verdict — the bibliography has not arrived yet. Grey and quiet, so it
+ * reads as "ask again in a moment" rather than as a state of the paper.
+ */
+.pdm-review-provenance.is-checking {
+    color: #80868b;
+    background: #f1f3f4;
+}
+
+.pdm-review-citation-warn {
+    margin: 6px 0 0;
+    font-size: 12px;
+    color: #8a5200;
+}
+
+/* ── Reference, challenge and cartography cards ─────────────────────────── */
+
+/* A description or an abstract read back to the reviewer. Quoted and set in
+   the author's own words, because the house style of a challenge is part of
+   what is being judged. */
+.pdm-review-quote {
+    margin: 0;
+    padding: 8px 10px;
+    font-size: 13px;
+    color: #3c4043;
+    background: #ffffff;
+    border-left: 2px solid #dfe2e6;
+}
+
+.pdm-collab .pdm-review-doi {
+    color: #1a73e8;
+    text-decoration: none;
+}
+
+.pdm-collab .pdm-review-doi:hover {
+    text-decoration: underline;
+}
+
+/*
+ * The one thing approval makes irreversible.
+ *
+ * Given the same weight as a rejection warning, because it carries the same
+ * finality: a cartography code is copied into thousands of array entries and
+ * the manage route refuses to change it afterwards.
+ */
+.pdm-review-permanent {
+    margin: 6px 0 0;
+    padding: 10px 12px;
+    font-size: 12px;
+    color: #8a5200;
+    background: #fef7e0;
+    border: 1px solid #feefc3;
+    border-radius: 6px;
+}
+
+/* ── Descriptions in the review queue ───────────────────────────────────── */
+
+/*
+ * Rendered as the reader will see it, not as labelled fields — a reviewer
+ * judging prose needs to read prose. The type scale is the card's, not the
+ * field grid's, so the description reads as a passage rather than as a value.
+ */
+.pdm-review-description {
+    margin: 10px 0 0;
+    padding: 14px 16px;
+    border: 1px solid #e8eaed;
+    border-radius: 12px;
+    background: #ffffff;
+}
+
+.pdm-review-description-label {
+    margin: 14px 0 6px;
+    font-size: 11.5px;
+    font-weight: 400;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    color: #80868b;
+}
+
+.pdm-review-description-label:first-child {
+    margin-top: 0;
+}
+
+.pdm-review-description-text {
+    margin: 0 0 8px;
+    font-size: 13.5px;
+    line-height: 1.55;
+    color: #26292d;
+}
+
+.pdm-review-description-list {
+    margin: 0 0 8px;
+    padding-left: 18px;
+    list-style: disc;
+    font-size: 13.5px;
+    line-height: 1.55;
+    color: #26292d;
+}
+
+.pdm-review-description-list li {
+    margin: 0 0 4px;
+    padding: 0;
+    list-style: inherit;
+    background: transparent;
+}
+
+/* The nested level. Kept visually close to its parent — the indent is the only
+   structure section_text carries, so it has to read as one thing. */
+.pdm-review-description-list ul {
+    margin: 4px 0 6px;
+    padding-left: 18px;
+    list-style: disc;
+}
+
+.pdm-review-description-source {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 8px;
+    margin: 4px 0 0;
+    font-size: 12.5px;
+    font-style: italic;
+    color: #80868b;
+}

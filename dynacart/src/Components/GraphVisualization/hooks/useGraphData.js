@@ -40,6 +40,24 @@ export const EMPTY_FILTERS = Object.freeze({
 const LIST_PARAMS = ['maps', 'levels', 'approaches', 'tags', 'authors', 'challenges', 'year'];
 const SINGLE_PARAMS = ['keyword', 'startYear', 'endYear'];
 
+/**
+ * How a multi-challenge selection is read: blocks helping with ANY of the
+ * selected challenges, or only those helping with ALL of them.
+ *
+ * 'any' is the default on every load and is never persisted — there is no
+ * browser storage in this app, and none is wanted here: the mode belongs to a
+ * question the user is asking right now, not to the user.
+ *
+ * Kept out of `filters` for the same reason `challenges` is: it is not a filter,
+ * so it must not count towards `hasActiveFilters`, must not be wiped by "Reset
+ * all", and must not sit behind "Apply filters".
+ */
+export const CHALLENGE_MATCH_ANY = 'any';
+export const CHALLENGE_MATCH_ALL = 'all';
+
+/** Below two challenges the modes are identical, so the control is not shown. */
+export const MIN_CHALLENGES_FOR_MATCH_MODE = 2;
+
 const EMPTY_GRAPH = Object.freeze({ blocks: [], edges: [], meta: null });
 
 /** Shape the sidebar can render against before /api/metadata answers. */
@@ -93,6 +111,7 @@ const useGraphData = () => {
     const [debouncedKeyword, setDebouncedKeyword] = useState('');
     // Independent of `filters` on purpose — see EMPTY_FILTERS.
     const [selectedChallenges, setSelectedChallenges] = useState([]);
+    const [challengeMatch, setChallengeMatch] = useState(CHALLENGE_MATCH_ANY);
 
     const [graph, setGraph] = useState(EMPTY_GRAPH);
     const [loading, setLoading] = useState(true);
@@ -116,14 +135,36 @@ const useGraphData = () => {
     // Serialising to a string gives the fetch effect a stable dependency, so
     // re-rendering with an equivalent filter object does not re-request.
     const queryKey = useMemo(
-        () => JSON.stringify(buildParams({
-            ...filters,
-            keyword: debouncedKeyword,
-            // Merged only here, at the point the request is built.
-            challenges: selectedChallenges,
-        })),
-        [filters, debouncedKeyword, selectedChallenges]
+        () => {
+            const params = buildParams({
+                ...filters,
+                keyword: debouncedKeyword,
+                // Merged only here, at the point the request is built.
+                challenges: selectedChallenges,
+            });
+            // Sent only when it changes the answer: the server already defaults
+            // to 'any', and below two challenges the two modes agree. Every
+            // request that did not involve this control therefore looks exactly
+            // as it did before the control existed.
+            if (challengeMatch !== CHALLENGE_MATCH_ANY
+                && selectedChallenges.length >= MIN_CHALLENGES_FOR_MATCH_MODE) {
+                params.challengeMatch = challengeMatch;
+            }
+            return JSON.stringify(params);
+        },
+        [filters, debouncedKeyword, selectedChallenges, challengeMatch]
     );
+
+    // A mode left set below the threshold would be invisible — the control is
+    // gone — and would then take effect again the moment a second challenge was
+    // ticked, changing the answer without the user having asked for it. Adding
+    // or removing a challenge while the control IS on screen keeps the mode,
+    // which is the whole point of it being a mode rather than a one-shot.
+    useEffect(() => {
+        if (selectedChallenges.length < MIN_CHALLENGES_FOR_MATCH_MODE) {
+            setChallengeMatch(CHALLENGE_MATCH_ANY);
+        }
+    }, [selectedChallenges]);
 
     // Option lists are fixed for the session — fetched once, never re-fetched.
     useEffect(() => {
@@ -270,6 +311,8 @@ const useGraphData = () => {
         selectedChallenges,
         toggleChallenge,
         clearChallenges,
+        challengeMatch,
+        setChallengeMatch,
     };
 };
 

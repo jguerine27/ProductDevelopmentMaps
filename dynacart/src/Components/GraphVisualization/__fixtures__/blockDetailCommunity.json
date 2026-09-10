@@ -1,0 +1,755 @@
+{
+  "block": {
+    "name": "Agile",
+    "level": "Approach",
+    "maps": [
+      "M",
+      "C",
+      "S"
+    ],
+    "related_approach": "Agile",
+    "color": "#c10001",
+    "citations": "Bricogne, 2015; Bricogne et al., 2016; Beck et al., 2001; Tomiyama et al., 2019; Porter and Heppelmann, 2014",
+    "tags": [
+      "requirement traceability",
+      "cross-discipline"
+    ],
+    "status": "approved",
+    "matched_challenges": [],
+    "degree": 10
+  },
+  "description": {
+    "text": "Agile development defines a strategic capability, a capability to create and respond to change, a capability to balance flexibility and structure, a capability to draw creativity and innovation out of a development team, and a capability to lead organizations through turbulence and uncertainty.",
+    "section_heading": "PRINCIPLES",
+    "section_text": "- Our highest priority is to satisfy the customer through early and continuous delivery of valuable software.\n- Welcome changing requirements, even late in development. Agile processes harness change for the customer's competitive advantage.\n- Deliver working software frequently, from a couple of weeks to a couple of months, with a preference to the shorter timescale.\n- Business people and developers must work together daily throughout the project.\n- Build projects around motivated individuals. Give them the environment and support they need, and trust them to get the job done.\n- The most efficient and effective method of conveying information to and within a development team is face-to-face conversation.\n- Working software is the primary measure of progress.\n- Agile processes promote sustainable development. The sponsors, developers, and users should be able to maintain a constant pace indefinitely.\n- Continuous attention to technical excellence and good design enhances agility.\n- Simplicity — the art of maximizing the amount of work not done — is essential.\n- The best architectures, requirements, and designs emerge from self-organizing teams.\n- At regular intervals, the team reflects on how to become more effective, then tunes and adjusts its behavior accordingly.",
+    "media_url": "",
+    "media_caption": "",
+    "description_source": {
+      "author": "Highsmith",
+      "authors_full": "Highsmith J",
+      "book_title": "",
+      "conference": "",
+      "doi": "",
+      "editors": "",
+      "institution": "",
+      "issue": "",
+      "journal": "",
+      "pages": "",
+      "publisher": "Addison-Wesley",
+      "status": "approved",
+      "title": "Agile Software Development Ecosystems",
+      "type": "book",
+      "volume": "",
+      "year": "2002"
+    },
+    "section_source": {
+      "author": "Beck et al.",
+      "authors_full": "Beck K, Beedle M, Van Bennekum A, Cockburn A, Cunningham W, Fowler M, Grenning J, Highsmith J, Hunt A, Jeffries R, Kern J, Marick B, Martin RC, Mellor S, Schwaber K, Sutherland J, Thomas D",
+      "book_title": "",
+      "conference": "",
+      "doi": "",
+      "editors": "",
+      "institution": "agilemanifesto.org",
+      "issue": "",
+      "journal": "",
+      "pages": "",
+      "publisher": "",
+      "status": "approved",
+      "title": "Manifesto for Agile Software Development",
+      "type": "report",
+      "volume": "",
+      "year": "2001"
+    },
+    "status": "approved"
+  },
+  "block_citations": [
+    "Bricogne, 2015",
+    "Bricogne et al., 2016",
+    "Beck et al., 2001",
+    "Tomiyama et al., 2019",
+    "Porter and Heppelmann, 2014"
+  ],
+  "references": [
+    {
+      "author": "Beck et al.",
+      "year": "2001",
+      "text": "Beck et al., 2001",
+      "resolved": true,
+      "reference": {
+        "author": "Beck et al.",
+        "authors_full": "Beck K, Beedle M, Van Bennekum A, Cockburn A, Cunningham W, Fowler M, Grenning J, Highsmith J, Hunt A, Jeffries R, Kern J, Marick B, Martin RC, Mellor S, Schwaber K, Sutherland J, Thomas D",
+        "book_title": "",
+        "conference": "",
+        "doi": "",
+        "editors": "",
+        "institution": "agilemanifesto.org",
+        "issue": "",
+        "journal": "",
+        "pages": "",
+        "publisher": "",
+        "status": "approved",
+        "title": "Manifesto for Agile Software Development",
+        "type": "report",
+        "volume": "",
+        "year": "2001"
+      },
+      "origins": [
+        "block_citation"
+      ]
+    },
+    {
+      "author": "Bricogne",
+      "year": "2015",
+      "text": "Bricogne, 2015",
+      "resolved": false,
+      "reference": null,
+      "origins": [
+        "block_citation"
+      ]
+    },
+    {
+      "author": "Bricogne et al.",
+      "year": "2016",
+      "text": "Bricogne et al., 2016",
+      "resolved": true,
+      "reference": {
+        "author": "Bricogne et al.",
+        "authors_full": "",
+        "book_title": "",
+        "conference": "",
+        "doi": "",
+        "editors": "",
+        "institution": "",
+        "issue": "",
+        "journal": "",
+        "pages": "",
+        "publisher": "",
+        "status": "approved",
+        "title": "",
+        "type": "",
+        "volume": "",
+        "year": "2016"
+      },
+      "origins": [
+        "block_citation"
+      ]
+    },
+    {
+      "author": "Goevert and Lindemann",
+      "year": "2018",
+      "text": "",
+      "resolved": true,
+      "reference": {
+        "author": "Goevert and Lindemann",
+        "authors_full": "",
+        "book_title": "",
+        "conference": "",
+        "doi": "",
+        "editors": "",
+        "institution": "",
+        "issue": "",
+        "journal": "",
+        "pages": "",
+        "publisher": "",
+        "status": "approved",
+        "title": "",
+        "type": "",
+        "volume": "",
+        "year": "2018"
+      },
+      "origins": [
+        "link"
+      ]
+    },
+    {
+      "author": "Luedeke et al.",
+      "year": "2018",
+      "text": "",
+      "resolved": true,
+      "reference": {
+        "author": "Luedeke et al.",
+        "authors_full": "",
+        "book_title": "",
+        "conference": "",
+        "doi": "",
+        "editors": "",
+        "institution": "",
+        "issue": "",
+        "journal": "",
+        "pages": "",
+        "publisher": "",
+        "status": "approved",
+        "title": "",
+        "type": "",
+        "volume": "",
+        "year": "2018"
+      },
+      "origins": [
+        "link"
+      ]
+    },
+    {
+      "author": "Mabrouk et al.",
+      "year": "2018",
+      "text": "",
+      "resolved": true,
+      "reference": {
+        "author": "Mabrouk et al.",
+        "authors_full": "",
+        "book_title": "",
+        "conference": "",
+        "doi": "",
+        "editors": "",
+        "institution": "",
+        "issue": "",
+        "journal": "",
+        "pages": "",
+        "publisher": "",
+        "status": "approved",
+        "title": "",
+        "type": "",
+        "volume": "",
+        "year": "2018"
+      },
+      "origins": [
+        "link"
+      ]
+    },
+    {
+      "author": "Porter and Heppelmann",
+      "year": "2014",
+      "text": "Porter and Heppelmann, 2014",
+      "resolved": false,
+      "reference": null,
+      "origins": [
+        "block_citation"
+      ]
+    },
+    {
+      "author": "Tomiyama et al.",
+      "year": "2019",
+      "text": "Tomiyama et al., 2019",
+      "resolved": true,
+      "reference": {
+        "author": "Tomiyama et al.",
+        "authors_full": "",
+        "book_title": "",
+        "conference": "",
+        "doi": "",
+        "editors": "",
+        "institution": "",
+        "issue": "",
+        "journal": "",
+        "pages": "",
+        "publisher": "",
+        "status": "approved",
+        "title": "",
+        "type": "",
+        "volume": "",
+        "year": "2019"
+      },
+      "origins": [
+        "block_citation"
+      ]
+    },
+    {
+      "author": "Wagner",
+      "year": "2014",
+      "text": "",
+      "resolved": true,
+      "reference": {
+        "author": "Wagner",
+        "authors_full": "",
+        "book_title": "",
+        "conference": "",
+        "doi": "",
+        "editors": "",
+        "institution": "",
+        "issue": "",
+        "journal": "",
+        "pages": "",
+        "publisher": "",
+        "status": "approved",
+        "title": "",
+        "type": "",
+        "volume": "",
+        "year": "2014"
+      },
+      "origins": [
+        "link"
+      ]
+    }
+  ],
+  "tags": [
+    {
+      "count": 1,
+      "mine": false,
+      "name": "cross-discipline"
+    },
+    {
+      "count": 2,
+      "mine": false,
+      "name": "requirement traceability"
+    }
+  ],
+  "ratings": {
+    "count": 2,
+    "averages": {
+      "efficacy": 3.5,
+      "product_quality": 5,
+      "design_process": 2,
+      "resource_dependency": 1
+    },
+    "mine": null
+  },
+  "comments": [
+    {
+      "id": "813c3a22-1bc5-474a-83cc-5eb338b85524",
+      "text": "This comment outlived its author.",
+      "author": {
+        "display_name": ""
+      },
+      "created_at": "2026-08-22T05:04:26.954Z",
+      "updated_at": "2026-08-22T05:04:26.954Z",
+      "helpful_count": 0,
+      "helpful_by_me": false
+    },
+    {
+      "id": "d34ddf3d-7f36-47bc-87e9-b4b3a708231d",
+      "text": "Worked better once we dropped the ceremony.",
+      "author": {
+        "display_name": "Other Person"
+      },
+      "created_at": "2026-08-22T05:04:26.825Z",
+      "updated_at": "2026-08-22T05:04:26.825Z",
+      "helpful_count": 0,
+      "helpful_by_me": false
+    },
+    {
+      "id": "c9e4c53b-f1d6-41b1-aebe-5678e157edfb",
+      "text": "We kept the shape but not the sequence, the right-hand arm ran continuously rather than waiting for the left to finish.",
+      "author": {
+        "display_name": "Syed Talha"
+      },
+      "created_at": "2026-08-22T05:04:26.595Z",
+      "updated_at": "2026-08-22T05:04:26.595Z",
+      "helpful_count": 1,
+      "helpful_by_me": false
+    }
+  ],
+  "connections": {
+    "outgoing": [
+      {
+        "source": "Agile",
+        "target": "Agile product development",
+        "ltype": "ec",
+        "effective_ltype": "ec",
+        "maps": [
+          "C"
+        ],
+        "reference_count": 1,
+        "references": [
+          {
+            "author": "Luedeke et al.",
+            "year": "2018",
+            "asterisk": false,
+            "grey": false
+          }
+        ],
+        "links": [
+          {
+            "source": "Agile",
+            "target": "Agile product development",
+            "ltype": "ec",
+            "maps": [
+              "C"
+            ],
+            "visible_reference_count": 1,
+            "stored_reference_count": 1
+          }
+        ],
+        "block": {
+          "color": "#c10001",
+          "level": "Process",
+          "maps": [
+            "C"
+          ],
+          "name": "Agile product development",
+          "related_approach": "Agile"
+        }
+      },
+      {
+        "source": "Agile",
+        "target": "Agile stage-gate process",
+        "ltype": "h",
+        "effective_ltype": "h",
+        "maps": [
+          "M"
+        ],
+        "reference_count": 0,
+        "references": [],
+        "links": [
+          {
+            "source": "Agile",
+            "target": "Agile stage-gate process",
+            "ltype": "h",
+            "maps": [
+              "M"
+            ],
+            "visible_reference_count": 0,
+            "stored_reference_count": 0
+          }
+        ],
+        "block": {
+          "color": "#b7b4b7",
+          "level": "Process",
+          "maps": [
+            "M"
+          ],
+          "name": "Agile stage-gate process",
+          "related_approach": "Agile-Plan-driven/Systematic"
+        }
+      },
+      {
+        "source": "Agile",
+        "target": "Agile systems engineering",
+        "ltype": "h",
+        "effective_ltype": "h",
+        "maps": [
+          "M"
+        ],
+        "reference_count": 0,
+        "references": [],
+        "links": [
+          {
+            "source": "Agile",
+            "target": "Agile systems engineering",
+            "ltype": "h",
+            "maps": [
+              "M"
+            ],
+            "visible_reference_count": 0,
+            "stored_reference_count": 0
+          }
+        ],
+        "block": {
+          "color": "#702c9f",
+          "level": "Approach",
+          "maps": [
+            "M"
+          ],
+          "name": "Agile systems engineering",
+          "related_approach": "Agile-Systems Engineering"
+        }
+      },
+      {
+        "source": "Agile",
+        "target": "Design thinking",
+        "ltype": "ec",
+        "effective_ltype": "ec",
+        "maps": [
+          "M"
+        ],
+        "reference_count": 1,
+        "references": [
+          {
+            "author": "Goevert and Lindemann",
+            "year": "2018",
+            "asterisk": false,
+            "grey": false
+          }
+        ],
+        "links": [
+          {
+            "source": "Agile",
+            "target": "Design thinking",
+            "ltype": "ec",
+            "maps": [
+              "M"
+            ],
+            "visible_reference_count": 1,
+            "stored_reference_count": 1
+          }
+        ],
+        "block": {
+          "color": "#c10001",
+          "level": "Process",
+          "maps": [
+            "M",
+            "C"
+          ],
+          "name": "Design thinking",
+          "related_approach": "Agile"
+        }
+      },
+      {
+        "source": "Agile",
+        "target": "Disciplined Agile delivery",
+        "ltype": "ec",
+        "effective_ltype": "ec",
+        "maps": [
+          "M"
+        ],
+        "reference_count": 1,
+        "references": [
+          {
+            "author": "Goevert and Lindemann",
+            "year": "2018",
+            "asterisk": false,
+            "grey": false
+          }
+        ],
+        "links": [
+          {
+            "source": "Agile",
+            "target": "Disciplined Agile delivery",
+            "ltype": "ec",
+            "maps": [
+              "M"
+            ],
+            "visible_reference_count": 1,
+            "stored_reference_count": 1
+          }
+        ],
+        "block": {
+          "color": "#c10001",
+          "level": "Process",
+          "maps": [
+            "M"
+          ],
+          "name": "Disciplined Agile delivery",
+          "related_approach": "Agile"
+        }
+      },
+      {
+        "source": "Agile",
+        "target": "Extreme programming",
+        "ltype": "ec",
+        "effective_ltype": "ec",
+        "maps": [
+          "M"
+        ],
+        "reference_count": 1,
+        "references": [
+          {
+            "author": "Goevert and Lindemann",
+            "year": "2018",
+            "asterisk": false,
+            "grey": false
+          }
+        ],
+        "links": [
+          {
+            "source": "Agile",
+            "target": "Extreme programming",
+            "ltype": "ec",
+            "maps": [
+              "M"
+            ],
+            "visible_reference_count": 1,
+            "stored_reference_count": 1
+          }
+        ],
+        "block": {
+          "color": "#c10001",
+          "level": "Process",
+          "maps": [
+            "M",
+            "C"
+          ],
+          "name": "Extreme programming",
+          "related_approach": "Agile"
+        }
+      },
+      {
+        "source": "Agile",
+        "target": "Lean startup",
+        "ltype": "h",
+        "effective_ltype": "h",
+        "maps": [
+          "M"
+        ],
+        "reference_count": 0,
+        "references": [],
+        "links": [
+          {
+            "source": "Agile",
+            "target": "Lean startup",
+            "ltype": "h",
+            "maps": [
+              "M"
+            ],
+            "visible_reference_count": 0,
+            "stored_reference_count": 0
+          }
+        ],
+        "block": {
+          "color": "#c65812",
+          "level": "Approach",
+          "maps": [
+            "M"
+          ],
+          "name": "Lean startup",
+          "related_approach": "Lean Startup"
+        }
+      },
+      {
+        "source": "Agile",
+        "target": "Lean startup process",
+        "ltype": "ec",
+        "effective_ltype": "ec",
+        "maps": [
+          "M"
+        ],
+        "reference_count": 1,
+        "references": [
+          {
+            "author": "Goevert and Lindemann",
+            "year": "2018",
+            "asterisk": false,
+            "grey": false
+          }
+        ],
+        "links": [
+          {
+            "source": "Agile",
+            "target": "Lean startup process",
+            "ltype": "ec",
+            "maps": [
+              "M"
+            ],
+            "visible_reference_count": 1,
+            "stored_reference_count": 1
+          }
+        ],
+        "block": {
+          "color": "#c65812",
+          "level": "Process",
+          "maps": [
+            "M"
+          ],
+          "name": "Lean startup process",
+          "related_approach": "Lean Startup"
+        }
+      },
+      {
+        "source": "Agile",
+        "target": "Scrum",
+        "ltype": "ec",
+        "effective_ltype": "ec",
+        "maps": [
+          "C",
+          "M"
+        ],
+        "reference_count": 2,
+        "references": [
+          {
+            "author": "Goevert and Lindemann",
+            "year": "2018",
+            "asterisk": false,
+            "grey": false
+          },
+          {
+            "author": "Mabrouk et al.",
+            "year": "2018",
+            "asterisk": false,
+            "grey": false
+          }
+        ],
+        "links": [
+          {
+            "source": "Agile",
+            "target": "Scrum",
+            "ltype": "ec",
+            "maps": [
+              "M"
+            ],
+            "visible_reference_count": 2,
+            "stored_reference_count": 2
+          },
+          {
+            "source": "Agile",
+            "target": "Scrum",
+            "ltype": "oc",
+            "maps": [
+              "C"
+            ],
+            "visible_reference_count": 0,
+            "stored_reference_count": 0
+          }
+        ],
+        "block": {
+          "color": "#c10001",
+          "level": "Process",
+          "maps": [
+            "M",
+            "C"
+          ],
+          "name": "Scrum",
+          "related_approach": "Agile"
+        }
+      },
+      {
+        "source": "Agile",
+        "target": "Scrum CPS",
+        "ltype": "oc",
+        "effective_ltype": "oc",
+        "maps": [
+          "C"
+        ],
+        "reference_count": 1,
+        "references": [
+          {
+            "author": "Wagner",
+            "year": "2014",
+            "asterisk": false,
+            "grey": false
+          }
+        ],
+        "links": [
+          {
+            "source": "Agile",
+            "target": "Scrum CPS",
+            "ltype": "oc",
+            "maps": [
+              "C"
+            ],
+            "visible_reference_count": 1,
+            "stored_reference_count": 1
+          }
+        ],
+        "block": {
+          "color": "#c10001",
+          "level": "Process",
+          "maps": [
+            "C"
+          ],
+          "name": "Scrum CPS",
+          "related_approach": "Agile"
+        }
+      }
+    ],
+    "incoming": []
+  },
+  "challenges": [
+    {
+      "description": "The development structure has difficulties minimizing siloed work and improving collaboration",
+      "name": "Silos and collaboration gaps",
+      "status": "approved"
+    }
+  ],
+  "meta": {
+    "filters_applied": {},
+    "evidence_filter_active": false,
+    "status": "approved",
+    "connection_filters": [
+      "maps",
+      "status",
+      "authors",
+      "year",
+      "startYear",
+      "endYear"
+    ],
+    "community_reviewed": false
+  }
+}

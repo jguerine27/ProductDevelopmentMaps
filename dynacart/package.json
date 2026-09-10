@@ -25,8 +25,8 @@
     "web-vitals": "^2.1.4"
   },
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
+    "start": "node init && react-scripts start",
+    "build": "node init && react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "verify:layout": "node verify-layout/run.mjs"
@@ -40,7 +40,7 @@
   "jest": {
     "transformIgnorePatterns": [
       "^.+\\.module\\.(css|sass|scss)$",
-      "[/\\\\]node_modules[/\\\\](?!(d3|d3-[a-z0-9-]+|internmap|delaunator|robust-predicates)[/\\\\])[^/\\\\]+[/\\\\].+\\.(js|mjs|jsx|ts|tsx)$"
+      "[/\\\\]node_modules[/\\\\](?!(axios|d3|d3-[a-z0-9-]+|internmap|delaunator|robust-predicates)[/\\\\])[^/\\\\]+[/\\\\].+\\.(js|mjs|jsx|ts|tsx)$"
     ]
   },
   "browserslist": {
