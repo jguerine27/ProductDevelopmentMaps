@@ -20,7 +20,13 @@ services:
       # it by taking pages the page cache and the backend are already using.
       NEO4J_server_memory_heap_initial__size: 1G
       NEO4J_server_memory_heap_max__size: 1G
-      NEO4J_server_memory_pagecache__size: 512m
+      # NOTE the single underscore before "size": the real setting is
+      # server.memory.pagecache.size (dots), whereas heap genuinely is
+      # heap.initial_size / heap.max_size (underscore). Neo4j escaping is
+      # _ -> . and __ -> _ , so a double underscore here produces
+      # server.memory.pagecache_size, which does not exist and which 5.x
+      # strict validation refuses to start on.
+      NEO4J_server_memory_pagecache_size: 512m
     volumes:
       # Named volumes, NOT ./neo4j/data. The image runs as uid 7474; a bind
       # mount to a host path Docker creates root-owned fails with EACCES on
@@ -33,7 +39,9 @@ services:
       - 127.0.0.1:7474:7474
       - 127.0.0.1:7687:7687
     healthcheck:
-      test: ["CMD-SHELL", "wget -qO- http://localhost:7474 >/dev/null 2>&1 || exit 1"]
+      # HTTP first, falling back to a bolt TCP connect through a bash builtin,
+      # so the check does not depend on wget existing in the image.
+      test: ["CMD-SHELL", "wget -qO- http://localhost:7474 >/dev/null 2>&1 || bash -c 'exec 3<>/dev/tcp/127.0.0.1/7687' || exit 1"]
       interval: 10s
       timeout: 5s
       retries: 12
