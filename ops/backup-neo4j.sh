@@ -28,6 +28,15 @@ RCLONE_REMOTE="${RCLONE_REMOTE:-}"
 STAMP="$(date +%F-%H%M)"
 mkdir -p "$BACKUP_DIR"
 
+# neo4j-admin runs as uid/gid 7474 inside the container and writes the dump to
+# this directory. Created by root it is root-owned and the dump fails with
+# "AccessDeniedException: /backups" - the same uid 7474 trap that makes a bind
+# mount of the data directory fail. Give group 7474 write access, setgid so the
+# dump file inherits the group, and leave o+rx so the ubuntu user can still
+# list and read its own backups without sudo.
+chgrp 7474 "$BACKUP_DIR"
+chmod 2775 "$BACKUP_DIR"
+
 log() { echo "[$(date +%FT%T)] $*"; }
 
 # Always restart Neo4j, even if the dump fails part way. Leaving the database
