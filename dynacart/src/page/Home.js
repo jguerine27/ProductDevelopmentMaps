@@ -13,9 +13,13 @@ import GraphVisualization from '../Components/GraphVisualization/GraphVisualizat
  * ── THE SHELL IS NO LONGER THIS PAGE'S ───────────────────────────────────────
  * The navbar and the account wiring used to live here, which is precisely why
  * they disappeared the moment anyone left /map. They are AppShell's now, and
- * Collaborate and Review wear the same frame. What is still Home's is the pair
- * of sections the bar switches between, because they are two views of THIS page
- * rather than two routes.
+ * Collaborate and Review wear the same frame.
+ *
+ * This page used to own a second section too — the bar's Home, a bare "Welcome
+ * to DynaCart" heading shown in place while the URL stayed on /map. The landing
+ * page at / replaced it, so the bar's Home navigates there and only the graph is
+ * left here. `activeForm` stays because the bar still needs to know which
+ * section is showing, and because Collaborate and Review pass their own ids.
  *
  * A section asked for from another page arrives in location state, since there
  * is no URL to carry it — the shell navigates here and names the section it
@@ -33,7 +37,6 @@ const Home = () => {
 
     return (
         <AppShell activeForm={activeForm} setActiveForm={setActiveForm}>
-            {activeForm === 'home' && <h1>Welcome to DynaCart</h1>}
             {activeForm === 'graph' && <GraphVisualization />}
         </AppShell>
     );

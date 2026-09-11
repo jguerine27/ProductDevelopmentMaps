@@ -1,6 +1,7 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import Home from './page/Home';
+import Landing from './page/Landing';
 import Signup from './page/Signup/Signup';
 import Login from './page/Login/Login';
 import Privacy from './page/Privacy';
@@ -24,15 +25,13 @@ import AppShell from './Components/AppShell/AppShell';
  * This is a change: the map used to sit behind a Firebase guard at /home, so a
  * signed-out visitor was bounced to a login screen before seeing anything.
  *
- * ── / IS AN INTERIM REDIRECT ─────────────────────────────────────────────────
+ * ── / IS THE LANDING PAGE ────────────────────────────────────────────────────
  * The map lives at /map, which matches the navbar and gives people a real URL to
- * share. That leaves / free for a landing page, which this project genuinely
- * wants — opening straight into a dense circular graph with no explanation is
- * hard on a first-time visitor. Nobody has designed that page yet, so / redirects
- * to /map for now. Replace this redirect with the landing page; do not move the
- * map back to /.
+ * share. That leaves / for the landing page it now holds — opening straight
+ * into a dense circular graph with no explanation is hard on a first-time
+ * visitor. Do not move the map back to /.
  *
- * /home redirects too, so links from the previous structure still work.
+ * /home still redirects to the map, so links from the previous structure work.
  *
  * ── THE PROVIDER SITS ABOVE THE ROUTER ───────────────────────────────────────
  * so the session is read once per page load rather than once per navigation, and
@@ -94,7 +93,7 @@ function App() {
             </AppShell>
           } />
 
-          <Route path="/" element={<Navigate to="/map" replace />} />
+          <Route path="/" element={<Landing />} />
           <Route path="/home" element={<Navigate to="/map" replace />} />
           <Route path="*" element={<Navigate to="/map" replace />} />
         </Routes>

@@ -27,14 +27,29 @@ import { useAuth } from '../../auth/AuthContext';
  * written once rather than repeated by every page that wants a bar.
  *
  * ── SECTIONS ARE Home's STATE, SO OTHER PAGES NAVIGATE ───────────────────────
- * Home switches between its two sections in place with `activeForm`; there is no
- * route for them. A page that owns that state passes `activeForm`/`setActiveForm`
+ * The map is a view Home.js switches to in place with `activeForm`; there is no
+ * route for it. A page that owns that state passes `activeForm`/`setActiveForm`
  * and keeps switching in place. A page that does not — Collaborate, Review —
  * passes the name of the section it is in (for the aria-current mark) and gets a
  * `setActiveForm` that navigates to /map instead, handing the wanted section
  * along in location state for Home to open on.
  */
-const AppShell = ({ activeForm = null, setActiveForm = null, children }) => {
+/**
+ * `stayOnSignOut` is for a public page that owns no sections of its own.
+ *
+ * handleLogout's rule is "end up somewhere you are allowed to be", and it reads
+ * `setActiveForm` to decide: a page that has sections switches one in place and
+ * therefore stays put, and a page that has none is assumed to be guarded, so it
+ * leaves for the map. The landing page is neither — public, but sectionless —
+ * and without this it would eject a reader to /map for signing out on a page
+ * they are perfectly entitled to keep reading.
+ */
+const AppShell = ({
+    activeForm = null,
+    setActiveForm = null,
+    stayOnSignOut = false,
+    children,
+}) => {
     const navigate = useNavigate();
     const { user, loading, signOut } = useAuth();
 
@@ -52,6 +67,7 @@ const AppShell = ({ activeForm = null, setActiveForm = null, children }) => {
 
     const handleLogout = async () => {
         await signOut();
+        if (stayOnSignOut) return;
         // The map is public, so signing out there should not eject the reader
         // from what they were reading — goToSection keeps them on it.
         //
@@ -68,6 +84,7 @@ const AppShell = ({ activeForm = null, setActiveForm = null, children }) => {
                 activeForm={activeForm}
                 user={user}
                 loading={loading}
+                onHome={() => navigate('/')}
                 onSignIn={() => navigate('/login')}
                 onRegister={() => navigate('/signup')}
                 onCollaborate={() => navigate('/collaborate')}

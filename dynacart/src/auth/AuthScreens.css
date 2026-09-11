@@ -322,6 +322,25 @@
     line-height: 1.6;
 }
 
+/* Navbar.css bundles bare `ul { list-style-type: none; text-align: center }`
+   and `li { display: inline; margin: 0 10px }` app-wide, which renders this
+   notice's lists as centred prose. `display: list-item` is what actually draws
+   the marker — `list-style: disc` on an inline item is silently inert. */
+.pdm-auth-notice ul {
+    margin: 0 0 12px;
+    padding-left: 20px;
+    text-align: left;
+    list-style: disc;
+}
+
+.pdm-auth-notice ul li {
+    display: list-item;
+    margin: 0 0 4px;
+    font-size: 14px;
+    line-height: 1.6;
+    list-style: inherit;
+}
+
 .pdm-auth-notice-actions {
     margin-top: 24px;
 }

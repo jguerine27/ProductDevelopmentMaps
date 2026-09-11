@@ -5,12 +5,12 @@ import './Navbar.css';
  * The application bar: wordmark left, section links and the account controls
  * right.
  *
- * These are BUTTONS rather than anchors because the app has no route for the
- * map's sub-sections — Home and Map are two values of Home.js's `activeForm`,
- * switched in place. An <a> without an href is not a link to anything, so a
- * button is the honest element; `aria-current` still marks which section is
- * showing. The account controls are buttons too, and the parent turns them into
- * navigation, which keeps this component renderable without a Router.
+ * These are BUTTONS rather than anchors because not every section is a route:
+ * Map is a view of Home.js switched in place through `activeForm`, so an <a>
+ * for it would have no href and link to nothing. The ones that ARE routes —
+ * Home, Collaborate, Review — travel by callback for the same reason the
+ * account controls do: the parent owns the navigation, which keeps this
+ * component renderable without a Router. `aria-current` marks where you are.
  *
  * Presentational on purpose: it takes `user` and callbacks as props rather than
  * calling useAuth() itself, so it can be tested without a provider and without a
@@ -18,10 +18,15 @@ import './Navbar.css';
  */
 
 /**
- * Sections that switch Home's view. `form` is null for the ones that are not a
- * view of Home at all: Collaborate is its own route, so it travels by callback
- * like Review does rather than through `setActiveForm`. A section with neither
- * a `form` nor a handler stays inert, which is what an unbuilt one should do.
+ * The sections the bar offers. `form` names a view of Home.js to switch to in
+ * place; `form: null` means the section is its own route and travels by
+ * callback instead. A section with neither stays inert, which is what an
+ * unbuilt one should do.
+ *
+ * HOME IS A ROUTE, NOT A VIEW. It used to be `form: 'home'`, which switched the
+ * map page to a bare "Welcome to DynaCart" heading and left the URL on /map.
+ * There is a real landing page at / now, so Home navigates there like
+ * Collaborate navigates to its own route, and the placeholder view is gone.
  *
  * `id` is what `activeForm` is compared against, and it is separate from `form`
  * for exactly one reason: a section that navigates has no `form` to switch to
@@ -30,8 +35,10 @@ import './Navbar.css';
  * id and have it marked. Without that the bar would sit above those pages
  * saying nothing at all about where the reader is.
  */
+const HOME = { id: 'home', label: 'Home', form: null, handler: 'onHome' };
+
 const SECTIONS = [
-    { id: 'home', label: 'Home', form: 'home' },
+    HOME,
     { id: 'graph', label: 'Map', form: 'graph' },
     { id: 'collaborate', label: 'Collaborate', form: null, handler: 'onCollaborate' },
 ];
@@ -43,6 +50,7 @@ const Navbar = ({
     loading = false,
     onSignIn,
     onRegister,
+    onHome,
     onCollaborate,
     onReview,
     onLogout,
@@ -51,7 +59,7 @@ const Navbar = ({
     // never the map underneath it.
     const [menuOpen, setMenuOpen] = useState(false);
 
-    const handlers = { onCollaborate };
+    const handlers = { onHome, onCollaborate };
 
     /**
      * A section either switches Home's view or navigates via its handler.
@@ -87,7 +95,7 @@ const Navbar = ({
     return (
         <nav className="pdm-nav" aria-label="Main">
             <div className="pdm-nav-inner">
-                <button type="button" className="pdm-nav-brand" onClick={() => go({ form: 'home' })}>
+                <button type="button" className="pdm-nav-brand" onClick={() => go(HOME)}>
                     ETS
                 </button>
 

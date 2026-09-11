@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, screen, waitFor } from '@testing-library/react';
+import { render, screen, waitFor, within } from '@testing-library/react';
 import apiClient from './api/client';
 import App from './App';
 
@@ -106,7 +106,6 @@ describe('the map is public and lives at /map', () => {
 
 describe('redirects', () => {
     it.each([
-        ['/', 'the landing page is not built yet, so / goes to the map'],
         ['/home', 'links from the previous structure still work'],
         ['/nonsense', 'an unknown route lands somewhere real'],
     ])('%s redirects to /map — %s', async (from) => {
@@ -115,6 +114,44 @@ describe('redirects', () => {
 
         await waitFor(() => expect(window.location.pathname).toBe('/map'));
         await waitFor(() => expect(container.querySelector('.pdm-layout')).not.toBeNull());
+    });
+});
+
+describe('the landing page', () => {
+    it('serves / itself rather than redirecting to the map', async () => {
+        at('/');
+        render(<App />);
+
+        expect(await screen.findByRole('heading', { name: 'Product Development', level: 1 })).toBeInTheDocument();
+        expect(window.location.pathname).toBe('/');
+    });
+
+    it('points at the map and at collaborating, and needs no session to do it', async () => {
+        at('/');
+        render(<App />);
+
+        expect(await screen.findByRole('link', { name: 'View Map' })).toHaveAttribute('href', '/map');
+        expect(screen.getByRole('link', { name: 'Collaborate' })).toHaveAttribute('href', '/collaborate');
+        expect(screen.queryByLabelText(/password/i)).toBeNull();
+    });
+
+    /**
+     * It shipped without the bar once, and a signed-in reader who followed the
+     * bar's own Home link landed here with no bar, no account name and no way to
+     * sign out. The account controls are the half that actually went missing, so
+     * a signed-in session is what this renders.
+     */
+    it('wears the navbar, account controls and all', async () => {
+        signedInAs(CONTRIBUTOR);
+        at('/');
+        render(<App />);
+
+        expect(await screen.findByText(CONTRIBUTOR.display_name)).toBeInTheDocument();
+        expect(navbar()).toBeInTheDocument();
+        expect(within(navbar()).getByRole('button', { name: 'Log out' })).toBeInTheDocument();
+        // And it says where you are, rather than sitting there saying nothing.
+        expect(within(navbar()).getByRole('button', { name: 'Home' }))
+            .toHaveAttribute('aria-current', 'page');
     });
 });
 

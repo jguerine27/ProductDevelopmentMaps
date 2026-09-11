@@ -3,11 +3,12 @@ import { fireEvent, render, screen, within } from '@testing-library/react';
 import Navbar from './Navbar';
 
 /**
- * The bar switches Home's view rather than navigating, so "active" means the
- * current `activeForm` and the controls are buttons, not anchors.
+ * The bar mixes two kinds of section — Map switches Home's view in place, Home
+ * and Collaborate navigate by callback — so "active" means the current
+ * `activeForm` either way, and the controls are buttons, not anchors.
  *
- * It is presentational: `user`, `loading` and the account callbacks arrive as
- * props from Home, so these tests need neither an auth provider nor a Router.
+ * It is presentational: `user`, `loading` and the callbacks arrive as props from
+ * AppShell, so these tests need neither an auth provider nor a Router.
  */
 
 const USER = { id: 'u1', display_name: 'Ada Lovelace', role: 'user', provider: 'firebase', orcid: '' };
@@ -107,17 +108,29 @@ describe('the Review link', () => {
 });
 
 describe('navigation', () => {
-    it('switches to the map and to home', () => {
+    it('switches to the map in place', () => {
         const { setActiveForm } = show();
 
         fireEvent.click(link('Map'));
         expect(setActiveForm).toHaveBeenLastCalledWith('graph');
+    });
+
+    /**
+     * Home used to be `form: 'home'`, which switched the map page to a bare
+     * welcome heading and left the URL on /map. It is the landing route now, so
+     * it must LEAVE rather than switch a view — hence both assertions.
+     */
+    it('navigates home rather than switching a view, from the link and the wordmark', () => {
+        const onHome = jest.fn();
+        const { setActiveForm } = show({ onHome });
 
         fireEvent.click(link('Home'));
-        expect(setActiveForm).toHaveBeenLastCalledWith('home');
+        expect(onHome).toHaveBeenCalledTimes(1);
 
         fireEvent.click(brand());
-        expect(setActiveForm).toHaveBeenLastCalledWith('home');
+        expect(onHome).toHaveBeenCalledTimes(2);
+
+        expect(setActiveForm).not.toHaveBeenCalled();
     });
 
     it('renders the unbuilt section normally but leaves it inert', () => {
@@ -185,12 +198,17 @@ describe('narrow screens', () => {
         expect(menu).toHaveClass('is-open');
     });
 
-    it('closes itself once a section is chosen', () => {
-        show();
+    // Map switches a view, Home navigates — the menu closes for either, so both
+    // kinds of section are checked rather than whichever one happens to be first.
+    it.each([
+        ['Map', {}],
+        ['Home', { onHome: () => {} }],
+    ])('closes itself once %s is chosen', (label, props) => {
+        show(props);
         const burger = screen.getByRole('button', { name: 'Menu' });
 
         fireEvent.click(burger);
-        fireEvent.click(link('Home'));
+        fireEvent.click(link(label));
 
         expect(burger).toHaveAttribute('aria-expanded', 'false');
     });

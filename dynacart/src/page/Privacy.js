@@ -17,15 +17,12 @@ import '../auth/AuthScreens.css';
 const Privacy = () => (
     <div className="pdm-auth-notice">
         <h1>Privacy notice</h1>
-        {/* <p><strong>Version {CONSENT_VERSION}</strong></p>
+        <p><strong>Version {CONSENT_VERSION}</strong></p>
 
         <h2>What is stored about you</h2>
         <p>When you create an account, this application stores:</p>
         <ul>
-            <li>a generated identifier for your account;</li>
             <li>your display name, shown alongside anything you contribute;</li>
-            <li>which sign-in provider you used, and that provider&apos;s own identifier for you;</li>
-            <li>your ORCID iD, if you signed in with ORCID;</li>
             <li>your role — contributor or peer reviewer;</li>
             <li>when your account was created and when you were last seen;</li>
             <li>which version of this notice you accepted, and when.</li>
@@ -47,17 +44,8 @@ const Privacy = () => (
         <p>
             Blocks, links, references and other content you propose are recorded
             against your account so a reviewer can see who proposed them. Once
-            approved they become part of the published cartographies.
-        </p>
-
-        <h2>Your rights</h2>
-        <p>
-            You can obtain a copy of everything held about you at any time, as a
-            JSON file, from your account.
-        </p>
-        <p>
-            You can also delete your account. Doing so removes your account record
-            entirely. Content you contributed that has already been approved stays
+            approved they become part of the published cartographies. If your account is deleted. 
+            Content you contributed that has already been approved stays
             — it is map content at that point, and removing it would damage the
             cartographies for everyone else — but it is no longer attributed to
             you, and neither are any review decisions you made. This is anonymisation
@@ -73,8 +61,8 @@ const Privacy = () => (
         </p>
 
         <div className="pdm-auth-notice-actions">
-            <Link className="pdm-auth-button" to="/map">Back to the map</Link>
-        </div> */}
+            <Link className="pdm-auth-button" to="/signup">Back to sign-up</Link>
+        </div>
     </div>
 );
 

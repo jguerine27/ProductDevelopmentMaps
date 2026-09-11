@@ -1,0 +1,151 @@
+/*
+ * The landing page at /.
+ *
+ * Every rule is scoped under `pdm-landing-`, for the same reason AuthScreens.css
+ * scopes its own: Navbar.css bundles bare `button`, `ul` and `li` rules app-wide,
+ * so an obvious class name here would collide with them.
+ *
+ * Colours come from AuthScreens.css and Navbar.css so this reads as the same
+ * application:
+ *   accent #1a73e8 · accent wash #e8f0fe · accent border #d2e3fc
+ *   text #26292d / #3c4043 · muted #5f6368 · border #e6e8eb
+ *   radius 8px · "Segoe UI", Roboto, Helvetica, Arial
+ */
+
+.pdm-landing {
+    font-family: "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    color: #3c4043;
+}
+
+/* ── Hero ────────────────────────────────────────────────────────────────── */
+
+/* The page sits inside AppShell, whose view is the scrolling element — so the
+   hero is sized to leave the three points just below the fold rather than to
+   fill the viewport exactly. border-box keeps the padding inside that height
+   instead of adding 192px on top of it. */
+.pdm-landing-hero {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+    min-height: 62vh;
+    padding: 72px 24px;
+    text-align: center;
+    background: #fbfaff;
+}
+
+.pdm-landing-title {
+    margin: 0;
+    font-size: clamp(40px, 7vw, 84px);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    line-height: 1.05;
+    color: #0b57d0;
+}
+
+.pdm-landing-tagline {
+    max-width: 940px;
+    margin: 20px 0 0;
+    font-size: clamp(18px, 2.4vw, 32px);
+    font-weight: 400;
+    line-height: 1.35;
+    color: #3b82f6;
+}
+
+.pdm-landing-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    justify-content: center;
+    margin-top: 40px;
+}
+
+/* `.pdm-landing` beats the legacy bare `button` rule that Navbar.css bundles. */
+.pdm-landing .pdm-landing-button {
+    display: inline-block;
+    padding: 11px 20px;
+    font: inherit;
+    font-size: 15px;
+    font-weight: 600;
+    text-align: center;
+    text-decoration: none;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.pdm-landing .pdm-landing-button-primary {
+    color: #ffffff;
+    background: #1a73e8;
+    border: 1px solid #1a73e8;
+}
+
+.pdm-landing .pdm-landing-button-primary:hover {
+    background: #1765cc;
+    border-color: #1765cc;
+}
+
+.pdm-landing .pdm-landing-button-secondary {
+    color: #26292d;
+    background: #e8f0fe;
+    border: 1px solid #d2e3fc;
+}
+
+.pdm-landing .pdm-landing-button-secondary:hover {
+    background: #d9e7fd;
+}
+
+.pdm-landing a:focus-visible {
+    outline: 2px solid #1a73e8;
+    outline-offset: 2px;
+}
+
+/* ── The three cards ─────────────────────────────────────────────────────── */
+
+.pdm-landing-points {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 48px;
+    max-width: 1240px;
+    margin: 0 auto;
+    padding: 72px 48px 96px;
+}
+
+.pdm-landing-point {
+    position: relative;
+    padding-left: 20px;
+}
+
+/* Drawn rather than an asset — no external request for a decoration. */
+.pdm-landing-point::before {
+    content: "\201C";
+    position: absolute;
+    top: 2px;
+    left: 0;
+    font-size: 22px;
+    line-height: 1;
+    color: #9aa0a6;
+}
+
+.pdm-landing-point h2 {
+    margin: 0 0 16px;
+    font-size: 24px;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    color: #1f2124;
+}
+
+.pdm-landing-point p {
+    margin: 0;
+    font-size: 16px;
+    line-height: 1.6;
+    color: #5f6368;
+}
+
+@media (max-width: 860px) {
+    .pdm-landing-points {
+        grid-template-columns: 1fr;
+        gap: 36px;
+        padding: 48px 24px 64px;
+    }
+}
