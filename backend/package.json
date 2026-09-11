@@ -7,8 +7,8 @@
     "node": ">=20"
   },
   "scripts": {
-    "start": "node index.js",
-    "dev": "node index.js",
+    "start": "node init && node index.js",
+    "dev": "node init && node index.js",
     "test": "node --test",
     "verify": "node verify.js",
     "setup-db": "node setup-database.js",
