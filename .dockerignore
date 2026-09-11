@@ -5,3 +5,12 @@ dynacart/build
 **/*.log
 README.md
 **/README.md
+
+# Service-account keys must never enter an image layer. COPY backend/ ./ would
+# otherwise bake the Firebase private key in, readable by anyone who can pull
+# it. The backend reads the credential from a read-only mount at runtime -
+# see FIREBASE_SERVICE_ACCOUNT_PATH in docker-compose.yml.
+**/firebase-service-account.json
+**/*service-account*.json
+**/serviceAccountKey.json
+secrets/

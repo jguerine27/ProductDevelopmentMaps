@@ -1,4 +1,8 @@
-# Copy .env.example to .env and fill in values before running docker-compose up
+# Copy .env.example to .env and fill in values before running docker compose up.
+#
+# Sized for an OVH VPS-1: 4 GB RAM, 2 vCore, 40 GB NVMe. The memory numbers
+# below are not defaults — see "Memory budget" in .env.example. Raising the
+# Neo4j heap on this plan will get the backend OOM-killed, not make it faster.
 
 services:
   neo4j:
@@ -8,16 +12,37 @@ services:
     environment:
       NEO4J_AUTH: neo4j/${NEO4J_PASSWORD}
       NEO4J_PLUGINS: '["apoc"]'
-      NEO4J_dbms_memory_heap_initial__size: 512m
-      NEO4J_dbms_memory_heap_max__size: 2G
-      NEO4J_dbms_memory_pagecache__size: 1G
+      # Neo4j 5 setting names. The NEO4J_dbms_memory_* forms these replaced are
+      # 4.x spellings; 5.x strict config validation rejects unknown keys at
+      # startup, so the old names do not warn — the container refuses to boot.
+      #
+      # initial == max on purpose: a JVM that grows its heap on a 4 GB box does
+      # it by taking pages the page cache and the backend are already using.
+      NEO4J_server_memory_heap_initial__size: 1G
+      NEO4J_server_memory_heap_max__size: 1G
+      NEO4J_server_memory_pagecache__size: 512m
     volumes:
-      - ./neo4j/data:/data
-      - ./neo4j/logs:/logs
-      - ./neo4j/plugins:/plugins
+      # Named volumes, NOT ./neo4j/data. The image runs as uid 7474; a bind
+      # mount to a host path Docker creates root-owned fails with EACCES on
+      # Linux while working fine on a Windows dev box.
+      - neo4j-data:/data
+      - neo4j-logs:/logs
     ports:
+      # Loopback only. Neo4j is reached by the backend over the compose network;
+      # 7474/7687 are exposed here for an SSH tunnel during maintenance.
       - 127.0.0.1:7474:7474
       - 127.0.0.1:7687:7687
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://localhost:7474 >/dev/null 2>&1 || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 40s
+    logging: &logging
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
     networks:
       - pdm-network
 
@@ -28,15 +53,33 @@ services:
     container_name: pdm-backend
     restart: unless-stopped
     depends_on:
-      - neo4j
+      neo4j:
+        # config.js exits(1) when the driver cannot connect, and restart policy
+        # turns that into a crash loop until Neo4j happens to be ready. Waiting
+        # for the healthcheck makes the first boot deterministic instead.
+        condition: service_healthy
     environment:
       NODE_ENV: production
       PORT: 4000
       NEO4J_URI: bolt://neo4j:7687
       NEO4J_USER: neo4j
       NEO4J_PASSWORD: ${NEO4J_PASSWORD}
-      # Replaces the old wide-open CORS. Set to the public origin of the site.
-      CORS_ORIGIN: ${CORS_ORIGIN:-http://localhost:3000}
+      # No :- fallback on either of these. NODE_ENV=production sets the session
+      # cookie Secure, so a localhost/http default would not fail loudly — it
+      # would serve a site where signing in silently does nothing.
+      CORS_ORIGIN: ${CORS_ORIGIN}
+      SESSION_SECRET: ${SESSION_SECRET}
+      # Mounted read-only below rather than copied in. See .dockerignore.
+      FIREBASE_SERVICE_ACCOUNT_PATH: /run/secrets/firebase-service-account.json
+      ORCID_BASE_URL: ${ORCID_BASE_URL:-https://orcid.org}
+      ORCID_CLIENT_ID: ${ORCID_CLIENT_ID:-}
+      ORCID_CLIENT_SECRET: ${ORCID_CLIENT_SECRET:-}
+      ORCID_REDIRECT_URI: ${ORCID_REDIRECT_URI:-}
+      # Explicit, so the post-login landing page is not quietly inherited from
+      # whichever origin happens to sort first in CORS_ORIGIN.
+      ORCID_SUCCESS_REDIRECT: ${ORCID_SUCCESS_REDIRECT:-}
+    volumes:
+      - ./secrets/firebase-service-account.json:/run/secrets/firebase-service-account.json:ro
     # /api/health reports 503 when Neo4j is unreachable, so a backend that comes
     # up before the database is restarted rather than left serving errors.
     healthcheck:
@@ -49,6 +92,7 @@ services:
       timeout: 5s
       retries: 5
       start_period: 20s
+    logging: *logging
     networks:
       - pdm-network
 
@@ -57,15 +101,31 @@ services:
       context: .
       dockerfile: Dockerfile.frontend
       args:
-        REACT_APP_BACKEND: /api
+        # Empty, NOT /api. Every call site in src/ already writes the /api
+        # prefix, so a base of /api yields /api/api/... and 404s everything.
+        REACT_APP_BACKEND: ""
+        REACT_APP_FIREBASE_API_KEY: ${REACT_APP_FIREBASE_API_KEY}
+        REACT_APP_FIREBASE_AUTH_DOMAIN: ${REACT_APP_FIREBASE_AUTH_DOMAIN}
+        REACT_APP_FIREBASE_PROJECT_ID: ${REACT_APP_FIREBASE_PROJECT_ID}
+        REACT_APP_FIREBASE_STORAGE_BUCKET: ${REACT_APP_FIREBASE_STORAGE_BUCKET}
+        REACT_APP_FIREBASE_MESSAGING_SENDER_ID: ${REACT_APP_FIREBASE_MESSAGING_SENDER_ID}
+        REACT_APP_FIREBASE_APP_ID: ${REACT_APP_FIREBASE_APP_ID}
     container_name: pdm-frontend
     restart: unless-stopped
     depends_on:
       - backend
     ports:
+      # Loopback only: the host's nginx/Caddy terminates TLS and proxies here.
+      # Publishing 0.0.0.0:80 would serve the app over plain HTTP, and the
+      # Secure session cookie would be dropped by the browser.
       - 127.0.0.1:3000:80
+    logging: *logging
     networks:
       - pdm-network
+
+volumes:
+  neo4j-data:
+  neo4j-logs:
 
 networks:
   pdm-network:

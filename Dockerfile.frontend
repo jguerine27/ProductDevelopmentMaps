@@ -8,8 +8,39 @@ RUN npm ci
 
 COPY dynacart/ ./
 
-ARG REACT_APP_BACKEND=/api
+# CRA inlines every REACT_APP_* at BUILD time, so all of these must be present
+# here - not in the container's runtime environment. dynacart/.env cannot supply
+# them: .dockerignore excludes **/.env so the key never enters an image layer,
+# which means each var has to arrive as an explicit build arg.
+#
+# Empty, NOT /api. Every call site in src/ already writes the /api prefix, so a
+# base of /api yields /api/api/... and 404s everything.
+ARG REACT_APP_BACKEND=""
 ENV REACT_APP_BACKEND=$REACT_APP_BACKEND
+
+# The Firebase WEB config. These are public identifiers by design - they ship in
+# the JS bundle for every visitor and are not secrets. Access is controlled by
+# Firebase security rules and the Authorized-domains list, not by hiding them.
+# (The service-account JSON the BACKEND uses is a real secret; it is mounted at
+# runtime and must never be built in.)
+ARG REACT_APP_FIREBASE_API_KEY
+ARG REACT_APP_FIREBASE_AUTH_DOMAIN
+ARG REACT_APP_FIREBASE_PROJECT_ID
+ARG REACT_APP_FIREBASE_STORAGE_BUCKET
+ARG REACT_APP_FIREBASE_MESSAGING_SENDER_ID
+ARG REACT_APP_FIREBASE_APP_ID
+ENV REACT_APP_FIREBASE_API_KEY=$REACT_APP_FIREBASE_API_KEY \
+    REACT_APP_FIREBASE_AUTH_DOMAIN=$REACT_APP_FIREBASE_AUTH_DOMAIN \
+    REACT_APP_FIREBASE_PROJECT_ID=$REACT_APP_FIREBASE_PROJECT_ID \
+    REACT_APP_FIREBASE_STORAGE_BUCKET=$REACT_APP_FIREBASE_STORAGE_BUCKET \
+    REACT_APP_FIREBASE_MESSAGING_SENDER_ID=$REACT_APP_FIREBASE_MESSAGING_SENDER_ID \
+    REACT_APP_FIREBASE_APP_ID=$REACT_APP_FIREBASE_APP_ID
+
+# Fail the BUILD rather than ship a bundle whose Firebase config is undefined.
+# CRA does not warn about a missing REACT_APP_*: it inlines `undefined`, and the
+# first symptom is auth/invalid-api-key in a visitor's console.
+RUN test -n "$REACT_APP_FIREBASE_API_KEY" || \
+      (echo "ERROR: REACT_APP_FIREBASE_API_KEY is empty. Set it in the root .env" && exit 1)
 
 RUN npm run build
 
