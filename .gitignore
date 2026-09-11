@@ -4,7 +4,6 @@ node_modules
 # The root .env carries SESSION_SECRET, NEO4J_PASSWORD and ORCID_CLIENT_SECRET
 # for the deployed stack - docker-compose.yml interpolates it. Only .env.example
 # belongs in the repo.
-.env
 !.env.example
 
 # Runtime secret mounts. secrets/firebase-service-account.json is bind-mounted
